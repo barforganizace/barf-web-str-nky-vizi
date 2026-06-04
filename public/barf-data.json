@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "nazev": "BARF kalkulačka — podkladová data",
+    "verze": "1.0",
+    "model": "procento z tělesné hmotnosti",
+    "poznamka": "Výpočet jede na PROCENTU z cílové tělesné hmotnosti (ne z aktuální, pokud má pes nad/podváhu). Všechny hmotnosti v kg, dávky v g, věk v měsících. Klíče (key) jsou v angličtině pro kód, labely v češtině pro UI.",
+    "jednotky": { "hmotnost": "kg", "davka": "g", "vek": "mesice" }
+  },
+
+  "vzorec": {
+    "hlavni": "denniDavka_g = hmotnost_kg * procento / 100 * 1000",
+    "kroky": [
+      "1. Z věku (měsíce) a velikosti plemene urči životní fázi: puppy / adult / senior.",
+      "2. Vyber základní procento: puppy podle věku; adult/senior z matice velikost × aktivita × kastrace.",
+      "3. Přičti korekci podle kondice (bodyCondition).",
+      "4. denniDavka_g = hmotnost_kg * procento / 100 * 1000.",
+      "5. Rozpočítej denniDavka_g na složky misky podle zvoleného poměru (ratios).",
+      "6. Volitelně: dopočítej kalorie a mikroživiny.",
+      "7. Validuj proti limitům (játra, kost, Ca:P)."
+    ],
+    "priklad": {
+      "vstup": { "hmotnost_kg": 20, "fáze": "adult", "velikost": "medium", "aktivita": "pohodar", "kastrovany": false, "kondice": "ideal" },
+      "procento": 2.5,
+      "denniDavka_g": 500
+    }
+  },
+
+  "vekFaze": {
+    "popis": "Hranice fází závisí na velikosti plemene. vek < puppyEnd => puppy; vek >= seniorStart => senior; jinak adult.",
+    "prahy": {
+      "small":  { "label": "Malé",   "puppyEndMonths": 10, "seniorStartMonths": 96 },
+      "medium": { "label": "Střední", "puppyEndMonths": 12, "seniorStartMonths": 84 },
+      "large":  { "label": "Velké",   "puppyEndMonths": 15, "seniorStartMonths": 72 },
+      "giant":  { "label": "Obří",    "puppyEndMonths": 24, "seniorStartMonths": 60 }
+    },
+    "vypocetVeku": "vekMesice = floor((dnes - datumNarozeni) / (30.44 dní * den)). Když není datum, ber default 36 měsíců."
+  },
+
+  "sazby": {
+    "adult": {
+      "popis": "% z cílové hmotnosti. Formát: neutral = nekastrovaný, neutered = kastrovaný.",
+      "matice": {
+        "small": {
+          "gaucak":    { "neutral": 2.5, "neutered": 2.2 },
+          "pohodar":   { "neutral": 3.0, "neutered": 2.7 },
+          "sportovec": { "neutral": 3.5, "neutered": 3.2 }
+        },
+        "medium": {
+          "gaucak":    { "neutral": 2.0, "neutered": 1.8 },
+          "pohodar":   { "neutral": 2.5, "neutered": 2.2 },
+          "sportovec": { "neutral": 3.0, "neutered": 2.7 }
+        },
+        "large": {
+          "gaucak":    { "neutral": 1.8, "neutered": 1.6 },
+          "pohodar":   { "neutral": 2.2, "neutered": 2.0 },
+          "sportovec": { "neutral": 2.7, "neutered": 2.4 }
+        },
+        "giant": {
+          "gaucak":    { "neutral": 1.5, "neutered": 1.3 },
+          "pohodar":   { "neutral": 1.8, "neutered": 1.6 },
+          "sportovec": { "neutral": 2.2, "neutered": 2.0 }
+        }
+      }
+    },
+    "puppy": {
+      "popis": "% z AKTUÁLNÍ hmotnosti, klesá s věkem. Doporuč vážit štěně každý týden a přepočítat. Vybírá se první rozsah, kde vekMesice <= maxMonths.",
+      "rozsahy": [
+        { "maxMonths": 4,  "label": "do 4 měsíců", "percent": 9.0 },
+        { "maxMonths": 6,  "label": "4–6 měsíců",   "percent": 7.0 },
+        { "maxMonths": 9,  "label": "6–9 měsíců",   "percent": 5.5 },
+        { "maxMonths": 12, "label": "9–12 měsíců",  "percent": 4.5 }
+      ]
+    },
+    "senior": {
+      "popis": "Senior používá sazbu 'gaucak' pro danou velikost (respektuje kastraci). Aktivita se ignoruje."
+    }
+  },
+
+  "kondice": {
+    "popis": "Korekce procenta. Přičítá se k základnímu procentu. VŽDY počítej z cílové hmotnosti.",
+    "moznosti": [
+      { "key": "underweight", "label": "Podváha",  "percentAdjust": 0.5 },
+      { "key": "ideal",       "label": "Ideální",   "percentAdjust": 0.0 },
+      { "key": "overweight",  "label": "Nadváha",   "percentAdjust": -0.5 }
+    ]
+  },
+
+  "slozeniMisky": {
+    "popis": "Jak rozpočítat denní dávku na jednotlivé složky. Appka používá 4 kategorie (default). Učebnicové modely BARF/PMR jsou jemnější a hodí se pro edukaci/validaci.",
+    "defaultApp": {
+      "label": "Výchozí (4 kategorie)",
+      "casti": [
+        { "key": "muscle", "label": "Svalovina",     "percent": 50 },
+        { "key": "rmb",    "label": "Masité kosti",   "percent": 25 },
+        { "key": "organs", "label": "Vnitřnosti",     "percent": 15 },
+        { "key": "other",  "label": "Ostatní",        "percent": 10 }
+      ]
+    },
+    "barf": {
+      "label": "BARF (Billinghurst) — se zeleninou",
+      "casti": [
+        { "key": "muscle",      "label": "Svalovina",        "percent": 70 },
+        { "key": "rmb",         "label": "Masité kosti",     "percent": 10 },
+        { "key": "veg",         "label": "Zelenina / ovoce", "percent": 10 },
+        { "key": "liver",       "label": "Játra",            "percent": 5 },
+        { "key": "otherOrgans", "label": "Ostatní orgány",   "percent": 5 }
+      ]
+    },
+    "pmr": {
+      "label": "PMR (prey model) — bez zeleniny",
+      "casti": [
+        { "key": "muscle",      "label": "Svalovina",      "percent": 80 },
+        { "key": "rmb",         "label": "Masité kosti",   "percent": 10 },
+        { "key": "liver",       "label": "Játra",          "percent": 5 },
+        { "key": "otherOrgans", "label": "Ostatní orgány", "percent": 5 }
+      ]
+    }
+  },
+
+  "kalorie": {
+    "popis": "Zjednodušený přepočet. Není to hlavní metrika výpočtu.",
+    "vzorec": "kcal = denniDavka_g * 1.6"
+  },
+
+  "mikroziviny": {
+    "popis": "FEDIAF minima na KG tělesné hmotnosti za den. Škálují lineárně s hmotností. Štěně má vyšší hodnoty napřímo (ne násobitelem).",
+    "naKg": {
+      "puppy":  { "calcium_mg": 320, "phosphorus_mg": 250, "magnesium_mg": 14,   "iron_mg": 2.2,  "zinc_mg": 2.25, "vitamin_a_ug": 75,   "vitamin_d_ug": 1.4 },
+      "adult":  { "calcium_mg": 120, "phosphorus_mg": 100, "magnesium_mg": 8.75, "iron_mg": 1.25, "zinc_mg": 1.5,  "vitamin_a_ug": 37.5, "vitamin_d_ug": 0.688 },
+      "senior": { "calcium_mg": 120, "phosphorus_mg": 100, "magnesium_mg": 8.75, "iron_mg": 1.25, "zinc_mg": 1.5,  "vitamin_a_ug": 37.5, "vitamin_d_ug": 0.688 }
+    }
+  },
+
+  "limity": {
+    "popis": "Zdravotní limity pro validaci výsledné misky.",
+    "liverMaxPercent": 5,
+    "liverNote": "Strop kvůli vitaminu A. Nikdy nemíchat játra a ostatní orgány do jednoho balíku.",
+    "boneTargetPercent": 10,
+    "boneMinPercent": 8,
+    "boneMaxPercent": 15,
+    "boneNote": "Myšleno reálný obsah kosti. Celé RMB (krky, křídla) jsou ~50 % maso, takže 10 % kosti ≈ 15–20 % RMB. Moc kosti = zácpa a rozhozený Ca:P.",
+    "muscleMinPercent": 70,
+    "caToPRatio": "1.2–1.4 : 1",
+    "transitionNote": "Přechod na BARF postupně 7–10 dní."
+  },
+
+  "suroviny": {
+    "muscle": {
+      "label": "Svalovina",
+      "note": "Srdce se počítá jako svalovina, ne orgán.",
+      "items": ["Hovězí svalovina", "Kuřecí maso", "Krůtí maso", "Jehněčí", "Králík", "Zvěřina", "Hovězí srdce", "Kuřecí žaludky", "Bachor (zelený dršťky)"]
+    },
+    "rmb": {
+      "label": "Masité kosti",
+      "note": "Pouze měkké, dužnaté kosti. Nikdy vařené a žádné nosné kosti velkých zvířat.",
+      "items": ["Kuřecí krky", "Kuřecí křídla", "Krůtí krky", "Kachní krky", "Jehněčí krky / žebra", "Králík (vcelku)"]
+    },
+    "liver": {
+      "label": "Játra",
+      "note": "Max 5 %. Vždy oddělit od ostatních orgánů.",
+      "items": ["Kuřecí játra", "Hovězí játra", "Jehněčí játra", "Drůbeží játra"]
+    },
+    "otherOrgans": {
+      "label": "Ostatní orgány",
+      "note": "Sekreční orgány (ne svalové).",
+      "items": ["Ledviny", "Slezina", "Brzlík", "Slinivka", "Varlata"]
+    },
+    "veg": {
+      "label": "Zelenina / ovoce",
+      "note": "Rozmixovat nebo lehce podusit. Pouze model BARF.",
+      "items": ["Mrkev", "Cuketa", "Dýně", "Brokolice", "Špenát", "Červená řepa", "Okurka", "Jablko (bez jadřince)", "Borůvky", "Banán"]
+    },
+    "supplements": {
+      "label": "Doplňky (volitelné)",
+      "note": "Hlavně omega-3, doplnění mikroživin.",
+      "items": ["Lososový / rybí olej", "Celé vejce (1–2× týdně)", "Mořské řasy", "Prášek z vaječných skořápek"]
+    }
+  },
+
+  "zakazane": {
+    "label": "Zakázané / toxické",
+    "note": "Tvrdá blokace ve validaci. Nikdy nepovolit v misce.",
+    "items": [
+      "Cibule", "Česnek", "Pažitka / pórek", "Hrozny a rozinky", "Avokádo",
+      "Čokoláda", "Xylitol (sladidlo)", "Makadamové ořechy", "Alkohol",
+      "Kofein", "Vařené kosti", "Syrové vepřové (Aujeszkyho choroba — jen tepelně zpracované)"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+export { FooterPromoSection } from "./FooterPromoSection";

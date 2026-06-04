@@ -1,0 +1,773 @@
+<!-- BARF Lovec — arkáda v design systému aplikace (Jakub) -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BARF Lovec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --primary:#1E2A38;
+    --primary-soft:#2C3A4B;
+    --accent:#A7DD52;
+    --accent-600:#8BC53F;
+    --bg:#F2F4F7;
+    --card:#FFFFFF;
+    --text:#1E2A38;
+    --soft:#6B7280;
+    --soft-2:#9AA3AF;
+    --line:#E5E7EB;
+    --line-2:#EEF1F4;
+    --c-muscle:#EF4444;
+    --c-bone:#F5B544;
+    --c-liver:#8B5CF6;
+    --c-organ:#22C55E;
+    --shadow:0 1px 2px rgba(16,24,40,.05), 0 6px 16px -8px rgba(16,24,40,.18);
+    --shadow-sm:0 1px 2px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;color:var(--text);background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:460px;margin:0 auto;min-height:100vh;padding:14px 16px 24px;display:flex;flex-direction:column}
+  .screen{display:none;animation:fade .35s ease both;flex:1;flex-direction:column}
+  .screen.on{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  h1{font-size:28px;font-weight:800;text-align:center;margin:6px 0 22px;letter-spacing:-.02em}
+  .lead{text-align:center;color:var(--soft);font-size:14px;margin:-14px 0 22px;line-height:1.5}
+
+  label{display:block;font-size:13px;font-weight:600;color:var(--soft);margin:18px 0 8px}
+  input{
+    width:100%;font:inherit;font-size:17px;font-weight:600;color:var(--text);
+    background:var(--card);border:1.5px solid transparent;border-radius:14px;
+    padding:15px 16px;box-shadow:var(--shadow-sm);outline:none;transition:.15s;
+  }
+  input::placeholder{color:var(--soft-2);font-weight:500}
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(167,221,82,.35)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ig{position:relative}
+  .ig .unit{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--soft-2);font-size:15px;pointer-events:none}
+
+  /* odvozená dávka — náhled */
+  .preview{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);margin-top:22px}
+  .preview .pt{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft-2);margin-bottom:4px}
+  .preview .pv{font-size:13px;color:var(--soft);line-height:1.5}
+  .preview .pv b{color:var(--text);font-weight:800}
+  .preview.dim{opacity:.5}
+
+  .actions{margin-top:auto;padding-top:18px;display:flex;gap:12px}
+  .btn{
+    appearance:none;cursor:pointer;font:inherit;font-weight:700;font-size:16px;
+    border:none;border-radius:16px;padding:17px 22px;background:var(--primary);color:#fff;
+    flex:1;transition:transform .08s,opacity .15s;box-shadow:var(--shadow);
+  }
+  .btn:active{transform:scale(.985)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.sec{background:var(--card);color:var(--text);box-shadow:var(--shadow-sm);flex:none;padding:17px 20px}
+  .btn.accent{background:var(--accent);color:var(--primary)}
+
+  /* hud */
+  .hud{display:flex;gap:12px;margin-bottom:10px}
+  .stat{background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-sm);text-align:center;flex:1}
+  .stat .l{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft-2)}
+  .stat .v{font-size:24px;font-weight:800;line-height:1.15;margin-top:2px}
+  .timewrap{background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-sm);flex:1.5;display:flex;flex-direction:column;justify-content:center}
+  .timewrap .row{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--soft-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+  .timewrap .row b{color:var(--text);font-size:14px}
+  .ttrack{height:9px;background:var(--line-2);border-radius:5px;overflow:hidden}
+  .ttrack .f{height:100%;width:100%;background:var(--accent);transition:width .12s linear;border-radius:5px}
+  .ttrack.warn .f{background:var(--c-muscle)}
+
+  /* dogbar */
+  .dogbar{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);margin-bottom:10px}
+  .dogbar.hit{animation:shake .42s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  .dogsvg{width:50px;height:50px;flex:none}
+  .dogbar-info{flex:1;min-width:0}
+  .dogbar-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:7px}
+  .dogbar-top .dn{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dogbar-top .hpval{font-weight:800;font-size:14px;color:var(--soft);flex:none;margin-left:10px}
+  .hptrack{height:12px;background:var(--line-2);border-radius:6px;overflow:hidden}
+  .hptrack .f{height:100%;width:100%;border-radius:6px;background:var(--c-organ);transition:width .35s cubic-bezier(.4,0,.2,1),background .3s}
+  .intro-dog{display:flex;justify-content:center;margin:8px 0 -2px}
+  .intro-dog svg{width:104px;height:104px;filter:drop-shadow(0 8px 18px rgba(16,24,40,.18))}
+
+  /* cílová miska — kompaktní 4 bary */
+  .targets{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-sm);margin-bottom:10px}
+  .trow .top{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;margin-bottom:6px}
+  .trow .nm{display:flex;align-items:center;gap:7px;font-weight:700}
+  .trow .ic{width:18px;height:18px;border-radius:6px;display:grid;place-items:center;flex:none}
+  .trow .ic i{width:8px;height:8px;border-radius:2px;display:block}
+  .trow .vv{font-weight:700;font-size:12px}.trow .vv b{font-weight:800}.trow .vv span{color:var(--soft-2);font-weight:600}
+  .trow .vv.met b{color:var(--c-organ)}
+  .trow .vv.over b{color:var(--c-muscle)}
+  .track{height:8px;background:var(--line-2);border-radius:5px;overflow:hidden;position:relative}
+  .track .zone{position:absolute;top:0;bottom:0;background:rgba(34,197,94,.18)}
+  .track .f{height:100%;width:0;border-radius:5px;transition:width .18s}
+
+  /* HRACÍ PLOCHA */
+  .field{
+    position:relative;flex:1;min-height:300px;border-radius:20px;overflow:hidden;
+    background:
+      radial-gradient(120% 80% at 50% -10%, #fff 0%, rgba(255,255,255,0) 60%),
+      linear-gradient(180deg,#EDF1F6 0%,#E4E9F0 100%);
+    box-shadow:inset 0 1px 2px rgba(16,24,40,.04), var(--shadow-sm);
+    margin-bottom:10px;touch-action:manipulation;
+  }
+  /* dno = miska */
+  .field::after{
+    content:'';position:absolute;left:0;right:0;bottom:0;height:46px;
+    background:linear-gradient(180deg,rgba(30,42,56,0) 0%,rgba(30,42,56,.06) 100%);
+    border-top:2px dashed rgba(30,42,56,.12);pointer-events:none;
+  }
+  .field-hint{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;font-weight:700;color:var(--soft-2);pointer-events:none;letter-spacing:.03em}
+
+  .faller{
+    position:absolute;width:64px;height:78px;border-radius:13px;
+    background:#fff;border:2px solid var(--cc);box-shadow:var(--shadow);cursor:pointer;
+    user-select:none;overflow:hidden;--cc:var(--soft);will-change:transform;
+    transform:translateZ(0);
+  }
+  .faller .art{position:absolute;top:0;left:0;right:0;height:54%;background:var(--cc);display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .faller .art::after{content:'';position:absolute;inset:0;background:#fff;opacity:.82}
+  .faller .art svg{position:relative;z-index:1;width:84%;height:84%}
+  .faller .info{position:absolute;left:0;right:0;bottom:0;height:46%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;background:#fff}
+  .faller .type{font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;color:#fff;background:var(--cc);border-radius:20px;padding:1px 6px;line-height:1.3}
+  .faller .pip{font-weight:800;font-size:13px;color:var(--text);line-height:1}
+  .faller .pip small{font-size:8px;font-weight:700;color:var(--soft-2);margin-left:1px}
+  .faller:active{transform:scale(.92)}
+  .faller.grab{animation:grab .26s ease forwards}
+  @keyframes grab{to{transform:scale(.3) translateY(-30px);opacity:0}}
+  .faller.bad{animation:badpick .3s ease}
+  @keyframes badpick{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  /* odlet do baru / floating score */
+  .float{position:fixed;z-index:55;font-weight:800;font-size:15px;pointer-events:none;animation:floatUp .7s ease forwards}
+  @keyframes floatUp{0%{opacity:0;transform:translateY(0) scale(.8)}15%{opacity:1}100%{opacity:0;transform:translateY(-38px) scale(1.05)}}
+
+  .serve-info{text-align:center;font-size:13px;font-weight:700;color:var(--soft);margin:0 4px 0;min-height:18px}
+  .serve-info.ok{color:var(--accent-600)}
+  .serve-info.bad{color:var(--c-muscle)}
+
+  .toast{position:fixed;left:50%;top:18%;transform:translateX(-50%) scale(.85);background:var(--primary);color:#fff;font-weight:800;font-size:20px;padding:13px 24px;border-radius:16px;opacity:0;pointer-events:none;z-index:60;transition:.2s;box-shadow:0 16px 40px -12px rgba(0,0,0,.5);text-align:center}
+  .toast.accent{background:var(--accent);color:var(--primary)}
+  .toast.bad{background:var(--c-muscle);color:#fff}
+  .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+
+  /* leaderboard / final */
+  .final{text-align:center;margin:6px 0 4px}
+  .final .sl{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--soft-2)}
+  .final .sv{font-size:64px;font-weight:800;line-height:1;margin:6px 0;color:var(--primary)}
+  .final .ss{color:var(--soft);font-size:14px}
+  .sectlabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft-2);margin:16px 4px 10px}
+  .lb-header{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 10px}
+  .lb-header .ttl{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft-2)}
+  .lb-header .col{font-size:11px;font-weight:700;color:var(--soft-2);letter-spacing:.06em}
+  .lb{list-style:none;margin:8px 0 0;padding:0}
+  .lb li{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow-sm);margin-bottom:9px;transition:transform .15s}
+  .lb li:hover{transform:translateX(2px)}
+  .lb .rk{font-weight:800;font-size:17px;text-align:center;color:var(--soft)}
+  .lb .rk.gold{color:#D4A017;font-size:20px}.lb .rk.silver{color:#8A9BA8;font-size:20px}.lb .rk.bronze{color:#B07040;font-size:20px}
+  .lb .wh b{display:block;font-weight:700;font-size:15px}.lb .wh small{color:var(--soft);font-size:12px}
+  .lb .pt{font-weight:800;font-size:19px}
+  .lb li.you{background:linear-gradient(135deg,var(--accent),#c5f06a);box-shadow:0 4px 16px -4px rgba(167,221,82,.5)}
+  .lb li.you .wh small{color:#3d5520}.lb li.you .rk{color:var(--primary)}
+  @keyframes pulseglow{0%,100%{box-shadow:0 4px 16px -4px rgba(167,221,82,.5)}50%{box-shadow:0 4px 32px -4px rgba(167,221,82,.9)}}
+  .lb li.you.pb{animation:pulseglow 1.2s ease 3}
+  .empty{text-align:center;color:var(--soft);padding:18px;font-size:14px}
+  .note{font-size:12px;color:var(--soft-2);text-align:center;margin-top:14px;line-height:1.55}
+  .foot{font-size:11px;color:var(--soft-2);text-align:center;margin-top:18px;line-height:1.5}
+
+  /* WIN OVERLAY */
+  .win-overlay{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:rgba(14,20,28,.85);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s}
+  .win-overlay.show{opacity:1;pointer-events:all}
+  .win-card{width:100%;max-width:400px;background:var(--card);border-radius:28px;padding:32px 28px 28px;box-shadow:0 32px 80px -16px rgba(0,0,0,.55);text-align:center;transform:scale(.85) translateY(30px);transition:transform .45s cubic-bezier(.175,.885,.32,1.275)}
+  .win-overlay.show .win-card{transform:scale(1) translateY(0)}
+  .win-medal{font-size:72px;line-height:1;margin-bottom:4px;animation:medal-pop .6s .2s both cubic-bezier(.175,.885,.32,1.275)}
+  @keyframes medal-pop{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+  .win-title{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--soft-2);margin-bottom:6px}
+  .win-score{font-size:72px;font-weight:800;line-height:1;color:var(--primary);margin:4px 0 2px;animation:score-count .5s .35s both}
+  @keyframes score-count{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .win-sub{color:var(--soft);font-size:14px;margin-bottom:22px}
+  .win-grade{display:inline-block;padding:5px 16px;border-radius:30px;font-size:13px;font-weight:800;margin-bottom:22px;letter-spacing:.05em}
+  .win-grade.s{background:#FFF0C2;color:#9A6800}.win-grade.a{background:#E8F9E8;color:#1A7A2E}
+  .win-grade.b{background:#EEF1FF;color:#3B4FD8}.win-grade.c{background:#F3F4F6;color:#6B7280}
+  .win-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+  .win-stat{background:var(--bg);border-radius:14px;padding:12px;text-align:center}
+  .win-stat .wsl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft-2)}
+  .win-stat .wsv{font-size:24px;font-weight:800;margin-top:2px}
+  .win-btns{display:flex;gap:10px}.win-btns .btn{font-size:15px;padding:15px 18px}
+  #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+</style>
+
+<div class="app">
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-wiz">
+    <div class="intro-dog">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <ellipse cx="18" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(-20 18 32)"/>
+        <ellipse cx="62" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(20 62 32)"/>
+        <ellipse cx="40" cy="42" rx="25" ry="26" fill="#E0B184"/>
+        <ellipse cx="40" cy="52" rx="16" ry="13" fill="#F2DCC0"/>
+        <circle cx="31" cy="39" r="3.3" fill="#1E2A38"/>
+        <circle cx="49" cy="39" r="3.3" fill="#1E2A38"/>
+        <ellipse cx="40" cy="49" rx="4.6" ry="3.6" fill="#1E2A38"/>
+        <path d="M30 54 q10 9 20 0" stroke="#1E2A38" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path d="M20 63 q20 10 40 0" stroke="#A7DD52" stroke-width="5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>BARF Lovec</h1>
+    <p class="lead">Zadej váhu a věk psa — z toho spočítám denní misku. Pak lovi padající suroviny: klikej jen na ty, co miska potřebuje, a trefuj přesné gramáže.</p>
+
+    <label for="playerName">Tvoje přezdívka</label>
+    <input id="playerName" maxlength="20" placeholder="Např. SyrovýŠéf" autocomplete="off">
+    <label for="dogName">Jméno psa</label>
+    <input id="dogName" maxlength="24" placeholder="Např. Rex" autocomplete="off">
+
+    <div class="two">
+      <div>
+        <label for="dogWeight">Váha psa</label>
+        <div class="ig"><input id="dogWeight" type="number" min="1" max="90" inputmode="decimal" placeholder="20"><span class="unit">kg</span></div>
+      </div>
+      <div>
+        <label for="dogAge">Věk psa</label>
+        <div class="ig"><input id="dogAge" type="number" min="1" max="240" inputmode="numeric" placeholder="36"><span class="unit">měs.</span></div>
+      </div>
+    </div>
+
+    <div class="preview dim" id="preview">
+      <div class="pt">Denní miska</div>
+      <div class="pv" id="previewBody">Vyplň váhu a věk pro výpočet dávky…</div>
+    </div>
+
+    <div class="actions"><button class="btn accent" id="startBtn">Spustit lov 🐾</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="s-game">
+    <div class="dogbar" id="dogStatus">
+      <svg class="dogsvg" viewBox="0 0 80 80" aria-hidden="true">
+        <ellipse cx="18" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(-20 18 32)"/>
+        <ellipse cx="62" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(20 62 32)"/>
+        <ellipse cx="40" cy="42" rx="25" ry="26" fill="#E0B184"/>
+        <ellipse cx="40" cy="52" rx="16" ry="13" fill="#F2DCC0"/>
+        <circle cx="31" cy="39" r="3.3" fill="#1E2A38"/>
+        <circle cx="49" cy="39" r="3.3" fill="#1E2A38"/>
+        <ellipse cx="40" cy="49" rx="4.6" ry="3.6" fill="#1E2A38"/>
+        <path id="dogMouth" d="M30 54 q10 9 20 0" stroke="#1E2A38" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 63 q20 10 40 0" stroke="#A7DD52" stroke-width="5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="dogbar-info">
+        <div class="dogbar-top"><span class="dn" id="dogHpName">Pes</span><span class="hpval"><span id="hpVal">100 %</span> ❤️</span></div>
+        <div class="hptrack"><div class="f" id="hpFill"></div></div>
+      </div>
+    </div>
+
+    <div class="hud">
+      <div class="stat"><div class="l">Kolo</div><div class="v" id="hudRound">1</div></div>
+      <div class="stat"><div class="l">Skóre</div><div class="v" id="hudScore">0</div></div>
+      <div class="timewrap">
+        <div class="row"><span>Čas misky</span><b id="timeVal">30 s</b></div>
+        <div class="ttrack" id="ttrack"><div class="f" id="timeFill"></div></div>
+      </div>
+    </div>
+
+    <div class="targets" id="targets"></div>
+
+    <div class="field" id="field">
+      <div class="field-hint">Klikej na suroviny, co miska potřebuje</div>
+    </div>
+
+    <div class="serve-info" id="serveInfo">Lov suroviny…</div>
+    <div class="actions"><button class="btn accent" id="serveBtn">Naservírovat misku</button></div>
+  </section>
+
+  <!-- OVER -->
+  <section class="screen" id="s-over">
+    <div class="final">
+      <div class="sl">Konec běhu</div>
+      <div class="sv" id="finalScore">0</div>
+      <div class="ss" id="finalSub"></div>
+    </div>
+    <div class="sectlabel" style="margin-top:6px">🏅 Žebříček lovců</div>
+    <div class="lb-header"><span class="ttl">Hráč</span><span class="col">Skóre</span></div>
+    <ul class="lb" id="lbList"></ul>
+    <div class="actions">
+      <button class="btn sec" id="editDog">Změnit psa</button>
+      <button class="btn accent" id="playAgain">Hrát znovu 🐾</button>
+    </div>
+    <p class="note" id="lbNote"></p>
+  </section>
+
+  <p class="foot" id="foot">Orientační pomůcka, ne veterinární doporučení. Konkrétní BARF plán konzultuj s odborníkem.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- WIN OVERLAY -->
+<canvas id="confetti-canvas"></canvas>
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card">
+    <div class="win-medal" id="winMedal">🏆</div>
+    <div class="win-title">Konec běhu</div>
+    <div class="win-score" id="winScore">0</div>
+    <div class="win-sub" id="winSub"></div>
+    <div class="win-grade" id="winGrade"></div>
+    <div class="win-stats">
+      <div class="win-stat"><div class="wsl">Misky</div><div class="wsv" id="winMeals">0</div></div>
+      <div class="win-stat"><div class="wsl">Nejdelší série</div><div class="wsv" id="winCombo">0</div></div>
+    </div>
+    <div class="win-btns">
+      <button class="btn sec" id="wEditDog">Změnit psa</button>
+      <button class="btn accent" id="wPlayAgain">Hrát znovu 🐾</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=id=>document.getElementById(id);
+
+  /* storage s fallbackem */
+  const mem={};
+  const store={
+    async get(k,s){ if(window.storage){try{return await window.storage.get(k,!!s);}catch(e){return null;}} return (k in mem)?{value:mem[k]}:null; },
+    async set(k,v,s){ if(window.storage){try{return await window.storage.set(k,v,!!s);}catch(e){return null;}} mem[k]=v; return {value:v}; }
+  };
+  const hasStorage=!!window.storage;
+  const LB_KEY='barf_lovec_lb_v1', PROFILE_KEY='barf_lovec_profile_v1';
+
+  const CATS={
+    muscle:{short:'Svalovina',color:'var(--c-muscle)',share:.80},
+    bone:{short:'Kosti',color:'var(--c-bone)',share:.10},
+    liver:{short:'Játra',color:'var(--c-liver)',share:.05},
+    organ:{short:'Orgány',color:'var(--c-organ)',share:.05},
+  };
+  const CATKEYS=['muscle','bone','liver','organ'];
+
+  // suroviny: [název, [možné gramáže]]
+  const INGREDIENTS={
+    muscle:[['Kuřecí prsa',[60,80,100]],['Hovězí svalovina',[120,150,180]],['Krůtí stehno',[80,100,120]],['Jehněčí',[100,120,150]],['Králík',[60,80,100]],['Hovězí srdce',[50,80,100]],['Zvěřina',[120,150,200]]],
+    bone:[['Kuřecí krky',[15,20,25]],['Kuřecí křídla',[25,30,40]],['Drůbeží karkas',[20,30,50]],['Jehněčí žebírka',[15,20,40]]],
+    liver:[['Kuřecí játra',[5,8,10]],['Hovězí játra',[10,12,15]],['Vepřová játra',[8,10,12]]],
+    organ:[['Ledviny',[5,8,10]],['Slezina',[8,12,15]],['Dršťky',[5,10,15]],['Slinivka',[5,8,12]]],
+  };
+
+  /* ── KARETNÍ ART ─────────────────────────────── */
+  const ART={
+    chicken:`<path d="M22 48 C18 31 38 19 58 23 C79 27 87 43 78 57 C69 70 39 70 29 60 C25 56 23 52 22 48Z" fill="#F3C6BE" stroke="#C98A80" stroke-width="3"/><path d="M40 31 C53 29 67 33 73 45" fill="none" stroke="#E3A89E" stroke-width="3.5" stroke-linecap="round"/>`,
+    beef:`<rect x="23" y="24" width="54" height="42" rx="9" fill="#B23B36" stroke="#7E2723" stroke-width="3"/><path d="M34 34 q8 7 0 14 M50 30 q6 11 -2 20 M62 36 q6 7 0 16" stroke="#E8B0A8" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    drumstick:`<ellipse cx="41" cy="44" rx="22" ry="20" fill="#E9A87E" stroke="#B97B52" stroke-width="3"/><rect x="56" y="39" width="22" height="10" rx="5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5" transform="rotate(-12 67 44)"/><circle cx="80" cy="33" r="6.5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5"/><circle cx="81" cy="47" r="6.5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5"/>`,
+    redcut:`<path d="M26 30 C40 21 70 21 78 34 C85 45 80 61 64 65 C44 71 23 60 22 46 C21 40 22 34 26 30Z" fill="#C0463E" stroke="#812B25" stroke-width="3"/><path d="M26 30 C40 21 70 21 78 34" fill="none" stroke="#F0E2CE" stroke-width="6" stroke-linecap="round"/>`,
+    heart:`<path d="M50 67 C29 50 21 40 27 30 C32 21 45 23 50 34 C55 23 68 21 73 30 C79 40 71 50 50 67Z" fill="#A8332F" stroke="#6E211E" stroke-width="3"/><path d="M50 38 q-6 7 -2 13" stroke="#D98A84" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    neck:`<g fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5"><ellipse cx="33" cy="33" rx="12" ry="10"/><ellipse cx="50" cy="42" rx="12" ry="10"/><ellipse cx="67" cy="51" rx="12" ry="10"/></g><g fill="#D8C39A"><circle cx="33" cy="33" r="3.4"/><circle cx="50" cy="42" r="3.4"/><circle cx="67" cy="51" r="3.4"/></g>`,
+    wing:`<path d="M29 36 C40 25 57 27 61 40 C65 53 54 63 42 61 C29 59 22 47 29 36Z" fill="#EBB98D" stroke="#B97B52" stroke-width="3"/><rect x="57" y="40" width="22" height="9" rx="4.5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5" transform="rotate(-20 68 44)"/>`,
+    ribs:`<path d="M23 26 q41 -7 54 9 l-3 33 q-31 9 -52 -2 Z" fill="#C0463E" stroke="#812B25" stroke-width="3"/><g stroke="#F2E6D0" stroke-width="4.5" stroke-linecap="round"><path d="M31 30 V58"/><path d="M43 28 V60"/><path d="M55 28 V60"/><path d="M67 32 V58"/></g>`,
+    liver:`<path d="M21 41 C23 28 44 24 64 28 C81 31 85 45 74 55 C60 67 33 65 25 55 C21 51 20 46 21 41Z" fill="#7E2E2A" stroke="#54201D" stroke-width="3"/><path d="M40 34 C52 32 65 36 71 45" fill="none" stroke="#A85A55" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="37" cy="41" rx="6" ry="3" fill="#9C4742" opacity=".7"/>`,
+    kidney:`<path d="M35 27 C57 21 76 33 71 50 C67 64 47 67 39 57 C45 51 45 44 39 40 C30 46 30 59 41 63 C26 59 20 42 28 31 C30 29 33 28 35 27Z" fill="#8C3A33" stroke="#5C231E" stroke-width="3"/><ellipse cx="36" cy="37" rx="5" ry="3" fill="#B05F58" opacity=".7"/>`,
+    organ:`<path d="M21 45 C23 34 40 30 58 34 C75 37 83 47 76 55 C67 65 39 63 27 57 C23 54 20 50 21 45Z" fill="#6E3B6B" stroke="#4A2747" stroke-width="3"/><path d="M33 43 C48 41 62 45 70 51" stroke="#9A6597" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    tripe:`<path d="M26 29 C44 23 64 25 74 36 C83 46 76 61 60 63 C40 67 23 56 21 44 C20 38 22 32 26 29Z" fill="#E8DCC8" stroke="#B9A988" stroke-width="3"/><g stroke="#C2B294" stroke-width="1.8" fill="none"><path d="M36 38 l6 -4 6 4 v8 l-6 4 -6 -4Z"/><path d="M50 38 l6 -4 6 4 v8 l-6 4 -6 -4Z"/><path d="M43 50 l6 -4 6 4 v8 l-6 4 -6 -4Z"/></g>`,
+  };
+  const ARTOF={
+    'Kuřecí prsa':'chicken','Hovězí svalovina':'beef','Krůtí stehno':'drumstick','Jehněčí':'redcut',
+    'Králík':'redcut','Hovězí srdce':'heart','Zvěřina':'redcut',
+    'Kuřecí krky':'neck','Kuřecí křídla':'wing','Drůbeží karkas':'ribs','Jehněčí žebírka':'ribs',
+    'Kuřecí játra':'liver','Hovězí játra':'liver','Vepřová játra':'liver',
+    'Ledviny':'kidney','Slezina':'organ','Dršťky':'tripe','Slinivka':'organ',
+  };
+  const ARTDEF={muscle:'beef',bone:'ribs',liver:'liver',organ:'kidney'};
+  function artFor(name,cat){const k=ARTOF[name]||ARTDEF[cat];return `<svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid meet">${ART[k]||''}</svg>`;}
+
+  const MOUTH={happy:'M30 54 q10 9 20 0',ok:'M32 56 h16',sad:'M30 59 q10 -7 20 0'};
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+  /* ── BARF MATEMATIKA ──────────────────────────── */
+  // % tělesné hmotnosti denně podle věku (měsíce)
+  function pctForAge(months){
+    if(months<2) return .10;
+    if(months<4) return .08;
+    if(months<6) return .06;
+    if(months<9) return .05;
+    if(months<12) return .04;
+    return .025; // dospělý
+  }
+  function ageLabel(months){
+    if(months<4) return 'malé štěně';
+    if(months<6) return 'štěně';
+    if(months<12) return 'mladý pes';
+    if(months<96) return 'dospělý';
+    return 'senior';
+  }
+  const round5=n=>Math.max(5,Math.round(n/5)*5);
+  function computeTargets(weightKg,ageMonths){
+    const pct=pctForAge(ageMonths);
+    const daily=weightKg*1000*pct; // gramy
+    const t={};
+    CATKEYS.forEach(c=>t[c]=round5(daily*CATS[c].share));
+    return {daily:Math.round(daily),pct,target:t};
+  }
+
+  /* ── STAV ─────────────────────────────────────── */
+  let player='',dog='',weightKg=20,ageMonths=36;
+  let baseTarget=null, baseDaily=0, basePct=.025;
+  let score=0,meals=0,combo=0,maxCombo=0,hp=100,roundNum=1;
+  let round=null, current={muscle:0,bone:0,liver:0,organ:0};
+  let fallers=[], spawnTimer=null, rafId=null, lastTs=0;
+  let timeLeft=0, timeMax=30, mealActive=false;
+
+  const screens=['wiz','game','over'];
+  function show(n){ screens.forEach(s=>$('s-'+s).classList.toggle('on',s===n)); $('foot').style.display=(n==='game')?'none':''; window.scrollTo({top:0}); }
+
+  /* prefill profilu */
+  (async()=>{
+    const p=await store.get(PROFILE_KEY,false);
+    if(p&&p.value){try{const d=JSON.parse(p.value);
+      if(d.player)$('playerName').value=d.player;
+      if(d.dog)$('dogName').value=d.dog;
+      if(d.weightKg)$('dogWeight').value=d.weightKg;
+      if(d.ageMonths)$('dogAge').value=d.ageMonths;
+      updatePreview();
+    }catch(e){}}
+  })();
+
+  function flash(el){el.style.borderColor='var(--c-muscle)';el.style.boxShadow='0 0 0 3px rgba(239,68,68,.25)';el.focus();setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},700);}
+
+  function updatePreview(){
+    const w=parseFloat($('dogWeight').value), a=parseInt($('dogAge').value,10);
+    const pv=$('previewBody'), box=$('preview');
+    if(!w||!a||w<=0||a<=0){ box.classList.add('dim'); pv.textContent='Vyplň váhu a věk pro výpočet dávky…'; return; }
+    box.classList.remove('dim');
+    const {daily,pct,target}=computeTargets(w,a);
+    pv.innerHTML=`<b>${daily} g/den</b> · ${ageLabel(a)} (${Math.round(pct*1000)/10} % hmotnosti)<br>
+      svalovina <b>${target.muscle} g</b> · kosti <b>${target.bone} g</b> · játra <b>${target.liver} g</b> · orgány <b>${target.organ} g</b>`;
+  }
+  ['dogWeight','dogAge'].forEach(id=>$(id).addEventListener('input',updatePreview));
+
+  async function saveProfile(){ await store.set(PROFILE_KEY,JSON.stringify({player,dog,weightKg,ageMonths}),false); }
+
+  /* ── NAV ──────────────────────────────────────── */
+  $('startBtn').onclick=()=>{
+    const pn=$('playerName').value.trim(), dn=$('dogName').value.trim();
+    const w=parseFloat($('dogWeight').value), a=parseInt($('dogAge').value,10);
+    if(!pn){flash($('playerName'));return;}
+    if(!dn){flash($('dogName'));return;}
+    if(!w||w<=0||w>90){flash($('dogWeight'));return;}
+    if(!a||a<=0||a>240){flash($('dogAge'));return;}
+    player=pn; dog=dn; weightKg=w; ageMonths=a;
+    const c=computeTargets(w,a); baseTarget=c.target; baseDaily=c.daily; basePct=c.pct;
+    saveProfile(); startGame();
+  };
+  $('playAgain').onclick=startGame;
+  $('editDog').onclick=()=>{ stopMeal(); show('wiz'); };
+  $('wEditDog').onclick=()=>{ hideWinOverlay(); stopMeal(); show('wiz'); };
+  $('wPlayAgain').onclick=()=>{ hideWinOverlay(); startGame(); };
+  $('serveBtn').onclick=()=>serve(false);
+
+  function iconChip(color){ return `<span class="ic" style="background:${color}1f"><i style="background:${color}"></i></span>`; }
+
+  /* ── HRA ──────────────────────────────────────── */
+  function startGame(){
+    score=0;meals=0;combo=0;maxCombo=0;hp=100;roundNum=1;
+    $('hudScore').textContent='0';
+    $('dogHpName').textContent=dog||'Pes'; renderHP();
+    show('game'); startMeal();
+  }
+
+  function startMeal(){
+    // cíl škáluje mírně s kolem (větší porce, těsnější tolerance, rychlejší pád)
+    const scale=1+(roundNum-1)*0.08;
+    round={ target:{}, tol:Math.max(0.18-roundNum*0.008,0.08) };
+    CATKEYS.forEach(c=>round.target[c]=round5(baseTarget[c]*scale));
+    current={muscle:0,bone:0,liver:0,organ:0};
+    timeMax=Math.max(18,30-(roundNum-1)*2);
+    timeLeft=timeMax;
+    $('hudRound').textContent=roundNum;
+    renderTargets(); updateProgress();
+    clearField();
+    mealActive=true;
+    $('serveBtn').disabled=false;
+    // spawn loop
+    const spawnEvery=Math.max(520,950-(roundNum-1)*70);
+    spawnTimer=setInterval(spawnFaller,spawnEvery);
+    for(let i=0;i<3;i++)setTimeout(spawnFaller,i*180);
+    lastTs=0; rafId=requestAnimationFrame(loop);
+  }
+  function stopMeal(){
+    mealActive=false;
+    if(spawnTimer){clearInterval(spawnTimer);spawnTimer=null;}
+    if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+  }
+  function clearField(){
+    fallers.forEach(f=>f.el.remove()); fallers=[];
+    const f=$('field'); [...f.querySelectorAll('.faller')].forEach(e=>e.remove());
+  }
+
+  function renderTargets(){
+    const t=$('targets'); t.innerHTML='';
+    CATKEYS.forEach(cat=>{
+      const c=CATS[cat];
+      const el=document.createElement('div'); el.className='trow'; el.dataset.cat=cat;
+      el.innerHTML=`<div class="top">
+          <span class="nm">${iconChip(c.color)}${c.short}</span>
+          <span class="vv"><b class="cur">0</b> <span>/ ${round.target[cat]}</span></span>
+        </div>
+        <div class="track"><div class="zone"></div><div class="f" style="background:${c.color}"></div></div>`;
+      t.appendChild(el);
+      const z=el.querySelector('.zone'); const lo=(1-round.tol)*100,hi=Math.min((1+round.tol)*100,100);
+      z.style.left=lo+'%'; z.style.width=(hi-lo)+'%';
+    });
+  }
+
+  // vážený výběr kategorie — víc svaloviny, ale i vzácné kúsky
+  function weightedCat(){
+    // dej vyšší šanci kategorii, která je nejvíc pod cílem
+    const need={};let sum=0;
+    CATKEYS.forEach(c=>{ const n=Math.max(0,round.target[c]-current[c]); need[c]=n+ (c==='muscle'?40:8); sum+=need[c]; });
+    let r=Math.random()*sum;
+    for(const c of CATKEYS){ if((r-=need[c])<=0) return c; }
+    return 'muscle';
+  }
+
+  function spawnFaller(){
+    if(!mealActive) return;
+    const field=$('field'); const W=field.clientWidth, H=field.clientHeight;
+    if(fallers.length>9) return; // strop
+    const cat=weightedCat();
+    const d=pick(INGREDIENTS[cat]); const name=d[0], g=pick(d[1]);
+    const c=CATS[cat];
+    const el=document.createElement('div'); el.className='faller'; el.style.setProperty('--cc',c.color);
+    el.innerHTML=`<div class="art">${artFor(name,cat)}</div>
+      <div class="info"><div class="pip">${g}<small>g</small></div><div class="type">${c.short}</div></div>`;
+    const x=Math.random()*(W-72)+4;
+    const speed=(0.055+Math.random()*0.04)*(1+(roundNum-1)*0.10); // px/ms
+    const sway=(Math.random()-0.5)*0.02, swayPhase=Math.random()*Math.PI*2;
+    const obj={el,cat,name,g,x,y:-90,speed,sway,swayPhase,t:0,alive:true,baseX:x};
+    el.style.left=x+'px'; el.style.top='-90px';
+    el.onclick=()=>grab(obj);
+    field.appendChild(el); fallers.push(obj);
+  }
+
+  function loop(ts){
+    if(!mealActive) return;
+    if(!lastTs)lastTs=ts;
+    const dt=Math.min(48,ts-lastTs); lastTs=ts;
+    const H=$('field').clientHeight;
+    // čas
+    timeLeft-=dt/1000;
+    if(timeLeft<=0){ timeLeft=0; updateTime(); return serve(true); }
+    updateTime();
+    // pohyb kusů
+    for(const o of fallers){
+      if(!o.alive) continue;
+      o.t+=dt;
+      o.y+=o.speed*dt;
+      const dx=Math.sin(o.swayPhase+o.t*0.003)*18;
+      o.el.style.transform=`translateX(${dx}px)`;
+      o.el.style.top=o.y+'px';
+      if(o.y>H+10){ o.alive=false; o.el.remove(); }
+    }
+    fallers=fallers.filter(o=>o.alive);
+    rafId=requestAnimationFrame(loop);
+  }
+
+  function updateTime(){
+    const pct=Math.max(0,timeLeft/timeMax)*100;
+    $('timeFill').style.width=pct+'%';
+    $('timeVal').textContent=Math.ceil(timeLeft)+' s';
+    $('ttrack').classList.toggle('warn',timeLeft<=6);
+  }
+
+  function grab(o){
+    if(!o.alive||!mealActive) return;
+    const cat=o.cat, tgt=round.target[cat], after=current[cat]+o.g;
+    const over=after>tgt*(1+round.tol);
+    o.alive=false;
+    const rect=o.el.getBoundingClientRect();
+    if(over){
+      // přeplnění — penalty, kus se nezapočítá
+      o.el.classList.add('bad');
+      const d=$('dogStatus'); d.classList.add('hit'); setTimeout(()=>d.classList.remove('hit'),420);
+      hp=Math.max(0,hp-6); renderHP();
+      floatText(rect.left+rect.width/2,rect.top,'−6 ❤️ moc!','var(--c-muscle)');
+      toast('Přeplněno! '+CATS[cat].short,'bad');
+      setTimeout(()=>o.el.remove(),300);
+      fallers=fallers.filter(x=>x.alive);
+      if(hp<=0){ stopMeal(); return endGame(); }
+      updateProgress();
+      return;
+    }
+    current[cat]=after;
+    o.el.classList.add('grab');
+    floatText(rect.left+rect.width/2,rect.top,'+'+o.g+' g',CATS[cat].color);
+    setTimeout(()=>o.el.remove(),260);
+    fallers=fallers.filter(x=>x.alive);
+    updateProgress();
+    // auto-serve když všechny 4 v zeleném pásmu
+    if(allMet()){ toast('Miska hotová!','accent'); setTimeout(()=>{ if(mealActive)serve(false); },350); }
+  }
+
+  function floatText(x,y,txt,color){
+    const el=document.createElement('div'); el.className='float'; el.textContent=txt;
+    el.style.left=x+'px'; el.style.top=y+'px'; el.style.color=color; el.style.transform='translate(-50%,0)';
+    document.body.appendChild(el); setTimeout(()=>el.remove(),700);
+  }
+
+  function allMet(){
+    return CATKEYS.every(c=>Math.abs(current[c]-round.target[c])<=round.target[c]*round.tol);
+  }
+
+  function updateProgress(){
+    CATKEYS.forEach(cat=>{
+      const el=$('targets').querySelector(`[data-cat="${cat}"]`);
+      const cur=current[cat], tgt=round.target[cat];
+      el.querySelector('.cur').textContent=cur;
+      const f=el.querySelector('.f'); f.style.width=Math.min(cur/tgt*100,100)+'%';
+      const met=Math.abs(cur-tgt)<=tgt*round.tol, over=cur>tgt*(1+round.tol);
+      f.style.background= over?'var(--c-muscle)':(met?'var(--c-organ)':CATS[cat].color);
+      const vv=el.querySelector('.vv'); vv.classList.toggle('met',met&&!over); vv.classList.toggle('over',over);
+    });
+    const acc=accuracy(), pct=Math.round(Math.max(0,acc)*100);
+    const dmg=Math.max(0,Math.round((1-acc)*100));
+    const info=$('serveInfo');
+    if(allMet()){ info.textContent='Perfektní miska — naservíruj!'; info.className='serve-info ok'; }
+    else { info.textContent=`Přesnost ${pct} % · při servírování pes ztratí ${dmg} ❤️`; info.className='serve-info'+(dmg>40?' bad':''); }
+  }
+
+  function accuracy(){
+    let werr=0,wsum=0;
+    CATKEYS.forEach(c=>{
+      const w=CATS[c].share;
+      werr += w*Math.abs(current[c]-round.target[c])/round.target[c];
+      wsum += w;
+    });
+    return 1-(werr/Math.max(wsum,1e-6));
+  }
+  function moneyMult(){ return 1+Math.min(Math.max(combo-1,0),5)*0.15; }
+  function rewardFor(acc){
+    let r=(100+roundNum*23)*Math.max(0,acc);
+    if(acc>=0.97)r+=40;
+    r*=moneyMult();
+    return Math.max(0,Math.round(r));
+  }
+
+  function serve(byTime){
+    if(!mealActive) return;
+    stopMeal();
+    const acc=accuracy();
+    const dmg=Math.max(0,Math.round((1-acc)*100));
+    const reward=rewardFor(acc);
+    score+=reward; meals++;
+    if(acc>=0.85){combo++; if(combo>maxCombo)maxCombo=combo;} else combo=0;
+    hp=Math.max(0,hp-dmg); renderHP();
+    if(dmg>0){const d=$('dogStatus');d.classList.add('hit');setTimeout(()=>d.classList.remove('hit'),420);}
+    $('hudScore').textContent=score;
+    const perfect=acc>=0.97;
+    const cm=combo>=2?(' · série ×'+moneyMult().toFixed(2)):'';
+    toast((byTime?'Čas vypršel · +':(perfect?'PERFEKTNÍ! +':'+'))+reward+(dmg>0?' · −'+dmg+' ❤️':'')+cm, perfect);
+    clearField();
+    if(hp<=0){ return endGame(); }
+    roundNum++;
+    setTimeout(startMeal,700);
+  }
+
+  function setDogMood(p){const m=$('dogMouth'); if(m)m.setAttribute('d', p>60?MOUTH.happy:(p>30?MOUTH.ok:MOUTH.sad));}
+  function renderHP(){
+    const p=Math.max(0,Math.round(hp));
+    $('hpVal').textContent=p+' %';
+    const f=$('hpFill'); f.style.width=p+'%';
+    f.style.background = p>60?'var(--c-organ)':(p>30?'var(--c-bone)':'var(--c-muscle)');
+    setDogMood(p);
+  }
+  function toast(txt,kind){const t=$('toast');t.textContent=txt;t.className='toast'+(kind?(' '+kind):'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),750);}
+
+  /* ── KONEC / WIN ──────────────────────────────── */
+  async function endGame(){
+    stopMeal();
+    $('finalScore').textContent=score.toLocaleString('cs-CZ');
+    $('finalSub').textContent=`${meals} misek · pes ${dog} (${weightKg} kg, ${ageMonths} měs.)`;
+    show('over'); await saveScore(); await renderLB();
+    showWinOverlay();
+  }
+  function gradeInfo(m){
+    if(m>=12)return{emoji:'🏆',label:'Mistr lovec!',cls:'s'};
+    if(m>=8) return{emoji:'🥇',label:'Skvělý lov!',cls:'a'};
+    if(m>=5) return{emoji:'🥈',label:'Dobrý lov!',cls:'b'};
+    return{emoji:'🥉',label:'Dobrý začátek!',cls:'c'};
+  }
+  function showWinOverlay(){
+    const g=gradeInfo(meals);
+    $('winMedal').textContent=g.emoji;
+    $('winScore').textContent=score.toLocaleString('cs-CZ');
+    $('winSub').textContent=`${meals} misek pro psa ${dog}`;
+    const gr=$('winGrade'); gr.textContent=g.label; gr.className='win-grade '+g.cls;
+    $('winMeals').textContent=meals;
+    $('winCombo').textContent=maxCombo;
+    $('winOverlay').classList.add('show');
+    if(meals>=4)launchConfetti();
+  }
+  function hideWinOverlay(){ $('winOverlay').classList.remove('show'); }
+
+  function launchConfetti(){
+    const canvas=$('confetti-canvas'); canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+    const ctx=canvas.getContext('2d');
+    const cols=['#A7DD52','#1E2A38','#F5B544','#EF4444','#8B5CF6','#22C55E','#fff'];
+    const pieces=Array.from({length:110},()=>({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height,
+      r:Math.random()*6+3, c:cols[Math.floor(Math.random()*cols.length)],
+      vx:(Math.random()-.5)*3, vy:Math.random()*4+2, rot:Math.random()*360, vr:(Math.random()-.5)*6, w:Math.random()*8+4
+    }));
+    let frame=0; const MAX=160;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{ ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle=p.c; ctx.globalAlpha=Math.max(0,1-frame/MAX); ctx.fillRect(-p.w/2,-p.r/2,p.w,p.r); ctx.restore();
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.vy+=.05; });
+      if(++frame<MAX)requestAnimationFrame(draw); else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    draw();
+  }
+
+  /* ── ŽEBŘÍČEK ─────────────────────────────────── */
+  async function saveScore(){
+    const entry={name:player,dog,score,meals,ts:Date.now()};
+    let list=[]; const r=await store.get(LB_KEY,true);
+    if(r&&r.value){try{list=JSON.parse(r.value)||[];}catch(e){}}
+    list.push(entry); list.sort((a,b)=>b.score-a.score); list=list.slice(0,50);
+    await store.set(LB_KEY,JSON.stringify(list),true); window.__me=entry;
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  async function renderLB(){
+    let list=[]; const r=await store.get(LB_KEY,true);
+    if(r&&r.value){try{list=JSON.parse(r.value)||[];}catch(e){}}
+    const ul=$('lbList'); ul.innerHTML=''; const me=window.__me;
+    const myPrev=list.filter(e=>e.name===me?.name&&!(e.ts===me?.ts));
+    const isPB=me&&(myPrev.length===0||myPrev.every(e=>e.score<=me.score));
+    if(!list.length)ul.innerHTML='<li class="empty">Zatím prázdno — buď první!</li>';
+    const medals=['🥇','🥈','🥉'], mcl=['gold','silver','bronze'];
+    list.slice(0,10).forEach((e,i)=>{
+      const li=document.createElement('li');
+      const isMe=me&&e.ts===me.ts&&e.name===me.name&&e.score===me.score;
+      if(isMe){li.classList.add('you');if(isPB)li.classList.add('pb');}
+      const rankHtml=i<3?`<span class="rk ${mcl[i]}">${medals[i]}</span>`:`<span class="rk">${i+1}</span>`;
+      li.innerHTML=`${rankHtml}
+        <span class="wh"><b>${esc(e.name)}</b><small>${esc(e.dog)} · ${e.meals} misek</small></span>
+        <span class="pt">${e.score.toLocaleString('cs-CZ')}</span>`;
+      ul.appendChild(li);
+    });
+    const pbNote=isPB&&me?' 🎉 Nové osobní maximum!':'';
+    $('lbNote').textContent=(hasStorage?'Žebříček je sdílený — tvoje přezdívka a skóre uvidí ostatní hráči.':'Náhledový režim: úložiště není dostupné, žebříček se neukládá.')+pbNote;
+  }
+
+  /* enter posouvá fokus */
+  $('playerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('dogName').focus();});
+  $('dogName').addEventListener('keydown',e=>{if(e.key==='Enter')$('dogWeight').focus();});
+  $('dogWeight').addEventListener('keydown',e=>{if(e.key==='Enter')$('dogAge').focus();});
+  $('dogAge').addEventListener('keydown',e=>{if(e.key==='Enter')$('startBtn').click();});
+})();
+</script>

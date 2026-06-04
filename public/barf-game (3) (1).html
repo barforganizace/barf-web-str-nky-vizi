@@ -1,0 +1,837 @@
+<!-- BARF Mistr — přepracováno na design system aplikace (Jakub) -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BARF Mistr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --primary:#1E2A38;        /* brand/primary/900 */
+    --primary-soft:#2C3A4B;
+    --accent:#A7DD52;         /* brand/accent/400 */
+    --accent-600:#8BC53F;
+    --bg:#F2F4F7;
+    --card:#FFFFFF;
+    --text:#1E2A38;
+    --soft:#6B7280;
+    --soft-2:#9AA3AF;
+    --line:#E5E7EB;
+    --line-2:#EEF1F4;
+    --c-muscle:#EF4444;
+    --c-bone:#F5B544;
+    --c-liver:#8B5CF6;
+    --c-organ:#22C55E;
+    --shadow:0 1px 2px rgba(16,24,40,.05), 0 6px 16px -8px rgba(16,24,40,.18);
+    --shadow-sm:0 1px 2px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;color:var(--text);background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:460px;margin:0 auto;min-height:100vh;padding:14px 16px 24px;display:flex;flex-direction:column}
+  .screen{display:none;animation:fade .35s ease both;flex:1;flex-direction:column}
+  .screen.on{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .step{display:none}
+  .step.on{display:block;animation:fade .3s ease both}
+
+  /* progress segments */
+  .steps{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:18px}
+  .steps .lab{font-size:13px;font-weight:600;color:var(--soft-2)}
+  .segs{display:flex;gap:8px}
+  .segs i{width:34px;height:5px;border-radius:3px;background:var(--line);transition:.25s}
+  .segs i.fill{background:var(--primary)}
+
+  h1{font-size:28px;font-weight:800;text-align:center;margin:6px 0 22px;letter-spacing:-.02em}
+  .lead{text-align:center;color:var(--soft);font-size:14px;margin:-14px 0 22px}
+
+  label{display:block;font-size:13px;font-weight:600;color:var(--soft);margin:18px 0 8px}
+  input{
+    width:100%;font:inherit;font-size:17px;font-weight:600;color:var(--text);
+    background:var(--card);border:1.5px solid transparent;border-radius:14px;
+    padding:15px 16px;box-shadow:var(--shadow-sm);outline:none;transition:.15s;
+  }
+  input::placeholder{color:var(--soft-2);font-weight:500}
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(167,221,82,.35)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .ig{position:relative}
+  .ig .unit{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--soft-2);font-size:15px}
+
+  /* selectable size cards */
+  .choices{display:flex;flex-direction:column;gap:12px}
+  .choice{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--card);border:1.5px solid transparent;border-radius:16px;
+    padding:16px 18px;cursor:pointer;box-shadow:var(--shadow-sm);transition:.15s;text-align:left;
+  }
+  .choice:hover{transform:translateY(-1px)}
+  .choice .t{font-weight:700;font-size:16px}
+  .choice .s{font-size:13px;color:var(--soft);margin-top:2px}
+  .choice .radio{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;transition:.15s}
+  .choice.sel{background:var(--accent)}
+  .choice.sel .s{color:#3d5520}
+  .choice.sel .radio{background:var(--primary);border-color:var(--primary)}
+  .choice.sel .radio svg{display:block}
+  .choice .radio svg{display:none;width:13px;height:13px}
+
+  /* primary button pinned bottom */
+  .actions{margin-top:auto;padding-top:14px;display:flex;gap:12px}
+  .btn{
+    appearance:none;cursor:pointer;font:inherit;font-weight:700;font-size:16px;
+    border:none;border-radius:16px;padding:17px 22px;background:var(--primary);color:#fff;
+    flex:1;transition:transform .08s,opacity .15s;box-shadow:var(--shadow);
+  }
+  .btn:active{transform:scale(.985)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.sec{background:var(--card);color:var(--text);box-shadow:var(--shadow-sm);flex:none;padding:17px 20px}
+  .btn.accent{background:var(--accent);color:var(--primary)}
+
+  /* dashboard card */
+  .dcard{background:var(--card);border-radius:20px;padding:14px;box-shadow:var(--shadow)}
+  .dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .dots{display:flex;gap:6px}
+  .dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}
+  .dots i:first-child{background:#FF6159}.dots i:nth-child(2){background:#FFC130}.dots i:nth-child(3){background:#3CC84A}
+  .toggle{display:flex;background:var(--bg);border-radius:10px;padding:3px;font-size:12px;font-weight:700}
+  .toggle button{border:none;background:transparent;font:inherit;font-weight:700;color:var(--soft);padding:5px 12px;border-radius:8px;cursor:pointer}
+  .toggle button.on{background:var(--accent);color:var(--primary)}
+
+  .drow{padding:8px 0;border-bottom:1px solid var(--line-2)}
+  .drow:last-child{border-bottom:none}
+  .drow .top{display:flex;align-items:center;justify-content:space-between;font-size:14px;margin-bottom:9px}
+  .drow .nm{display:flex;align-items:center;gap:10px;font-weight:600}
+  .drow .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:none}
+  .drow .ic i{width:11px;height:11px;border-radius:3px;display:block}
+  .drow .vv{font-weight:700}.drow .vv b{font-weight:800}.drow .vv span{color:var(--soft-2);font-weight:600}
+  .drow .vv.met b{color:var(--c-organ)}
+  .track{height:8px;background:var(--line-2);border-radius:5px;overflow:hidden;position:relative}
+  .track .zone{position:absolute;top:0;bottom:0;background:rgba(34,197,94,.18)}
+  .track .f{height:100%;width:0;border-radius:5px;transition:width .2s}
+
+  /* game hud */
+  .hud{display:flex;gap:12px;margin-bottom:10px}
+  .stat{background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-sm);text-align:center;flex:1}
+  .stat .l{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft-2)}
+  .stat .v{font-size:26px;font-weight:800;line-height:1.15;margin-top:2px}
+  .timewrap{background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow-sm);flex:1.4;display:flex;flex-direction:column;justify-content:center}
+  .timewrap .row{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--soft-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+  .timewrap .row b{color:var(--text);font-size:14px}
+  .ttrack{height:9px;background:var(--line-2);border-radius:5px;overflow:hidden}
+  .ttrack .f{height:100%;width:100%;background:var(--accent);transition:width .2s linear;border-radius:5px}
+  .ttrack.warn .f{background:var(--c-muscle)}
+
+  .sectlabel{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft-2);margin:16px 4px 10px}
+  .combo{font-size:13px;font-weight:800;color:var(--accent-600)}
+
+  /* nutrition grid (hand) */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:11px}
+  .tile{
+    position:relative;aspect-ratio:63/90;border-radius:13px;
+    background:#fff;border:2px solid var(--cc);box-shadow:var(--shadow-sm);cursor:pointer;
+    user-select:none;text-align:left;overflow:hidden;--cc:var(--soft);
+    transform:translateZ(0);                 /* drží oříznutí artu i bez hoveru */
+    transition:transform .12s,box-shadow .15s;
+  }
+  .tile::before{content:'';position:absolute;inset:0;border:1px solid rgba(0,0,0,.06);border-radius:11px;pointer-events:none;z-index:3}
+  .tile:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+  .tile:active{transform:scale(.97)}
+  .tile .art{position:absolute;top:0;left:0;right:0;height:56%;background:var(--cc);border-radius:11px 11px 0 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .tile .art::after{content:'';position:absolute;inset:0;background:#fff;opacity:.82}
+  .tile .art svg{position:relative;z-index:1;width:84%;height:84%}
+  .tile .info{position:absolute;left:0;right:0;bottom:0;height:44%;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:0 7px;background:#fff;border-radius:0 0 11px 11px}
+  .tile .banner{color:var(--text);font-weight:800;font-size:11px;line-height:1.1;text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tile .type{font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--cc);border-radius:20px;padding:2px 8px;align-self:center;line-height:1.3}
+  .tile .pip{position:absolute;top:5px;left:5px;z-index:4;background:var(--cc);color:#fff;font-size:12px;font-weight:800;line-height:1;padding:3px 6px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .tile .pip small{font-size:9px;font-weight:700;opacity:.85;margin-left:1px}
+  .tile .cost{position:absolute;top:30px;left:5px;z-index:4;height:24px;min-width:24px;padding:0 7px;border-radius:13px;background:radial-gradient(circle at 35% 28%,#FFE08A,#E0A21A);color:#3a2a00;border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.28);display:grid;place-items:center;font-size:12px;font-weight:800}
+  .tile.sel{box-shadow:0 0 0 3px var(--accent),var(--shadow);transform:translateY(-4px)}
+  .tile.sel::after{content:'✓';position:absolute;top:5px;right:5px;z-index:4;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--primary);display:grid;place-items:center;font-weight:900;font-size:14px;box-shadow:0 2px 5px rgba(0,0,0,.22)}
+  .tile:disabled{opacity:.5;cursor:not-allowed}
+  .tile:disabled:hover{transform:translateZ(0);box-shadow:var(--shadow-sm)}
+  .tile.sold{filter:grayscale(.65);opacity:.6}
+  .tile.sold .cost{background:radial-gradient(circle at 35% 28%,#d4ef9f,#8BC53F);color:#1E2A38}
+  .tile.mini{aspect-ratio:63/80;cursor:default}
+  .tile.mini .banner{font-size:10px}
+  .tile.mini:hover{transform:translateZ(0);box-shadow:var(--shadow-sm)}
+
+  /* ── VĚJÍŘ překrývajících se karet (ruka i obchod) ─────────── */
+  .fan{display:flex;justify-content:center;align-items:flex-end;overflow-x:auto;overflow-y:visible;padding:22px 6px 8px;min-height:166px;scrollbar-width:none}
+  .fan::-webkit-scrollbar{display:none}
+  .fan .tile{flex:0 0 auto;width:96px;transform-origin:bottom center}
+  .fan .tile:hover{transform:translateY(-16px)}
+  .fan .tile.sel{transform:translateY(-26px);box-shadow:0 0 0 3px var(--accent),0 14px 24px -8px rgba(0,0,0,.42)}
+  .fan .tile.sel:hover{transform:translateY(-32px)}
+  .tile.cantafford{opacity:.5}
+  .fan .tile.focus{transform:translateY(-36px);opacity:1;box-shadow:0 0 0 3px var(--accent),0 14px 22px -10px rgba(0,0,0,.45)}
+  .buybar{display:flex;align-items:center;gap:12px;margin:8px 4px 2px;min-height:46px}
+  .buybar #buyInfo{flex:1;font-size:13px;font-weight:700;color:var(--soft);line-height:1.25}
+  .buybar #buyInfo b{color:var(--text)}
+  .buybar .btn{flex:none;padding:13px 20px;font-size:15px}
+  #deckView{min-height:128px;padding-top:10px}
+  .tile.pop{animation:pop .3s}
+  @keyframes pop{0%{transform:translateY(-26px) scale(1)}40%{transform:translateY(-26px) scale(1.08)}100%{transform:translateY(-26px) scale(1)}}
+
+  .toast{position:fixed;left:50%;top:16%;transform:translateX(-50%) scale(.85);background:var(--primary);color:#fff;font-weight:800;font-size:22px;padding:13px 26px;border-radius:16px;opacity:0;pointer-events:none;z-index:60;transition:.2s;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)}
+  .toast.accent{background:var(--accent);color:var(--primary)}
+  .toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+
+  /* leaderboard */
+  .final{text-align:center;margin:6px 0 4px}
+  .final .sl{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--soft-2)}
+  .final .sv{font-size:64px;font-weight:800;line-height:1;margin:6px 0;color:var(--primary)}
+  .final .ss{color:var(--soft);font-size:14px}
+  .lb{list-style:none;margin:8px 0 0;padding:0}
+  .lb li{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow-sm);margin-bottom:9px}
+  .lb li.you{background:var(--accent)}
+  .lb .rk{font-weight:800;font-size:17px;text-align:center;color:var(--soft)}
+  .lb li.you .rk{color:var(--primary)}
+  .lb .wh b{display:block;font-weight:700;font-size:15px}.lb .wh small{color:var(--soft);font-size:12px}
+  .lb li.you .wh small{color:#3d5520}
+  .lb .pt{font-weight:800;font-size:19px}
+  .empty{text-align:center;color:var(--soft);padding:18px;font-size:14px}
+  .note{font-size:12px;color:var(--soft-2);text-align:center;margin-top:14px;line-height:1.55}
+  .foot{font-size:11px;color:var(--soft-2);text-align:center;margin-top:18px;line-height:1.5}
+  h2.cardttl{font-size:18px;font-weight:800;margin:0 0 4px}
+
+  /* ── WIN OVERLAY ─────────────────────────────────────────── */
+  .win-overlay{
+    position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;padding:24px;
+    background:rgba(14,20,28,.85);backdrop-filter:blur(6px);
+    opacity:0;pointer-events:none;transition:opacity .35s;
+  }
+  .win-overlay.show{opacity:1;pointer-events:all;}
+  .win-card{
+    width:100%;max-width:400px;background:var(--card);border-radius:28px;
+    padding:32px 28px 28px;box-shadow:0 32px 80px -16px rgba(0,0,0,.55);
+    text-align:center;transform:scale(.85) translateY(30px);
+    transition:transform .45s cubic-bezier(.175,.885,.32,1.275);
+  }
+  .win-overlay.show .win-card{transform:scale(1) translateY(0);}
+
+  .win-medal{font-size:72px;line-height:1;margin-bottom:4px;animation:medal-pop .6s .2s both cubic-bezier(.175,.885,.32,1.275);}
+  @keyframes medal-pop{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+  .win-title{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--soft-2);margin-bottom:6px}
+  .win-score{font-size:72px;font-weight:800;line-height:1;color:var(--primary);margin:4px 0 2px;
+    animation:score-count .5s .35s both;}
+  @keyframes score-count{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .win-sub{color:var(--soft);font-size:14px;margin-bottom:22px}
+  .win-grade{display:inline-block;padding:5px 16px;border-radius:30px;font-size:13px;font-weight:800;margin-bottom:22px;letter-spacing:.05em}
+  .win-grade.s{background:#FFF0C2;color:#9A6800}
+  .win-grade.a{background:#E8F9E8;color:#1A7A2E}
+  .win-grade.b{background:#EEF1FF;color:#3B4FD8}
+  .win-grade.c{background:#F3F4F6;color:#6B7280}
+
+  .win-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+  .win-stat{background:var(--bg);border-radius:14px;padding:12px;text-align:center}
+  .win-stat .wsl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--soft-2)}
+  .win-stat .wsv{font-size:24px;font-weight:800;margin-top:2px}
+
+  .win-btns{display:flex;gap:10px}
+  .win-btns .btn{font-size:15px;padding:15px 18px}
+
+  /* confetti canvas */
+  #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99;}
+
+  /* ── LEADERBOARD IMPROVEMENTS ─────────────────────────────── */
+  .lb li{transition:transform .15s}
+  .lb li:hover{transform:translateX(2px)}
+  .lb .rk.gold{color:#D4A017;font-size:20px}
+  .lb .rk.silver{color:#8A9BA8;font-size:20px}
+  .lb .rk.bronze{color:#B07040;font-size:20px}
+  .lb li.you{background:linear-gradient(135deg,var(--accent),#c5f06a);box-shadow:0 4px 16px -4px rgba(167,221,82,.5)}
+  .lb li.you .wh small{color:#3d5520}
+  .lb li.you .rk{color:var(--primary)}
+  .lb-header{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 10px}
+  .lb-header .ttl{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft-2)}
+  .lb-header .col{font-size:11px;font-weight:700;color:var(--soft-2);letter-spacing:.06em}
+
+  .rank-badge{display:inline-flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:50%;font-size:14px;font-weight:800}
+
+  /* pulse on new personal best */
+  @keyframes pulseglow{0%,100%{box-shadow:0 4px 16px -4px rgba(167,221,82,.5)}50%{box-shadow:0 4px 32px -4px rgba(167,221,82,.9)}}
+  .lb li.you.pb{animation:pulseglow 1.2s ease 3}
+
+  /* ── ROGUELIKE EKONOMIKA ──────────────────────────────────── */
+  .serve-info{text-align:center;font-size:13px;font-weight:700;color:var(--soft);margin:14px 4px 0;min-height:18px;transition:.15s}
+  .serve-info.ok{color:var(--accent-600)}
+  .serve-info.bad{color:var(--c-muscle)}
+
+  .dogbar{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);margin-bottom:10px}
+  .dogbar.hit{animation:shake .42s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+  .dogsvg{width:54px;height:54px;flex:none}
+  .dogbar-info{flex:1;min-width:0}
+  .dogbar-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:7px}
+  .dogbar-top .dn{font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dogbar-top .hpval{font-weight:800;font-size:14px;color:var(--soft);flex:none;margin-left:10px}
+  .hptrack{height:12px;background:var(--line-2);border-radius:6px;overflow:hidden}
+  .hptrack .f{height:100%;width:100%;border-radius:6px;background:var(--c-organ);transition:width .35s cubic-bezier(.4,0,.2,1),background .3s}
+  .hphint{font-size:11px;color:var(--soft-2);margin-top:6px;font-weight:600}
+  .intro-dog{display:flex;justify-content:center;margin:8px 0 -2px}
+  .intro-dog svg{width:104px;height:104px;filter:drop-shadow(0 8px 18px rgba(16,24,40,.18))}
+</style>
+
+<div class="app">
+
+  <!-- INTRO -->
+  <section class="screen on" id="s-wiz">
+    <div class="intro-dog">
+      <svg viewBox="0 0 80 80" aria-hidden="true">
+        <ellipse cx="18" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(-20 18 32)"/>
+        <ellipse cx="62" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(20 62 32)"/>
+        <ellipse cx="40" cy="42" rx="25" ry="26" fill="#E0B184"/>
+        <ellipse cx="40" cy="52" rx="16" ry="13" fill="#F2DCC0"/>
+        <circle cx="31" cy="39" r="3.3" fill="#1E2A38"/>
+        <circle cx="49" cy="39" r="3.3" fill="#1E2A38"/>
+        <ellipse cx="40" cy="49" rx="4.6" ry="3.6" fill="#1E2A38"/>
+        <path d="M30 54 q10 9 20 0" stroke="#1E2A38" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path d="M20 63 q20 10 40 0" stroke="#A7DD52" stroke-width="5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>BARF Mistr</h1>
+    <p class="lead">Skládej psovi misku co nejpřesněji, vydělávej a nakupuj suroviny do balíčku. Každá nepřesná miska psa stojí zdraví — jak dlouho ho udržíš ve formě?</p>
+    <label for="playerName">Tvoje přezdívka</label>
+    <input id="playerName" maxlength="20" placeholder="Např. SyrovýŠéf" autocomplete="off">
+    <label for="dogName">Jméno psa</label>
+    <input id="dogName" maxlength="24" placeholder="Např. Rex" autocomplete="off">
+    <div class="actions"><button class="btn accent" id="startBtn">Hrát 🐾</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="s-game">
+    <div class="dogbar" id="dogStatus">
+      <svg class="dogsvg" viewBox="0 0 80 80" aria-hidden="true">
+        <ellipse cx="18" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(-20 18 32)"/>
+        <ellipse cx="62" cy="32" rx="8.5" ry="15" fill="#C68A5B" transform="rotate(20 62 32)"/>
+        <ellipse cx="40" cy="42" rx="25" ry="26" fill="#E0B184"/>
+        <ellipse cx="40" cy="52" rx="16" ry="13" fill="#F2DCC0"/>
+        <circle cx="31" cy="39" r="3.3" fill="#1E2A38"/>
+        <circle cx="49" cy="39" r="3.3" fill="#1E2A38"/>
+        <ellipse cx="40" cy="49" rx="4.6" ry="3.6" fill="#1E2A38"/>
+        <path id="dogMouth" d="M30 54 q10 9 20 0" stroke="#1E2A38" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 63 q20 10 40 0" stroke="#A7DD52" stroke-width="5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="dogbar-info">
+        <div class="dogbar-top"><span class="dn" id="dogHpName">Pes</span><span class="hpval"><span id="hpVal">100 %</span> ❤️</span></div>
+        <div class="hptrack"><div class="f" id="hpFill"></div></div>
+        <div class="hphint">Čím přesnější miska, tím míň zdraví ztratí</div>
+      </div>
+    </div>
+
+    <div class="hud">
+      <div class="stat"><div class="l">Peníze</div><div class="v" id="hudMoney">0 💰</div></div>
+      <div class="stat"><div class="l">Kolo</div><div class="v" id="hudRound">1</div></div>
+      <div class="stat"><div class="l">Skóre</div><div class="v" id="hudScore">0</div></div>
+    </div>
+
+    <div class="dcard">
+      <div class="dhead">
+        <div class="dots"><i></i><i></i><i></i></div>
+        <div class="combo" id="comboBox"></div>
+      </div>
+      <h2 class="cardttl">Cílová miska</h2>
+      <div id="targets"></div>
+    </div>
+
+    <div class="sectlabel" id="handLabel">Tvoje suroviny — co dáš do misky, spotřebuje se</div>
+    <div id="hand" class="fan"></div>
+
+    <div class="serve-info" id="serveInfo">Vyber suroviny do misky</div>
+    <div class="actions"><button class="btn accent" id="serveBtn" disabled>Naservírovat misku</button></div>
+  </section>
+
+  <!-- SHOP -->
+  <section class="screen" id="s-shop">
+    <div class="final" style="margin:6px 0 2px">
+      <div class="sl">Obchod · kolo <span id="shopRoundDone"></span> zvládnuto</div>
+      <div class="sv" id="shopMoney">0 💰</div>
+      <div class="ss">Nakup suroviny do balíčku — další kolo bude náročnější</div>
+    </div>
+    <div class="sectlabel">Nabídka — ťukni pro náhled, pak Koupit</div>
+    <div class="fan" id="shopOffers"></div>
+    <div class="buybar" id="buyBar"><span id="buyInfo">Ťukni na surovinu</span><button class="btn accent" id="buyBtn" disabled>Koupit</button></div>
+    <div class="sectlabel">Zbývající zásoby (<span id="deckCount">0</span>)</div>
+    <div class="fan" id="deckView"></div>
+    <div class="actions"><button class="btn accent" id="nextRoundBtn">Další kolo →</button></div>
+  </section>
+
+  <!-- OVER -->
+  <section class="screen" id="s-over">
+    <div class="final">
+      <div class="sl">Konec kola</div>
+      <div class="sv" id="finalScore">0</div>
+      <div class="ss" id="finalSub"></div>
+    </div>
+    <div class="sectlabel" style="margin-top:6px">🏅 Žebříček hráčů</div>
+    <div class="lb-header">
+      <span class="ttl">Hráč</span>
+      <span class="col">Skóre</span>
+    </div>
+    <ul class="lb" id="lbList"></ul>
+    <div class="actions">
+      <button class="btn sec" id="editDog">Změnit psa</button>
+      <button class="btn accent" id="playAgain">Hrát znovu 🐾</button>
+    </div>
+    <p class="note" id="lbNote"></p>
+  </section>
+
+  <p class="foot" id="foot">Orientační pomůcka, ne veterinární doporučení. Konkrétní BARF plán konzultuj s odborníkem.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- WIN OVERLAY -->
+<canvas id="confetti-canvas"></canvas>
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card">
+    <div class="win-medal" id="winMedal">🏆</div>
+    <div class="win-title">Konec kola</div>
+    <div class="win-score" id="winScore">0</div>
+    <div class="win-sub" id="winSub"></div>
+    <div class="win-grade" id="winGrade"></div>
+    <div class="win-stats">
+      <div class="win-stat">
+        <div class="wsl">Misky</div>
+        <div class="wsv" id="winMeals">0</div>
+      </div>
+      <div class="win-stat">
+        <div class="wsl">Nejdelší série</div>
+        <div class="wsv" id="winCombo">0</div>
+      </div>
+    </div>
+    <div class="win-btns">
+      <button class="btn sec" id="wEditDog">Změnit psa</button>
+      <button class="btn accent" id="wPlayAgain">Hrát znovu 🐾</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const $=id=>document.getElementById(id);
+
+  /* storage with fallback */
+  const mem={};
+  const store={
+    async get(k,s){ if(window.storage){try{return await window.storage.get(k,!!s);}catch(e){return null;}} return (k in mem)?{value:mem[k]}:null; },
+    async set(k,v,s){ if(window.storage){try{return await window.storage.set(k,v,!!s);}catch(e){return null;}} mem[k]=v; return {value:v}; }
+  };
+  const hasStorage=!!window.storage;
+  const LB_KEY='barf_leaderboard_v2', PROFILE_KEY='barf_profile_v2';
+
+  const CATS={
+    muscle:{label:'Svalovina',short:'Svalovina',color:'var(--c-muscle)',share:.80},
+    bone:{label:'Jedlé kosti',short:'Kosti',color:'var(--c-bone)',share:.10},
+    liver:{label:'Játra',short:'Játra',color:'var(--c-liver)',share:.05},
+    organ:{label:'Ostatní orgány',short:'Orgány',color:'var(--c-organ)',share:.05},
+  };
+  const INGREDIENTS={
+    muscle:[['Kuřecí prsa',[60,80,100]],['Hovězí svalovina',[120,150,180]],['Krůtí stehno',[80,100,120]],['Jehněčí',[100,120,150]],['Králík',[60,80,100]],['Hovězí srdce',[50,80,100]],['Zvěřina',[120,150,200]]],
+    bone:[['Kuřecí krky',[15,20,25]],['Kuřecí křídla',[25,30,40]],['Drůbeží karkas',[20,30,50]],['Jehněčí žebírka',[15,20,40]]],
+    liver:[['Kuřecí játra',[5,8,10]],['Hovězí játra',[10,12,15]],['Vepřová játra',[8,10,12]]],
+    organ:[['Ledviny',[5,8,10]],['Slezina',[8,12,15]],['Dršťky',[5,10,15]],['Slinivka',[5,8,12]]],
+  };
+  const TOL=0.14;
+
+  let player='',dog='';
+  let score=0,meals=0,combo=0,maxCombo=0;
+  let money=0,roundNum=1,deck=[],shopOffers=[],hp=100,shopFocus=null;
+  let round=null,selected=[];
+
+  /* dog mood mouth shapes */
+  const MOUTH={happy:'M30 54 q10 9 20 0',ok:'M32 56 h16',sad:'M30 59 q10 -7 20 0'};
+
+  const screens=['wiz','game','shop','over'];
+  function show(n){ screens.forEach(s=>$('s-'+s).classList.toggle('on',s===n)); $('foot').style.display=(n==='game'||n==='shop')?'none':''; window.scrollTo({top:0}); }
+
+  /* prefill jména */
+  (async()=>{
+    const p=await store.get(PROFILE_KEY,false);
+    if(p&&p.value){try{const d=JSON.parse(p.value);
+      if(d.player)$('playerName').value=d.player;
+      if(d.dog)$('dogName').value=d.dog;
+    }catch(e){}}
+  })();
+
+  function flash(el){el.style.borderColor='var(--c-muscle)';el.style.boxShadow='0 0 0 3px rgba(239,68,68,.25)';el.focus();setTimeout(()=>{el.style.borderColor='';el.style.boxShadow='';},700);}
+
+  async function saveProfile(){
+    await store.set(PROFILE_KEY,JSON.stringify({player,dog}),false);
+  }
+
+  /* nav */
+  $('startBtn').onclick=()=>{
+    const pn=$('playerName').value.trim(), dn=$('dogName').value.trim();
+    if(!pn){flash($('playerName'));return;}
+    if(!dn){flash($('dogName'));return;}
+    player=pn; dog=dn; saveProfile(); startGame();
+  };
+  $('playAgain').onclick=startGame;
+  $('editDog').onclick=()=>show('wiz');
+  $('serveBtn').onclick=serve;
+
+  function iconChip(color){ return `<span class="ic" style="background:${color}1f"><i style="background:${color}"></i></span>`; }
+
+  /* round gen */
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+  const rid=()=>Math.random().toString(36).slice(2);
+  const CATORDER={muscle:0,bone:1,liver:2,organ:3};
+  const sortCards=arr=>arr.slice().sort((a,b)=>(CATORDER[a.cat]-CATORDER[b.cat])||(b.g-a.g));
+  function makeCard(cat){const d=pick(INGREDIENTS[cat]);return {id:rid(),cat,name:d[0],g:pick(d[1])};}
+
+  function starterDeck(){
+    const mk=(cat,name,g)=>({id:rid(),cat,name,g});
+    return [
+      mk('muscle','Hovězí svalovina',150), mk('muscle','Kuřecí prsa',100),
+      mk('muscle','Krůtí stehno',100), mk('muscle','Králík',80),
+      mk('bone','Kuřecí krky',30), mk('bone','Kuřecí krky',20),
+      mk('liver','Kuřecí játra',10), mk('organ','Ledviny',10),
+    ];
+  }
+  function priceOf(card){
+    const mult={muscle:1,bone:1.2,liver:1.6,organ:1.6}[card.cat]||1;
+    return Math.max(6,Math.round((14+card.g*0.32)*mult));
+  }
+  function makeOffer(forceCat){
+    const cat=forceCat||pick(['muscle','muscle','muscle','bone','liver','organ']);
+    const d=pick(INGREDIENTS[cat]); const g=pick(d[1]);
+    const card={id:rid(),cat,name:d[0],g}; card.price=priceOf(card); return card;
+  }
+
+  /* ── KARETNÍ ART (vektorové ilustrace surovin) ─────────────── */
+  const ART={
+    chicken:`<path d="M22 48 C18 31 38 19 58 23 C79 27 87 43 78 57 C69 70 39 70 29 60 C25 56 23 52 22 48Z" fill="#F3C6BE" stroke="#C98A80" stroke-width="3"/><path d="M40 31 C53 29 67 33 73 45" fill="none" stroke="#E3A89E" stroke-width="3.5" stroke-linecap="round"/>`,
+    beef:`<rect x="23" y="24" width="54" height="42" rx="9" fill="#B23B36" stroke="#7E2723" stroke-width="3"/><path d="M34 34 q8 7 0 14 M50 30 q6 11 -2 20 M62 36 q6 7 0 16" stroke="#E8B0A8" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    drumstick:`<ellipse cx="41" cy="44" rx="22" ry="20" fill="#E9A87E" stroke="#B97B52" stroke-width="3"/><rect x="56" y="39" width="22" height="10" rx="5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5" transform="rotate(-12 67 44)"/><circle cx="80" cy="33" r="6.5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5"/><circle cx="81" cy="47" r="6.5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5"/>`,
+    redcut:`<path d="M26 30 C40 21 70 21 78 34 C85 45 80 61 64 65 C44 71 23 60 22 46 C21 40 22 34 26 30Z" fill="#C0463E" stroke="#812B25" stroke-width="3"/><path d="M26 30 C40 21 70 21 78 34" fill="none" stroke="#F0E2CE" stroke-width="6" stroke-linecap="round"/>`,
+    heart:`<path d="M50 67 C29 50 21 40 27 30 C32 21 45 23 50 34 C55 23 68 21 73 30 C79 40 71 50 50 67Z" fill="#A8332F" stroke="#6E211E" stroke-width="3"/><path d="M50 38 q-6 7 -2 13" stroke="#D98A84" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    neck:`<g fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5"><ellipse cx="33" cy="33" rx="12" ry="10"/><ellipse cx="50" cy="42" rx="12" ry="10"/><ellipse cx="67" cy="51" rx="12" ry="10"/></g><g fill="#D8C39A"><circle cx="33" cy="33" r="3.4"/><circle cx="50" cy="42" r="3.4"/><circle cx="67" cy="51" r="3.4"/></g>`,
+    wing:`<path d="M29 36 C40 25 57 27 61 40 C65 53 54 63 42 61 C29 59 22 47 29 36Z" fill="#EBB98D" stroke="#B97B52" stroke-width="3"/><rect x="57" y="40" width="22" height="9" rx="4.5" fill="#F2E6D0" stroke="#C9B48C" stroke-width="2.5" transform="rotate(-20 68 44)"/>`,
+    ribs:`<path d="M23 26 q41 -7 54 9 l-3 33 q-31 9 -52 -2 Z" fill="#C0463E" stroke="#812B25" stroke-width="3"/><g stroke="#F2E6D0" stroke-width="4.5" stroke-linecap="round"><path d="M31 30 V58"/><path d="M43 28 V60"/><path d="M55 28 V60"/><path d="M67 32 V58"/></g>`,
+    liver:`<path d="M21 41 C23 28 44 24 64 28 C81 31 85 45 74 55 C60 67 33 65 25 55 C21 51 20 46 21 41Z" fill="#7E2E2A" stroke="#54201D" stroke-width="3"/><path d="M40 34 C52 32 65 36 71 45" fill="none" stroke="#A85A55" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="37" cy="41" rx="6" ry="3" fill="#9C4742" opacity=".7"/>`,
+    kidney:`<path d="M35 27 C57 21 76 33 71 50 C67 64 47 67 39 57 C45 51 45 44 39 40 C30 46 30 59 41 63 C26 59 20 42 28 31 C30 29 33 28 35 27Z" fill="#8C3A33" stroke="#5C231E" stroke-width="3"/><ellipse cx="36" cy="37" rx="5" ry="3" fill="#B05F58" opacity=".7"/>`,
+    organ:`<path d="M21 45 C23 34 40 30 58 34 C75 37 83 47 76 55 C67 65 39 63 27 57 C23 54 20 50 21 45Z" fill="#6E3B6B" stroke="#4A2747" stroke-width="3"/><path d="M33 43 C48 41 62 45 70 51" stroke="#9A6597" stroke-width="3" fill="none" stroke-linecap="round"/>`,
+    tripe:`<path d="M26 29 C44 23 64 25 74 36 C83 46 76 61 60 63 C40 67 23 56 21 44 C20 38 22 32 26 29Z" fill="#E8DCC8" stroke="#B9A988" stroke-width="3"/><g stroke="#C2B294" stroke-width="1.8" fill="none"><path d="M36 38 l6 -4 6 4 v8 l-6 4 -6 -4Z"/><path d="M50 38 l6 -4 6 4 v8 l-6 4 -6 -4Z"/><path d="M43 50 l6 -4 6 4 v8 l-6 4 -6 -4Z"/></g>`,
+  };
+  const ARTOF={
+    'Kuřecí prsa':'chicken','Hovězí svalovina':'beef','Krůtí stehno':'drumstick','Jehněčí':'redcut',
+    'Králík':'redcut','Hovězí srdce':'heart','Zvěřina':'redcut',
+    'Kuřecí krky':'neck','Kuřecí křídla':'wing','Drůbeží karkas':'ribs','Jehněčí žebírka':'ribs',
+    'Kuřecí játra':'liver','Hovězí játra':'liver','Vepřová játra':'liver',
+    'Ledviny':'kidney','Slezina':'organ','Dršťky':'tripe','Slinivka':'organ',
+  };
+  const ARTDEF={muscle:'beef',bone:'ribs',liver:'liver',organ:'kidney'};
+  function artFor(card){const k=ARTOF[card.name]||ARTDEF[card.cat];return `<svg viewBox="0 0 100 80" preserveAspectRatio="xMidYMid meet">${ART[k]||''}</svg>`;}
+  function cardInner(card,opts){
+    opts=opts||{}; const c=CATS[card.cat];
+    let h=`<div class="pip">${card.g}<small>g</small></div>`;
+    if(opts.cost!=null)h+=`<div class="cost">${opts.sold?'✓':opts.cost}</div>`;
+    h+=`<div class="art">${artFor(card)}</div>
+      <div class="info"><div class="banner">${card.name}</div><div class="type">${c.short}</div></div>`;
+    return h;
+  }
+
+  function startRound(){
+    if(deck.length===0){ toast('Došly ti suroviny!'); return endGame(); }
+    const active=['muscle','bone'];
+    if(roundNum>=4)active.push('liver');
+    if(roundNum>=6)active.push('organ');
+    const scale=1+(roundNum-1)*0.10;
+    const baseT={muscle:[180,260],bone:[30,55],liver:[10,16],organ:[10,16]};
+    const target={};
+    active.forEach(cat=>{const[lo,hi]=baseT[cat];target[cat]=Math.round((lo+Math.random()*(hi-lo))*scale/5)*5;});
+    const tol=Math.max(0.18-roundNum*0.006,0.07);
+    round={active,target,hand:sortCards(deck),tol};
+    selected=[];
+    $('hudRound').textContent=roundNum;
+    renderTargets(); renderHand(); updateProgress();
+  }
+  function renderTargets(){
+    const t=$('targets'); t.innerHTML='';
+    round.active.forEach(cat=>{
+      const c=CATS[cat];
+      const el=document.createElement('div'); el.className='drow'; el.dataset.cat=cat;
+      el.innerHTML=`<div class="top">
+          <span class="nm">${iconChip(c.color)}${c.short}</span>
+          <span class="vv"><b class="cur">0</b> <span>/ ${round.target[cat]} g</span></span>
+        </div>
+        <div class="track"><div class="zone"></div><div class="f" style="background:${c.color}"></div></div>`;
+      t.appendChild(el);
+      const z=el.querySelector('.zone'); const lo=(1-round.tol)*100,hi=Math.min((1+round.tol)*100,100);
+      z.style.left=lo+'%'; z.style.width=(hi-lo)+'%';
+    });
+  }
+  function renderHand(){
+    const h=$('hand'); h.innerHTML='';
+    const cards=round.hand, n=cards.length;
+    $('handLabel').textContent=`Tvoje suroviny (${n}) — co dáš do misky, zmizí`;
+    const cardW=96, maxW=Math.min(430,(window.innerWidth||400)-36);
+    let advance = n>1 ? (maxW-cardW)/(n-1) : 0;
+    advance = Math.max(26, Math.min(advance, 60));
+    cards.forEach((card,idx)=>{
+      const c=CATS[card.cat];
+      const b=document.createElement('button'); b.className='tile';
+      b.style.setProperty('--cc',c.color);
+      if(idx>0)b.style.marginLeft=(advance-cardW)+'px';
+      b.innerHTML=cardInner(card);
+      b.onclick=()=>toggle(card.id,b);
+      h.appendChild(b);
+    });
+  }
+  function toggle(id,el){
+    const i=selected.indexOf(id);
+    if(i>=0){selected.splice(i,1);el.classList.remove('sel');}
+    else{selected.push(id);el.classList.add('sel','pop');setTimeout(()=>el.classList.remove('pop'),300);}
+    updateProgress();
+  }
+  function sums(){const s={muscle:0,bone:0,liver:0,organ:0};selected.forEach(id=>{const c=round.hand.find(x=>x.id===id);if(c)s[c.cat]+=c.g;});return s;}
+  function updateProgress(){
+    const s=sums();
+    round.active.forEach(cat=>{
+      const el=$('targets').querySelector(`[data-cat="${cat}"]`);
+      const cur=s[cat],tgt=round.target[cat];
+      el.querySelector('.cur').textContent=cur;
+      const f=el.querySelector('.f'); f.style.width=Math.min(cur/tgt*100,100)+'%';
+      const met=Math.abs(cur-tgt)<=tgt*round.tol, over=cur>tgt*(1+round.tol);
+      f.style.background= over?'var(--c-muscle)':(met?'var(--c-organ)':CATS[cat].color);
+      el.querySelector('.vv').classList.toggle('met',met);
+    });
+    const has=selected.length>0;
+    const acc=accuracy(), pct=Math.round(Math.max(0,acc)*100);
+    const dmg=Math.max(0,Math.round((1-acc)*100));
+    const info=$('serveInfo'), btn=$('serveBtn');
+    if(!has){info.textContent='Vyber suroviny do misky';info.className='serve-info';btn.textContent='Naservírovat misku';}
+    else if(dmg<=0){info.textContent=`Perfektní miska · 0 ❤️ ztráty · odměna ≈ ${rewardFor(acc)} 💰`;info.className='serve-info ok';btn.textContent='Naservírovat misku';}
+    else if(dmg>=hp){info.textContent=`Přesnost ${pct} % · ⚠️ −${dmg} ❤️ — to ${dog} položí! (konec běhu)`;info.className='serve-info bad';btn.textContent='Naservírovat (riziko!)';}
+    else{info.textContent=`Přesnost ${pct} % · pes ztratí ${dmg} ❤️ · odměna ≈ ${rewardFor(acc)} 💰`;info.className='serve-info';btn.textContent='Naservírovat misku';}
+    btn.disabled=!has;
+  }
+  function moneyMult(){return 1+Math.min(Math.max(combo-1,0),5)*0.15;}
+  function rewardFor(acc){
+    let r=(100+roundNum*23)*Math.max(0,acc);
+    if(acc>=0.97)r+=40;
+    r*=moneyMult();
+    return Math.max(0,Math.round(r));
+  }
+  function accuracy(){
+    const s=sums(); let werr=0,wsum=0;
+    round.active.forEach(c=>{
+      const w=CATS[c].share;
+      werr += w*Math.abs(s[c]-round.target[c])/round.target[c];
+      wsum += w;
+    });
+    const totalT=round.active.reduce((a,c)=>a+round.target[c],0)||1;
+    for(const k in s){ if(!round.active.includes(k)&&s[k]>0){ werr += 0.3*(s[k]/totalT); } }
+    return 1-(werr/Math.max(wsum,1e-6));
+  }
+  function serve(){
+    if(!selected.length)return;
+    const acc=accuracy();
+    const dmg=Math.max(0,Math.round((1-acc)*100));
+    const reward=rewardFor(acc);
+    money+=reward; score+=reward; meals++;
+    if(acc>=0.85){combo++; if(combo>maxCombo)maxCombo=combo;} else combo=0;
+    hp-=dmg; renderHP();
+    if(dmg>0){const d=$('dogStatus');d.classList.add('hit');setTimeout(()=>d.classList.remove('hit'),420);}
+    $('hudScore').textContent=score; $('hudMoney').textContent=money+' 💰';
+    $('comboBox').textContent=combo>=2?('série ×'+moneyMult().toFixed(2)):'';
+    const perfect=acc>=0.97;
+    toast((perfect?'PERFEKTNÍ! +':'+')+reward+' 💰'+(dmg>0?' · −'+dmg+' ❤️':''), perfect);
+    deck=deck.filter(c=>!selected.includes(c.id));   // spotřebuj použité suroviny
+    selected=[];
+    if(hp<=0){ return endGame(); }
+    openShop();
+  }
+  function setDogMood(p){const m=$('dogMouth'); if(m)m.setAttribute('d', p>60?MOUTH.happy:(p>30?MOUTH.ok:MOUTH.sad));}
+  function renderHP(){
+    const p=Math.max(0,Math.round(hp));
+    $('hpVal').textContent=p+' %';
+    const f=$('hpFill'); f.style.width=p+'%';
+    f.style.background = p>60?'var(--c-organ)':(p>30?'var(--c-bone)':'var(--c-muscle)');
+    setDogMood(p);
+  }
+  function toast(txt,accent){const t=$('toast');t.textContent=txt;t.classList.toggle('accent',!!accent);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),650);}
+
+  /* loop */
+  function startGame(){
+    score=0;meals=0;combo=0;maxCombo=0;money=0;roundNum=1;deck=starterDeck();hp=100;
+    $('hudScore').textContent='0';$('hudMoney').textContent='0 💰';$('comboBox').textContent='';
+    $('dogHpName').textContent=dog||'Pes'; renderHP();
+    show('game'); startRound();
+  }
+
+  /* ── SHOP ───────────────────────────────────── */
+  function openShop(){
+    shopOffers=sortCards([
+      makeOffer('muscle'),makeOffer('muscle'),makeOffer('muscle'),
+      makeOffer('bone'),makeOffer('bone'),makeOffer('bone'),
+      makeOffer('liver'),makeOffer('liver'),makeOffer('liver'),
+      makeOffer('organ'),makeOffer('organ'),makeOffer('organ'),
+    ]);
+    shopFocus=null;
+    $('shopRoundDone').textContent=roundNum;
+    renderShop(); renderDeck(); show('shop');
+  }
+  function renderShop(){
+    $('shopMoney').textContent=money+' 💰';
+    const w=$('shopOffers'); w.innerHTML='';
+    const n=shopOffers.length, cardW=96, maxW=Math.min(430,(window.innerWidth||400)-36);
+    let advance = n>1 ? (maxW-cardW)/(n-1) : 0;
+    advance = Math.max(26, Math.min(advance, 60));
+    shopOffers.forEach((card,i)=>{
+      const c=CATS[card.cat]; const sold=!!card.bought, broke=!sold&&money<card.price;
+      const b=document.createElement('button');
+      b.className='tile'+(sold?' sold':'')+(broke?' cantafford':'')+(i===shopFocus?' focus':'');
+      b.style.setProperty('--cc',c.color);
+      if(i>0)b.style.marginLeft=(advance-cardW)+'px';
+      b.innerHTML=cardInner(card,{cost:card.price,sold});
+      b.disabled=sold;
+      if(!sold)b.onclick=()=>focusOffer(i);
+      w.appendChild(b);
+    });
+    updateBuyBar();
+  }
+  function focusOffer(i){ shopFocus=(shopFocus===i?null:i); renderShop(); }
+  function updateBuyBar(){
+    const info=$('buyInfo'), btn=$('buyBtn');
+    const card=shopFocus!=null?shopOffers[shopFocus]:null;
+    if(!card||card.bought){ info.textContent='Ťukni na surovinu'; btn.disabled=true; btn.textContent='Koupit'; return; }
+    info.innerHTML=`<b>${card.name}</b> · ${card.g} g · ${CATS[card.cat].short}`;
+    const aff=money>=card.price;
+    btn.disabled=!aff;
+    btn.textContent=aff?('Koupit za '+card.price+' 💰'):('Chybí '+(card.price-money)+' 💰');
+  }
+  $('buyBtn').onclick=()=>{ if(shopFocus!=null)buy(shopFocus); };
+  function buy(i){
+    const card=shopOffers[i];
+    if(card.bought||money<card.price)return;
+    money-=card.price; card.bought=true;
+    deck.push({id:rid(),cat:card.cat,name:card.name,g:card.g});
+    $('hudMoney').textContent=money+' 💰';
+    shopFocus=null;
+    renderShop(); renderDeck();
+  }
+  function renderDeck(){
+    $('deckCount').textContent=deck.length;
+    const w=$('deckView'); w.innerHTML='';
+    const sorted=sortCards(deck), n=sorted.length;
+    const cardW=96, maxW=Math.min(430,(window.innerWidth||400)-36);
+    let advance = n>1 ? (maxW-cardW)/(n-1) : 0;
+    advance = Math.max(26, Math.min(advance, 60));
+    sorted.forEach((card,idx)=>{
+      const c=CATS[card.cat];
+      const el=document.createElement('div'); el.className='tile mini';
+      el.style.setProperty('--cc',c.color);
+      if(idx>0)el.style.marginLeft=(advance-cardW)+'px';
+      el.innerHTML=cardInner(card);
+      w.appendChild(el);
+    });
+  }
+  $('nextRoundBtn').onclick=()=>{ roundNum++; startRound(); show('game'); };
+
+  async function endGame(){
+    $('finalScore').textContent=score.toLocaleString('cs-CZ');
+    $('finalSub').textContent=`${meals} kol · balíček ${deck.length} karet · pes ${dog}`;
+    show('over'); await saveScore(); await renderLB();
+    showWinOverlay();
+  }
+
+  /* ── WIN OVERLAY ────────────────────────────── */
+  function gradeInfo(r){
+    if(r>=11)return{emoji:'🏆',label:'Mistr BARF!',cls:'s'};
+    if(r>=8) return{emoji:'🥇',label:'Skvělý běh!',cls:'a'};
+    if(r>=5) return{emoji:'🥈',label:'Dobrý běh!',cls:'b'};
+    return{emoji:'🥉',label:'Dobrý začátek!',cls:'c'};
+  }
+  function showWinOverlay(){
+    const g=gradeInfo(meals);
+    $('winMedal').textContent=g.emoji;
+    $('winScore').textContent=score.toLocaleString('cs-CZ');
+    $('winSub').textContent=`${meals} kol pro psa ${dog}`;
+    const gr=$('winGrade'); gr.textContent=g.label; gr.className='win-grade '+g.cls;
+    $('winMeals').textContent=meals;
+    $('winCombo').textContent=maxCombo;
+    const ov=$('winOverlay'); ov.classList.add('show');
+    if(meals>=4)launchConfetti();
+  }
+  function hideWinOverlay(){ $('winOverlay').classList.remove('show'); }
+
+  /* confetti */
+  function launchConfetti(){
+    const canvas=$('confetti-canvas');
+    canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+    const ctx=canvas.getContext('2d');
+    const cols=['#A7DD52','#1E2A38','#F5B544','#EF4444','#8B5CF6','#22C55E','#fff'];
+    const pieces=Array.from({length:110},()=>({
+      x:Math.random()*canvas.width, y:Math.random()*canvas.height-canvas.height,
+      r:Math.random()*6+3, c:cols[Math.floor(Math.random()*cols.length)],
+      vx:(Math.random()-.5)*3, vy:Math.random()*4+2, rot:Math.random()*360, vr:(Math.random()-.5)*6,
+      w:Math.random()*8+4
+    }));
+    let frame=0; const MAX=160;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+        ctx.fillStyle=p.c; ctx.globalAlpha=Math.max(0,1-frame/MAX);
+        ctx.fillRect(-p.w/2,-p.r/2,p.w,p.r);
+        ctx.restore();
+        p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr; p.vy+=.05;
+      });
+      if(++frame<MAX)requestAnimationFrame(draw);
+      else ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+    draw();
+  }
+
+  $('wPlayAgain').onclick=()=>{hideWinOverlay();startGame();};
+  $('wEditDog').onclick=()=>{hideWinOverlay();show('wiz');};
+
+  /* leaderboard */
+  async function saveScore(){
+    const entry={name:player,dog,score,meals,ts:Date.now()};
+    let list=[]; const r=await store.get(LB_KEY,true);
+    if(r&&r.value){try{list=JSON.parse(r.value)||[];}catch(e){}}
+    list.push(entry); list.sort((a,b)=>b.score-a.score); list=list.slice(0,50);
+    await store.set(LB_KEY,JSON.stringify(list),true); window.__me=entry;
+  }
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  async function renderLB(){
+    let list=[]; const r=await store.get(LB_KEY,true);
+    if(r&&r.value){try{list=JSON.parse(r.value)||[];}catch(e){}}
+    const ul=$('lbList'); ul.innerHTML=''; const me=window.__me;
+
+    // detect personal best: is current score the best for this player?
+    const myPrev=list.filter(e=>e.name===me?.name&&!(e.ts===me?.ts));
+    const isPB=me&&(myPrev.length===0||myPrev.every(e=>e.score<=me.score));
+
+    if(!list.length)ul.innerHTML='<li class="empty">Zatím prázdno — buď první!</li>';
+    const medals=['🥇','🥈','🥉'];
+    list.slice(0,10).forEach((e,i)=>{
+      const li=document.createElement('li');
+      const isMe=me&&e.ts===me.ts&&e.name===me.name&&e.score===me.score;
+      if(isMe){li.classList.add('you');if(isPB)li.classList.add('pb');}
+      const rankHtml=i<3
+        ?`<span class="rk">${medals[i]}</span>`
+        :`<span class="rk">${i+1}</span>`;
+      li.innerHTML=`${rankHtml}
+        <span class="wh"><b>${esc(e.name)}</b><small>${esc(e.dog)} · ${e.meals} misek</small></span>
+        <span class="pt">${e.score.toLocaleString('cs-CZ')}</span>`;
+      ul.appendChild(li);
+    });
+    const pbNote=isPB&&me?' 🎉 Nové osobní maximum!':'';
+    $('lbNote').textContent=(hasStorage?'Žebříček je sdílený — tvoje přezdívka a skóre uvidí ostatní hráči.':'Náhledový režim: úložiště není dostupné, žebříček se neukládá.')+pbNote;
+  }
+
+  $('playerName').addEventListener('keydown',e=>{if(e.key==='Enter')$('dogName').focus();});
+  $('dogName').addEventListener('keydown',e=>{if(e.key==='Enter')$('startBtn').click();});
+})();
+</script>
