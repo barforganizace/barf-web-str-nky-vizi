@@ -55,7 +55,7 @@ export const posts: Post[] = [
     readTime: "5 min čtení",
     source: "MetropoleVet Praha",
     sourceUrl: "https://www.metropolevet.cz/barf/",
-    image: "/news-1.jpg",
+    image: "/article-1.jpg",
     featured: true,
     content: (
       <>
@@ -112,7 +112,7 @@ export const posts: Post[] = [
     readTime: "6 min čtení",
     source: "Rufruf.cz",
     sourceUrl: "https://www.rufruf.cz/blog/barf-jidelnicek-jak-spravne-krmit-psa-syrovou-stravou",
-    image: "/news-2.jpg",
+    image: "/article-2.jpg",
     content: (
       <>
         <P>
@@ -295,7 +295,7 @@ export const posts: Post[] = [
     readTime: "4 min čtení",
     source: "Yoggies.cz",
     sourceUrl: "https://yoggies.cz/b-a-r-f-maso-pro-psy/",
-    image: "/news-5.jpg",
+    image: "/article-5.jpg",
     content: (
       <>
         <P>
@@ -348,7 +348,7 @@ export const posts: Post[] = [
     readTime: "5 min čtení",
     source: "ForBarf.cz",
     sourceUrl: "https://www.forbarf.cz/barf-vyziva-psa",
-    image: "/news-6.jpg",
+    image: "/article-6.jpg",
     content: (
       <>
         <P>
