@@ -52,7 +52,7 @@ const allFaqItems = [
     answer: (
       <>
         V hlavním menu klepni na ikonku svého psa (vlevo nahoře) a vyber{" "}
-        <strong>Přidat psa</strong>. Zadáš jméno, plemeno, věk, hmotnost a
+        <strong>Přidat psa</strong>. Zadáš jméno, věk, hmotnost a
         úroveň aktivity. Aplikace si automaticky spočítá správné denní dávky
         pro každého psa zvlášť. Mezi psy přepínáš jedním klepnutím.
       </>
@@ -62,7 +62,7 @@ const allFaqItems = [
     id: "faq-4",
     number: "04",
     category: "Pes",
-    question: "Jak změním hmotnost nebo plemeno psa?",
+    question: "Jak změním hmotnost nebo údaje psa?",
     answer: (
       <>
         Jdi do <strong>Nastavení → Můj pes → Upravit profil</strong>. Po
@@ -79,7 +79,7 @@ const allFaqItems = [
     question: "Proč mi makra nesedí? Zdají se moc vysoká nebo nízká.",
     answer: (
       <>
-        Denní limit vychází z váhy psa, plemene a aktivity — obvykle{" "}
+        Denní limit vychází z váhy psa, velikosti a aktivity — obvykle{" "}
         <strong>2–3 % tělesné hmotnosti za den</strong>. Pokud máš pocit, že
         čísla nesedí, zkontroluj nejdříve profil psa: správnou hmotnost a
         úroveň aktivity (klidný, střední, aktivní). Štěňata a kojící feny mají
@@ -114,7 +114,7 @@ const allFaqItems = [
         <strong>Sdílet mix</strong>. Vyber mix ze své lednice nebo ho vytvoř
         ručně, přidej popis a volitelně i fotku. Po zveřejnění ho ostatní mohou
         hodnotit a uložit jedním klepnutím rovnou do své lednice. Sdílené recepty
-        lze filtrovat podle plemene, velikosti psa nebo alergenů.
+        lze filtrovat podle velikosti psa nebo alergenů.
       </>
     ),
   },

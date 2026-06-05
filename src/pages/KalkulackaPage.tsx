@@ -1,77 +1,6 @@
 import { useState } from "react";
 import { SharedNav } from "../components/SharedNav";
 
-// ─── Dog SVG illustrations ────────────────────────────────────────────────────
-const DogSmall = () => (
-  <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
-    <ellipse cx="52" cy="55" rx="22" ry="14" fill="#E8C49A"/>
-    <circle cx="30" cy="42" r="14" fill="#E8C49A"/>
-    <ellipse cx="19" cy="30" rx="7" ry="13" fill="#D4956A" transform="rotate(-20 19 30)"/>
-    <ellipse cx="19" cy="30" rx="4" ry="9" fill="#F0A070" transform="rotate(-20 19 30)"/>
-    <ellipse cx="40" cy="29" rx="7" ry="12" fill="#D4956A" transform="rotate(15 40 29)"/>
-    <ellipse cx="40" cy="29" rx="4" ry="8" fill="#F0A070" transform="rotate(15 40 29)"/>
-    <circle cx="25" cy="40" r="3.5" fill="#2D1B0E"/><circle cx="36" cy="40" r="3.5" fill="#2D1B0E"/>
-    <circle cx="26" cy="39" r="1.2" fill="white"/><circle cx="37" cy="39" r="1.2" fill="white"/>
-    <ellipse cx="30" cy="47" rx="3.5" ry="2.5" fill="#2D1B0E"/>
-    <rect x="36" y="64" width="7" height="12" rx="3.5" fill="#D4956A"/>
-    <rect x="48" y="64" width="7" height="12" rx="3.5" fill="#D4956A"/>
-    <rect x="60" y="64" width="7" height="12" rx="3.5" fill="#D4956A"/>
-    <path d="M74 50 Q85 42 82 35" stroke="#D4956A" strokeWidth="4" strokeLinecap="round" fill="none"/>
-  </svg>
-);
-const DogMedium = () => (
-  <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
-    <ellipse cx="55" cy="52" rx="26" ry="16" fill="white"/>
-    <ellipse cx="62" cy="50" rx="18" ry="14" fill="#1a1a2e"/>
-    <ellipse cx="42" cy="48" rx="12" ry="10" fill="white"/>
-    <circle cx="28" cy="40" r="15" fill="#1a1a2e"/>
-    <ellipse cx="28" cy="44" rx="5" ry="9" fill="white"/>
-    <ellipse cx="16" cy="32" rx="6" ry="11" fill="#1a1a2e" transform="rotate(-15 16 32)"/>
-    <ellipse cx="16" cy="35" rx="3" ry="6" fill="#3a2a4e" transform="rotate(-15 16 35)"/>
-    <ellipse cx="39" cy="30" rx="6" ry="10" fill="#1a1a2e" transform="rotate(10 39 30)"/>
-    <circle cx="22" cy="38" r="3.5" fill="#5B3A1A"/><circle cx="34" cy="38" r="3.5" fill="#5B3A1A"/>
-    <circle cx="23" cy="37" r="1.5" fill="white"/><circle cx="35" cy="37" r="1.5" fill="white"/>
-    <ellipse cx="28" cy="47" rx="4" ry="2.8" fill="#1a0a00"/>
-    <rect x="40" y="63" width="8" height="14" rx="4" fill="#1a1a2e"/>
-    <rect x="53" y="63" width="8" height="14" rx="4" fill="#1a1a2e"/>
-    <rect x="65" y="63" width="8" height="14" rx="4" fill="#1a1a2e"/>
-    <path d="M80 48 Q92 38 88 28" stroke="#1a1a2e" strokeWidth="5" strokeLinecap="round" fill="none"/>
-    <path d="M80 48 Q93 40 89 29" stroke="white" strokeWidth="2" strokeLinecap="round" fill="none"/>
-  </svg>
-);
-const DogLarge = () => (
-  <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
-    <ellipse cx="57" cy="53" rx="28" ry="18" fill="#D4A940"/>
-    <circle cx="28" cy="42" r="17" fill="#D4A940"/>
-    <ellipse cx="15" cy="40" rx="7" ry="12" fill="#B8902E" transform="rotate(-10 15 40)"/>
-    <ellipse cx="40" cy="38" rx="7" ry="12" fill="#B8902E" transform="rotate(8 40 38)"/>
-    <ellipse cx="28" cy="48" rx="9" ry="7" fill="#E8C060"/>
-    <circle cx="21" cy="40" r="4" fill="#3D2000"/><circle cx="35" cy="40" r="4" fill="#3D2000"/>
-    <circle cx="22" cy="38.5" r="1.5" fill="white"/><circle cx="36" cy="38.5" r="1.5" fill="white"/>
-    <ellipse cx="28" cy="48" rx="4.5" ry="3.2" fill="#1a0800"/>
-    <rect x="40" y="65" width="10" height="13" rx="5" fill="#B8902E"/>
-    <rect x="55" y="65" width="10" height="13" rx="5" fill="#B8902E"/>
-    <rect x="68" y="65" width="10" height="13" rx="5" fill="#B8902E"/>
-    <path d="M84 50 Q95 40 90 30" stroke="#B8902E" strokeWidth="6" strokeLinecap="round" fill="none"/>
-  </svg>
-);
-const DogGiant = () => (
-  <svg viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full">
-    <ellipse cx="58" cy="52" rx="30" ry="20" fill="#F5F0E8"/>
-    <ellipse cx="68" cy="50" rx="20" ry="16" fill="#8B4513"/>
-    <circle cx="26" cy="43" r="18" fill="#8B4513"/>
-    <ellipse cx="26" cy="49" rx="8" ry="12" fill="#F5F0E8"/>
-    <ellipse cx="11" cy="45" rx="8" ry="15" fill="#6B3410" transform="rotate(-8 11 45)"/>
-    <ellipse cx="41" cy="43" rx="8" ry="14" fill="#6B3410" transform="rotate(5 41 43)"/>
-    <circle cx="19" cy="41" r="4.5" fill="#2D1B0E"/><circle cx="33" cy="41" r="4.5" fill="#2D1B0E"/>
-    <circle cx="20" cy="39.5" r="1.8" fill="white"/><circle cx="34" cy="39.5" r="1.8" fill="white"/>
-    <ellipse cx="26" cy="50" rx="6" ry="4" fill="#1a0800"/>
-    <rect x="38" y="66" width="12" height="13" rx="6" fill="#6B3410"/>
-    <rect x="55" y="66" width="12" height="13" rx="6" fill="#F5F0E8"/>
-    <rect x="70" y="66" width="12" height="13" rx="6" fill="#6B3410"/>
-    <path d="M87 50 Q96 42 92 34" stroke="#6B3410" strokeWidth="7" strokeLinecap="round" fill="none"/>
-  </svg>
-);
 
 const LiverIcon = () => (
   <svg viewBox="0 0 32 32" fill="none" width="36" height="36">
@@ -146,9 +75,10 @@ function calcDaily(weightKg: number, ageMonths: number, breedSize: BreedSize, ac
   return {
     stage, percent,
     ration_g,
-    muscle_g:       Math.round(ration_g * 0.50),
-    rmb_g:          Math.round(ration_g * 0.25),
-    organs_g:       Math.round(ration_g * 0.15),
+    muscle_g:       Math.round(ration_g * 0.70),
+    rmb_g:          Math.round(ration_g * 0.10),
+    organs_g:       Math.round(ration_g * 0.05),
+    kidneys_g:      Math.round(ration_g * 0.05),
     other_g:        Math.round(ration_g * 0.10),
     kcal:           Math.round(ration_g * 1.6),
     calcium_mg:     Math.round(weightKg * micro.calcium_mg),
@@ -164,10 +94,10 @@ function calcDaily(weightKg: number, ageMonths: number, breedSize: BreedSize, ac
 // ─── UI data ──────────────────────────────────────────────────────────────────
 
 const SIZES = [
-  { key: "small"  as BreedSize, label: "Malá plemena",   sub: "do 10 kg",   example: "Čivava, Krysařík, Yorkie",       Dog: DogSmall,  color: "#FEF3C7", cardH: 72,  dogH: 60  },
-  { key: "medium" as BreedSize, label: "Střední plemena", sub: "10–25 kg",   example: "Border Kolie, Kokršpaněl",       Dog: DogMedium, color: "#EDE9FE", cardH: 88,  dogH: 76  },
-  { key: "large"  as BreedSize, label: "Velká plemena",   sub: "25–45 kg",   example: "Labrador, Zlatý retrívr",        Dog: DogLarge,  color: "#FEF9C3", cardH: 104, dogH: 92  },
-  { key: "giant"  as BreedSize, label: "Obří plemena",    sub: "nad 45 kg",  example: "Doga, Bernardýn, Newfoundland",  Dog: DogGiant,  color: "#FCE7F3", cardH: 120, dogH: 108 },
+  { key: "small"  as BreedSize, label: "Malý pes",   sub: "do 10 kg",   example: "Čivava, Krysařík, Yorkie",       img: "/dog small.svg",  color: "#FEF3C7", cardH: 72  },
+  { key: "medium" as BreedSize, label: "Střední pes", sub: "10–25 kg",   example: "Border Kolie, Kokršpaněl",       img: "/dog medium.svg", color: "#EDE9FE", cardH: 88  },
+  { key: "large"  as BreedSize, label: "Velký pes",   sub: "25–45 kg",   example: "Labrador, Zlatý retrívr",        img: "/dog big.svg",    color: "#FEF9C3", cardH: 104 },
+  { key: "giant"  as BreedSize, label: "Obří pes",    sub: "nad 45 kg",  example: "Doga, Bernardýn, Newfoundland",  img: "/dog huge.svg",   color: "#FCE7F3", cardH: 120 },
 ];
 
 const WEIGHT_RANGE: Record<BreedSize, [number, number]> = {
@@ -187,10 +117,10 @@ const CONDITIONS: { key: Condition; label: string; sub: string; adjust: string }
 ];
 
 const CATS = [
-  { key: "muscle", label: "Svalovina",    icon: "🥩",          color: "#EF4444", light: "#FEF2F2", border: "#FECACA" },
-  { key: "rmb",    label: "Masité kosti", icon: "🦴",          color: "#D97706", light: "#FFFBEB", border: "#FDE68A" },
-  { key: "organs", label: "Vnitřnosti",   icon: <LiverIcon />, color: "#7C3AED", light: "#F5F3FF", border: "#DDD6FE" },
-  { key: "other",  label: "Ostatní",      icon: "🌿",          color: "#16A34A", light: "#F0FDF4", border: "#BBF7D0" },
+  { key: "muscle",  label: "Svalovina",  pct: 70, icon: "🥩",          color: "#EF4444", light: "#FEF2F2", border: "#FECACA", detail: "Hovězí, kuřecí, krůtí, jehněčí. Střídejte alespoň 3 druhy masa týdně." },
+  { key: "rmb",     label: "Masité kosti", pct: 10, icon: "🦴",          color: "#D97706", light: "#FFFBEB", border: "#FDE68A", detail: "Kuřecí krky, křídla, hovězí žebra. Vždy syrové — vařené kosti jsou nebezpečné." },
+  { key: "organs",  label: "Vnitřnosti",   pct: 10, icon: <LiverIcon />, color: "#7C3AED", light: "#F5F3FF", border: "#DDD6FE", detail: "Vnitřnosti 10 % denní dávky, včetně 5 % ledvin." },
+  { key: "other",   label: "Ostatní",      pct: 10, icon: "🌿",          color: "#16A34A", light: "#F0FDF4", border: "#BBF7D0", detail: "Zelenina 7 %, oříšky 2 %, ovoce 1 % z denní dávky." },
 ];
 
 const STAGE_LABEL: Record<Stage, string> = { puppy: "🐾 Štěně", adult: "🐕 Dospělý", senior: "🦮 Senior" };
@@ -277,7 +207,7 @@ export const KalkulackaPage = () => {
         {step === 0 && (
           <div>
             <Steps current={0} total={3} />
-            <h2 className="mb-1 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">Velikost plemene</h2>
+            <h2 className="mb-1 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">Velikost psa</h2>
             <p className="mb-6 text-sm text-gray-500">Životní fáze (štěně/dospělý/senior) se určí automaticky z věku.</p>
             <div className="flex flex-col gap-3">
               {SIZES.map((s) => {
@@ -286,7 +216,7 @@ export const KalkulackaPage = () => {
                   <button key={s.key} onClick={() => { setBreedSize(s.key); setWeight(Math.round((WEIGHT_RANGE[s.key][0] + WEIGHT_RANGE[s.key][1]) / 2)); }}
                     className={`flex items-center overflow-hidden rounded-2xl border-2 bg-white text-left transition-all hover:shadow-md ${active ? "border-[#c3e96b] shadow-md" : "border-gray-200 hover:border-gray-300"}`}>
                     <div className="flex shrink-0 items-end justify-center overflow-hidden" style={{ backgroundColor: active ? "#c3e96b" : s.color, width: 108, height: s.cardH }}>
-                      <div style={{ height: s.dogH, width: s.dogH + 8 }}><s.Dog /></div>
+                      <img src={s.img} alt={s.label} className="h-full w-full object-contain object-bottom" />
                     </div>
                     <div className="flex-1 px-4">
                       <p className="font-bold text-[#191c1d]">{s.label}</p>
@@ -440,8 +370,8 @@ export const KalkulackaPage = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                  <div className="h-12 w-12 overflow-hidden rounded-xl" style={{ backgroundColor: sizeData.color }}>
-                    <sizeData.Dog />
+                  <div className="h-12 w-12 overflow-hidden rounded-xl">
+                    <img src={sizeData.img} alt={sizeData.label} className="h-full w-full object-cover" />
                   </div>
                   <div className="text-xs text-white/50">
                     <p className="font-semibold text-white">{weight} kg · {fmtAge(ageMonths)}</p>
@@ -455,8 +385,9 @@ export const KalkulackaPage = () => {
             {/* složky */}
             <div className="mb-5 grid gap-4 sm:grid-cols-2">
               {CATS.map((cat) => {
-                const g = result[cat.key === "muscle" ? "muscle_g" : cat.key === "rmb" ? "rmb_g" : cat.key === "organs" ? "organs_g" : "other_g"] as number;
-                const pct = cat.key === "muscle" ? 50 : cat.key === "rmb" ? 25 : cat.key === "organs" ? 15 : 10;
+                const keyMap: Record<string, keyof typeof result> = { muscle: "muscle_g", rmb: "rmb_g", organs: "organs_g", kidneys: "kidneys_g", other: "other_g" };
+                const g = result[keyMap[cat.key]] as number;
+                const pct = cat.pct;
                 return (
                   <div key={cat.key} className="overflow-hidden rounded-2xl border-2 bg-white shadow-sm" style={{ borderColor: cat.border }}>
                     <div className="flex items-start gap-4 p-5 pb-3">
@@ -499,22 +430,41 @@ export const KalkulackaPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {CATS.map((cat) => {
-                    const g = result[cat.key === "muscle" ? "muscle_g" : cat.key === "rmb" ? "rmb_g" : cat.key === "organs" ? "organs_g" : "other_g"] as number;
-                    return (
-                      <tr key={cat.key} className="hover:bg-gray-50/50">
-                        <td className="px-7 py-3 font-medium text-gray-700">
+                  {(() => {
+                    const muscle_g = result.muscle_g;
+                    const rmb_g = result.rmb_g;
+                    const organs_g = result.organs_g + result.kidneys_g;
+                    const kidneys_g = result.kidneys_g;
+                    const other_g = result.other_g;
+                    const veg_g = Math.round(result.ration_g * 0.07);
+                    const nuts_g = Math.round(result.ration_g * 0.02);
+                    const fruit_g = Math.round(result.ration_g * 0.01);
+
+                    const renderRow = (label: string, grams: number, color?: string, indent = false) => (
+                      <tr key={label} className={indent ? "hover:bg-gray-50/50" : "hover:bg-gray-50/50"}>
+                        <td className={`px-7 py-3 font-medium text-gray-700 ${indent ? "pl-12" : ""}`}>
                           <div className="flex items-center gap-2">
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                            {cat.label}
+                            {color && <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />}
+                            {label}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-gray-600">{g} g</td>
-                        <td className="px-4 py-3 text-gray-600">{(g * 7 / 1000).toFixed(2)} kg</td>
-                        <td className="px-4 py-3 text-gray-600">{(g * 30 / 1000).toFixed(1)} kg</td>
+                        <td className="px-4 py-3 text-gray-600">{grams} g</td>
+                        <td className="px-4 py-3 text-gray-600">{(grams * 7 / 1000).toFixed(2)} kg</td>
+                        <td className="px-4 py-3 text-gray-600">{(grams * 30 / 1000).toFixed(1)} kg</td>
                       </tr>
                     );
-                  })}
+
+                    return [
+                      renderRow("Svalovina", muscle_g, "#EF4444"),
+                      renderRow("Masité kosti", rmb_g, "#D97706"),
+                      renderRow("Vnitřnosti", organs_g, "#7C3AED"),
+                      renderRow("  – Ledviny", kidneys_g, "#A855F7", true),
+                      renderRow("Ostatní", other_g, "#16A34A"),
+                      renderRow("  – Zelenina", veg_g, undefined, true),
+                      renderRow("  – Oříšky", nuts_g, undefined, true),
+                      renderRow("  – Ovoce", fruit_g, undefined, true),
+                    ];
+                  })()}
                   <tr className="bg-gray-50 font-semibold">
                     <td className="px-7 py-3 text-gray-700">Celkem</td>
                     <td className="px-4 py-3 text-gray-700">{result.ration_g} g</td>

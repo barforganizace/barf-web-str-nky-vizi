@@ -23,11 +23,19 @@
 }
 
 .dark {
-  --textdark: rgba(195, 233, 107, 1);
+  --textdark: rgba(129, 172, 56, 1);
   --textprimary: rgba(241, 245, 249, 1);
   --textsecondary: rgba(148, 163, 184, 1);
   --textwhite: rgba(15, 23, 42, 1);
   color-scheme: dark;
+}
+
+.dark .bg-textdark {
+  color: #111827 !important;
+}
+
+.dark .bg-textdark * {
+  color: #111827 !important;
 }
 
 /* Dark mode globální pozadí a karty */

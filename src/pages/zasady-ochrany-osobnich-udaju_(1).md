@@ -26,7 +26,7 @@ Tyto zásady popisují, jaké osobní údaje shromažďujeme při používání 
 
 Údaje, které do aplikace zadáš a které slouží k sestavení krmných plánů:
 
-- Jméno, plemeno, věk, váha, pohlaví, kondice psa
+- Jméno, věk, váha, pohlaví, kondice psa
 - Zdravotní omezení, alergie, dietní specifika
 - Krmné plány, deníkové záznamy, fotografie (pokud je nahraješ)
 

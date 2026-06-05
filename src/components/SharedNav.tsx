@@ -1,24 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "./ThemeProvider";
-
-const navLinks = [
-  { label: "Kalkulačka", to: "/kalkulacka" },
-  { label: "Novinky", to: "/novinky" },
-  { label: "Zábava", to: "/zabava" },
-  { label: "Stažení", to: "/stazeni" },
-  { label: "FAQ", to: "/faq" },
-];
+import { useTranslation } from "react-i18next";
 
 export const SharedNav = () => {
   const { pathname } = useLocation();
   const { theme, toggle } = useTheme();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
 
-  // zavři menu při změně stránky
-  useEffect(() => { setOpen(false); }, [pathname]);
+  const isCS = i18n.language.startsWith("cs");
+  const switchLang = () => i18n.changeLanguage(isCS ? "en" : "cs");
 
-  // zamez scroll při otevřeném menu
+  const navLinks = [
+    { labelKey: "nav.calculator", to: "/kalkulacka" },
+    { labelKey: "nav.news",       to: "/novinky"    },
+    { labelKey: "nav.entertainment", to: "/zabava"  },
+    { labelKey: "nav.download",   to: "/stazeni"    },
+    { labelKey: "nav.faq",        to: "/faq"        },
+  ];
+
+  useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -31,11 +33,11 @@ export const SharedNav = () => {
 
           {/* logo */}
           <Link to="/" className="inline-flex shrink-0 items-center transition-opacity hover:opacity-70" aria-label="Domů">
-            <img src="/barflogo.png" alt="BarfingApp" className="h-8 w-auto object-contain mix-blend-multiply" />
+            <img src="/Vector.svg" alt="BarfingApp" className="h-8 w-auto object-contain" />
           </Link>
 
-          {/* desktop nav — skryté pod lg */}
-          <nav aria-label="Hlavní navigace" className="hidden lg:block">
+          {/* desktop nav */}
+          <nav aria-label={t("nav.main_navigation", "Hlavní navigace")} className="hidden lg:block">
             <ul className="flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.to;
@@ -47,7 +49,7 @@ export const SharedNav = () => {
                         isActive ? "bg-textdark text-white" : "text-textsecondary hover:bg-black/5 hover:text-textprimary"
                       }`}
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                     </Link>
                   </li>
                 );
@@ -55,13 +57,23 @@ export const SharedNav = () => {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {/* language switcher */}
+            <button
+              onClick={switchLang}
+              className="flex h-9 items-center gap-1 rounded-full px-3 text-xs font-bold transition hover:bg-black/5 dark:hover:bg-white/10"
+              title={isCS ? "Switch to English" : "Přepnout na češtinu"}
+            >
+              <span className={isCS ? "text-textprimary" : "text-gray-400"}>CZ</span>
+              <span className="text-gray-300">/</span>
+              <span className={!isCS ? "text-textprimary" : "text-gray-400"}>EN</span>
+            </button>
+
             {/* dark mode toggle */}
             <button
               onClick={toggle}
-              aria-label={theme === "dark" ? "Světlý režim" : "Tmavý režim"}
+              aria-label={theme === "dark" ? t("nav.light_mode") : t("nav.dark_mode")}
               className="flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-black/5 dark:hover:bg-white/10"
-              title={theme === "dark" ? "Přepnout na světlý režim" : "Přepnout na tmavý režim"}
             >
               {theme === "dark" ? (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -77,9 +89,9 @@ export const SharedNav = () => {
             {/* CTA — desktop */}
             <Link
               to="/stazeni"
-              className="hidden lg:inline-flex h-9 items-center gap-1.5 rounded-full bg-textdark px-[18px] [font-family:'Inter',Helvetica] text-sm font-bold text-white transition-opacity hover:opacity-80 dark:bg-[#c3e96b] dark:text-[#191c1d]"
+              className="hidden lg:inline-flex h-9 items-center gap-1.5 rounded-full bg-textdark px-[18px] [font-family:'Inter',Helvetica] text-sm font-bold text-white transition-opacity hover:opacity-80 dark:bg-[#8fad38] dark:text-[#111827]"
             >
-              Stáhnout
+              {t("nav.download_btn")}
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                 <path d="M6 1v8M2.5 6l3.5 3.5L9.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -88,7 +100,7 @@ export const SharedNav = () => {
             {/* hamburger — mobile */}
             <button
               onClick={() => setOpen((v) => !v)}
-              aria-label={open ? "Zavřít menu" : "Otevřít menu"}
+              aria-label={open ? t("nav.close_menu") : t("nav.open_menu")}
               className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5 dark:hover:bg-white/10"
             >
               {open ? (
@@ -108,7 +120,6 @@ export const SharedNav = () => {
       {/* Mobile drawer */}
       {open && (
         <div className="fixed inset-0 z-10 lg:hidden" onClick={() => setOpen(false)}>
-          {/* overlay */}
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
         </div>
       )}
@@ -129,24 +140,28 @@ export const SharedNav = () => {
                       isActive ? "bg-[#f7fde8] text-[#506600]" : "text-textprimary hover:bg-gray-50"
                     }`}
                   >
-                    {link.label}
-                    {isActive && (
-                      <span className="h-2 w-2 rounded-full bg-[#c3e96b]" />
-                    )}
+                    {t(link.labelKey)}
+                    {isActive && <span className="h-2 w-2 rounded-full bg-[#c3e96b]" />}
                   </Link>
                 </li>
               );
             })}
           </ul>
-          <div className="p-4 pt-3">
+          {/* language + download row in mobile menu */}
+          <div className="flex items-center gap-2 p-4 pt-3">
+            <button
+              onClick={switchLang}
+              className="flex h-10 flex-1 items-center justify-center gap-1 rounded-xl border border-gray-200 text-sm font-bold transition hover:bg-gray-50"
+            >
+              <span className={isCS ? "text-textprimary" : "text-gray-400"}>CZ</span>
+              <span className="text-gray-300">/</span>
+              <span className={!isCS ? "text-textprimary" : "text-gray-400"}>EN</span>
+            </button>
             <Link
               to="/stazeni"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-textdark py-3 [font-family:'Inter',Helvetica] text-sm font-bold text-white transition-opacity hover:opacity-80"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-textdark py-2.5 [font-family:'Inter',Helvetica] text-sm font-bold text-white transition-opacity hover:opacity-80"
             >
-              Stáhnout zdarma
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M6 1v8M2.5 6l3.5 3.5L9.5 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              {t("nav.download_btn")}
             </Link>
           </div>
         </nav>

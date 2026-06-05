@@ -52,7 +52,7 @@ export const ZasadyOchrany = (): JSX.Element => {
                 plánů:
               </p>
               <ul className="mt-2 space-y-1 pl-5">
-                <li>Jméno, plemeno, věk, váha, pohlaví, kondice psa</li>
+                <li>Jméno, věk, váha, pohlaví, kondice psa</li>
                 <li>Zdravotní omezení, alergie, dietní specifika</li>
                 <li>
                   Krmné plány, deníkové záznamy, fotografie (pokud je nahraješ)

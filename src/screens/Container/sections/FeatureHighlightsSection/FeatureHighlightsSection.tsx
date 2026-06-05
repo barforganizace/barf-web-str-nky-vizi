@@ -37,7 +37,7 @@ const featureItems = [
       </>
     ),
     bullets: [
-      "Automatický výpočet z plemene a aktivity",
+      "Automatický výpočet z velikosti a aktivity",
       "Týdenní strip s aktuálním dnem",
       "Detaily mikro živin v sekci dál",
     ],
@@ -55,7 +55,7 @@ const featureItems = [
     bullets: [
       "Zveřejněte recept a nechte ostatní hodnotit",
       "Uložte cizí mix jedním klepnutím do svých zásob",
-      "Filtrujte podle plemene, velikosti nebo alergenů",
+      "Filtrujte podle velikosti nebo alergenů",
     ],
     imageSrc: "/Mockup_mixy.svg",
     imageAlt: "Komunita — sdílení jídel",

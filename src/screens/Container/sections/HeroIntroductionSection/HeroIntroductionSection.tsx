@@ -17,7 +17,7 @@ const featureStats = [
       <>
         Malá, střední, velká, obří
         <br />
-        plemena
+        velikosti
       </>
     ),
   },
