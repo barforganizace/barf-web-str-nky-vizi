@@ -94,10 +94,10 @@ function calcDaily(weightKg: number, ageMonths: number, breedSize: BreedSize, ac
 // ─── UI data ──────────────────────────────────────────────────────────────────
 
 const SIZES = [
-  { key: "small"  as BreedSize, label: "Malý pes",   sub: "do 10 kg",   example: "Čivava, Krysařík, Yorkie",       img: "/dog small.svg",  color: "#FEF3C7", cardH: 72  },
-  { key: "medium" as BreedSize, label: "Střední pes", sub: "10–25 kg",   example: "Border Kolie, Kokršpaněl",       img: "/dog medium.svg", color: "#EDE9FE", cardH: 88  },
-  { key: "large"  as BreedSize, label: "Velký pes",   sub: "25–45 kg",   example: "Labrador, Zlatý retrívr",        img: "/dog big.svg",    color: "#FEF9C3", cardH: 104 },
-  { key: "giant"  as BreedSize, label: "Obří pes",    sub: "nad 45 kg",  example: "Doga, Bernardýn, Newfoundland",  img: "/dog huge.svg",   color: "#FCE7F3", cardH: 120 },
+  { key: "small"  as BreedSize, label: "Malý pes",   sub: "do 10 kg",   example: "Čivava, Krysařík, Yorkie",       img: "/dog-small.svg",  color: "#FEF3C7", cardH: 72  },
+  { key: "medium" as BreedSize, label: "Střední pes", sub: "10–25 kg",   example: "Border Kolie, Kokršpaněl",       img: "/dog-medium.svg", color: "#EDE9FE", cardH: 88  },
+  { key: "large"  as BreedSize, label: "Velký pes",   sub: "25–45 kg",   example: "Labrador, Zlatý retrívr",        img: "/dog-big.svg",    color: "#FEF9C3", cardH: 104 },
+  { key: "giant"  as BreedSize, label: "Obří pes",    sub: "nad 45 kg",  example: "Doga, Bernardýn, Newfoundland",  img: "/dog-huge.svg",   color: "#FCE7F3", cardH: 120 },
 ];
 
 const WEIGHT_RANGE: Record<BreedSize, [number, number]> = {
