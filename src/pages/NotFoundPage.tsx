@@ -1,22 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { SharedNav } from "../components/SharedNav";
 
-const quickLinks = [
-  { label: "Kalkulačka", to: "/kalkulacka", emoji: "🧮" },
-  { label: "Novinky", to: "/novinky", emoji: "📰" },
-  { label: "Zábava", to: "/zabava", emoji: "🎮" },
-  { label: "FAQ", to: "/faq", emoji: "❓" },
-];
-
 export const NotFoundPage = (): JSX.Element => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const quickLinks = [
+    { label: t("nav.calculator"), to: "/kalkulacka", emoji: "🧮" },
+    { label: t("nav.news"),       to: "/novinky",    emoji: "📰" },
+    { label: t("nav.entertainment"), to: "/zabava",  emoji: "🎮" },
+    { label: "FAQ",               to: "/faq",        emoji: "❓" },
+  ];
 
   return (
     <div className="flex min-h-screen flex-col bg-[#f2f4f7]">
       <SharedNav />
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
-        {/* big 404 */}
         <div className="relative mb-6 select-none">
           <span className="[font-family:'Inter',Helvetica] text-[120px] font-bold leading-none text-[#e5e7eb] sm:text-[160px]">
             404
@@ -27,13 +28,12 @@ export const NotFoundPage = (): JSX.Element => {
         </div>
 
         <h1 className="mb-3 [font-family:'Inter',Helvetica] text-[28px] font-semibold leading-tight text-textprimary sm:text-[36px]">
-          Tuhle stránku jsme nenašli
+          {t("not_found.title")}
         </h1>
         <p className="mb-10 max-w-[420px] text-base leading-relaxed text-gray-500">
-          Odkaz možná expiroval, nebo stránka nikdy neexistovala. Pes ji možná sežral.
+          {t("not_found.desc")}
         </p>
 
-        {/* quick links */}
         <div className="mb-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {quickLinks.map((l) => (
             <Link
@@ -55,13 +55,13 @@ export const NotFoundPage = (): JSX.Element => {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m15 18-6-6 6-6"/>
             </svg>
-            Zpět
+            {t("not_found.back")}
           </button>
           <Link
             to="/"
             className="inline-flex items-center gap-2 rounded-full bg-textdark px-6 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-80"
           >
-            Domovská stránka
+            {t("not_found.home")}
           </Link>
         </div>
       </main>

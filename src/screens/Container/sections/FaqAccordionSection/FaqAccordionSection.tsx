@@ -1,7 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "../../../../components/ui/card";
 
 export const FaqAccordionSection = (): JSX.Element => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative w-full self-stretch bg-[#f2f4f7] px-8 pt-20 pb-[120px]">
       <div className="mx-auto flex w-full max-w-[1800px] flex-col items-center px-4 sm:px-6 md:px-10 lg:px-12">
@@ -13,7 +16,7 @@ export const FaqAccordionSection = (): JSX.Element => {
           </div>
           <div className="flex w-full flex-col items-center pb-[1.2px]">
             <h2 className="[font-family:'Inter',Helvetica] text-center text-[42px] font-bold leading-tight tracking-[-1.44px] text-textprimary sm:text-6xl lg:text-7xl lg:leading-[79.2px]">
-              Máte dotazy? Vše najdete v FAQ.
+              {t("faq_cta.title")}
             </h2>
           </div>
         </header>
@@ -22,15 +25,13 @@ export const FaqAccordionSection = (): JSX.Element => {
             <CardContent className="p-10 sm:p-14">
               <div className="flex flex-col items-center gap-8 text-center">
                 <p className="max-w-[820px] text-base font-semibold leading-[28px] tracking-[0] text-textprimary sm:text-xl sm:leading-[32px]">
-                  Pokud máte otázky k aplikaci nebo chcete rychle najít odpověď,
-                  klikněte na FAQ. Najdete tam všechny běžné dotazy přehledně
-                  seřazené.
+                  {t("faq_cta.desc")}
                 </p>
                 <Link
                   to="/faq"
                   className="inline-flex h-14 items-center justify-center rounded-full bg-textdark px-8 text-base font-bold text-white transition hover:bg-textdark/90"
                 >
-                  Přejít na FAQ
+                  {t("faq_cta.btn")}
                 </Link>
               </div>
             </CardContent>

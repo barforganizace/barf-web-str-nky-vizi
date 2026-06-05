@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SharedNav } from "../components/SharedNav";
 import {
   Accordion,
@@ -174,11 +175,21 @@ const allFaqItems = [
   },
 ];
 
-const categories = ["Vše", "Účet", "Pes", "Makra & výpočty", "Komunita", "Technické"];
+const CATEGORY_KEYS = ["Vše", "Účet", "Pes", "Makra & výpočty", "Komunita", "Technické"] as const;
 
 export const FaqPage = (): JSX.Element => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Vše");
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    "Vše":            t("faq_page.cat_all"),
+    "Účet":           t("faq_page.cat_account"),
+    "Pes":            t("faq_page.cat_dog"),
+    "Makra & výpočty": t("faq_page.cat_macros"),
+    "Komunita":       t("faq_page.cat_community"),
+    "Technické":      t("faq_page.cat_technical"),
+  };
 
   const filtered = allFaqItems.filter((item) => {
     const matchesCategory =
@@ -198,13 +209,13 @@ export const FaqPage = (): JSX.Element => {
       {/* hero + search */}
       <div className="bg-textdark px-6 py-16 text-center">
         <p className="mb-3 [font-family:'Manrope',Helvetica] text-sm font-bold tracking-[2.5px] text-[#c3e96b]">
-          NÁPOVĚDA
+          {t("faq_page.label")}
         </p>
         <h1 className="mb-4 [font-family:'Inter',Helvetica] text-[40px] font-normal leading-tight tracking-[-1.2px] text-white sm:text-[56px]">
-          Jak ti můžeme pomoct?
+          {t("faq_page.title")}
         </h1>
         <p className="mb-10 text-base text-[#ffffffb8]">
-          Najdi odpověď mezi nejčastějšími dotazy nebo nám napiš přímo.
+          {t("faq_page.subtitle")}
         </p>
 
         {/* search bar */}
@@ -221,7 +232,7 @@ export const FaqPage = (): JSX.Element => {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Hledat v nápovědě…"
+            placeholder={t("faq_page.search_placeholder")}
             className="w-full rounded-2xl border-0 bg-white py-4 pl-12 pr-5 text-base text-gray-800 shadow-lg outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-[#c3e96b]"
           />
           {query && (
@@ -241,7 +252,7 @@ export const FaqPage = (): JSX.Element => {
       {/* category chips */}
       <div className="sticky top-14 z-10 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-[900px] gap-2 overflow-x-auto px-6 py-3 scrollbar-hide">
-          {categories.map((cat) => (
+          {CATEGORY_KEYS.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -251,7 +262,7 @@ export const FaqPage = (): JSX.Element => {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
             >
-              {cat}
+              {CATEGORY_LABELS[cat]}
             </button>
           ))}
         </div>
@@ -263,16 +274,16 @@ export const FaqPage = (): JSX.Element => {
           <div className="py-20 text-center">
             <p className="text-2xl">🔍</p>
             <p className="mt-3 text-lg font-medium text-gray-700">
-              Nic jsme nenašli
+              {t("faq_page.no_results")}
             </p>
             <p className="mt-1 text-gray-500">
-              Zkus jiné slovo nebo nám napiš přímo.
+              {t("faq_page.no_results_hint")}
             </p>
             <a
               href="mailto:barfingapp@gmail.com"
               className="mt-5 inline-block rounded-xl bg-textdark px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-80"
             >
-              Napsat podporu
+              {t("faq_page.write_support")}
             </a>
           </div>
         ) : (
@@ -287,7 +298,7 @@ export const FaqPage = (): JSX.Element => {
                       </span>
                       <div className="flex flex-col items-start gap-1.5">
                         <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-                          {item.category}
+                          {CATEGORY_LABELS[item.category] ?? item.category}
                         </span>
                         <span className="[font-family:'Inter',Helvetica] text-[17px] font-semibold leading-snug text-textprimary sm:text-[19px]">
                           {item.question}
@@ -308,12 +319,12 @@ export const FaqPage = (): JSX.Element => {
 
         {/* contact CTA */}
         <div className="mt-16 rounded-3xl bg-textdark p-10 text-center">
-          <p className="mb-1 text-sm font-semibold tracking-widest text-[#c3e96b]">STÁLE NENAŠEL?</p>
+          <p className="mb-1 text-sm font-semibold tracking-widest text-[#c3e96b]">{t("faq_page.cta_label")}</p>
           <h2 className="mt-2 [font-family:'Inter',Helvetica] text-[28px] font-normal leading-tight text-white sm:text-[36px]">
-            Napiš nám přímo
+            {t("faq_page.cta_title")}
           </h2>
           <p className="mt-3 text-[#ffffffb8]">
-            Odpovídáme do 48 hodin, obvykle rychleji.
+            {t("faq_page.cta_desc")}
           </p>
           <a
             href="mailto:barfingapp@gmail.com"

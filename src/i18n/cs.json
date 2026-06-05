@@ -189,7 +189,22 @@
     "cta_app_label": "APLIKACE",
     "cta_app_title": "Sledujte dávky přímo v aplikaci",
     "cta_app_desc": "BarfingApp hlídá zásoby, počítá makra a upozorní, co je potřeba spotřebovat.",
-    "cta_app_btn": "Stáhnout zdarma"
+    "cta_app_btn": "Stáhnout zdarma",
+    "age_months_abbr": "měs.",
+    "age_year": "rok",
+    "age_years_2_4": "roky",
+    "age_years_5_plus": "let",
+    "stage_label_puppy": "🐾 Štěně",
+    "stage_label_adult": "🐕 Dospělý",
+    "stage_label_senior": "🦮 Senior",
+    "percent_weight": "% hmotnosti",
+    "neutered_abbr": "Kastr.",
+    "intact_abbr": "Nekastr.",
+    "warning": "Upozornění",
+    "cat_kidneys": "Ledviny",
+    "cat_veggie": "Zelenina",
+    "cat_nuts": "Oříšky",
+    "cat_fruit": "Ovoce"
   },
   "news": {
     "label": "NOVINKY",
@@ -203,12 +218,36 @@
     "newsletter_label": "NEWSLETTER",
     "newsletter_title": "Novinky přímo do e-mailu",
     "newsletter_desc": "Jednou za dva týdny — žádný spam, jen to nejlepší ze světa BARF.",
-    "source": "Zdroj"
+    "source": "Zdroj",
+    "cat_research": "Výzkum",
+    "cat_tips": "Tipy",
+    "cat_season": "Sezóna",
+    "cat_beginner": "Začátky",
+    "cat_community": "Komunita",
+    "cat_science": "Věda"
   },
   "article": {
     "back": "Všechny novinky",
     "prev": "Předchozí článek",
     "next": "Další článek",
     "back_all": "Zpět na všechny novinky"
+  },
+  "faq_cta": {
+    "title": "Máte dotazy? Vše najdete v FAQ.",
+    "desc": "Pokud máte otázky k aplikaci nebo chcete rychle najít odpověď, klikněte na FAQ. Najdete tam všechny běžné dotazy přehledně seřazené.",
+    "btn": "Přejít na FAQ"
+  },
+  "zabava": {
+    "label": "MINI HRY",
+    "title": "Zábava se světem BARF",
+    "subtitle": "Dvě mini hry přímo v prohlížeči — žádná instalace, hraj hned.",
+    "tag_quiz": "Kvíz",
+    "tag_arcade": "Arkáda",
+    "game1_desc": "Otestuj znalosti o BARF dietě — poměry surovin, výživa, pravidla krmení.",
+    "game2_desc": "Chytej správné suroviny a vyhýbej se špatným. Prověří reflexy i znalost BARF složek.",
+    "cta_label": "APLIKACE",
+    "cta_title": "Chceš sledovat skutečné krmení?",
+    "cta_desc": "Stáhni BarfingApp a hlídej lednici, makra i zásoby.",
+    "cta_btn": "Stáhnout zdarma"
   }
 }

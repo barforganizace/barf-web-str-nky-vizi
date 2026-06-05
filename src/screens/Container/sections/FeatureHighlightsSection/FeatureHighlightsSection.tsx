@@ -1,78 +1,52 @@
+import { useTranslation } from "react-i18next";
 import { Badge } from "../../../../components/ui/badge";
 import { Card, CardContent } from "../../../../components/ui/card";
 
-const featureItems = [
-  {
-    number: "01",
-    title: "Moje Lednice",
-    subtitle: "Vaše digitální spíž BARF surovin.",
-    description: (
-      <>
-        Evidujte hovězí mix, vnitřnosti i kosti po balíčcích. Aplikace
-        <br />
-        hlídá čerstvost a včas upozorní, co je potřeba spotřebovat.
-      </>
-    ),
-    bullets: [
-      "Kategorie: Svalovina · Vnitřnosti · Kosti · Ostatní",
-      "Sledování čerstvosti ve dnech",
-      "Suma v kg a kusech",
-    ],
-    imageSrc: "/Mockup_3.svg",
-    imageAlt: "Moje Lednice aplikace",
-    imageOnLeft: true,
-    align: "left",
-  },
-  {
-    number: "02",
-    title: "Denní makra",
-    subtitle: "Svalovina, Kosti, Vnitřnonsti, Ledviny.",
-    description: (
-      <>
-        Pro každý den vidíte, kolik váš pes snědl vs. jeho denní limit.
-        <br />
-        Žádné Excel tabulky — barevné progress bary, sentence-
-        <br />
-        case popisky a čísla, která dávají smysl.
-      </>
-    ),
-    bullets: [
-      "Automatický výpočet z velikosti a aktivity",
-      "Týdenní strip s aktuálním dnem",
-      "Detaily mikro živin v sekci dál",
-    ],
-    imageSrc: "/Mockup_2 copy.svg",
-    imageAlt: "Denní makra aplikace",
-    imageOnLeft: false,
-    align: "right",
-  },
-  {
-    number: "03",
-    title: "Komunita",
-    subtitle: "Sdílejte jídla svých psů s ostatními.",
-    description:
-      "Inspirujte se od ostatních majitelů nebo podělte se o oblíbené BARF recepty a denní porce. Stačí pár klepnutí a váš mix je venku — ostatní ho mohou uložit rovnou do své lednice.",
-    bullets: [
-      "Zveřejněte recept a nechte ostatní hodnotit",
-      "Uložte cizí mix jedním klepnutím do svých zásob",
-      "Filtrujte podle velikosti nebo alergenů",
-    ],
-    imageSrc: "/Mockup_mixy.svg",
-    imageAlt: "Komunita — sdílení jídel",
-    imageOnLeft: true,
-    align: "left",
-  },
-] as const;
-
 export const FeatureHighlightsSection = (): JSX.Element => {
+  const { t } = useTranslation();
+
+  const featureItems = [
+    {
+      number: "01",
+      title: t("features.f1_title"),
+      subtitle: t("features.f1_sub"),
+      description: t("features.f1_desc"),
+      bullets: [t("features.f1_b1"), t("features.f1_b2"), t("features.f1_b3")],
+      imageSrc: "/Mockup_3.svg",
+      imageAlt: t("features.f1_title"),
+      imageOnLeft: true,
+      align: "left",
+    },
+    {
+      number: "02",
+      title: t("features.f2_title"),
+      subtitle: t("features.f2_sub"),
+      description: t("features.f2_desc"),
+      bullets: [t("features.f2_b1"), t("features.f2_b2"), t("features.f2_b3")],
+      imageSrc: "/Mockup_2 copy.svg",
+      imageAlt: t("features.f2_title"),
+      imageOnLeft: false,
+      align: "right",
+    },
+    {
+      number: "03",
+      title: t("features.f3_title"),
+      subtitle: t("features.f3_sub"),
+      description: t("features.f3_desc"),
+      bullets: [t("features.f3_b1"), t("features.f3_b2"), t("features.f3_b3")],
+      imageSrc: "/Mockup_mixy.svg",
+      imageAlt: t("features.f3_title"),
+      imageOnLeft: true,
+      align: "left",
+    },
+  ];
+
   return (
     <section className="relative w-full bg-[#f2f4f7] px-6 py-20 md:px-10 lg:px-[120px] lg:py-[120px]">
       <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center">
         <header className="flex w-full max-w-[980px] flex-col items-center px-4 pb-14 text-center lg:pb-20">
           <h2 className="[font-family:'Inter',Helvetica] text-[48px] font-normal leading-[1.08] tracking-[-0.96px] text-textprimary md:text-[72px] lg:text-[110px] lg:leading-[140px]">
-            Vše, co potřebujete pro
-            <br />
-            Barfování na jednom místě
+            {t("features.section_title")}
           </h2>
         </header>
         <div className="flex w-full flex-col gap-20 lg:gap-24">
@@ -137,7 +111,6 @@ export const FeatureHighlightsSection = (): JSX.Element => {
                             <path d="M11 18.5l5 5 9-10" stroke="#506600" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
                         )}
-
                         <span className="[font-family:'Inter',Helvetica] text-[18px] font-medium leading-normal text-gray-800 md:text-[20px] lg:text-[23.8px]">
                           {bullet}
                         </span>

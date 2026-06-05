@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SharedNav } from "../components/SharedNav";
-
 
 const LiverIcon = () => (
   <svg viewBox="0 0 32 32" fill="none" width="36" height="36">
@@ -9,8 +9,6 @@ const LiverIcon = () => (
     <ellipse cx="13" cy="13" rx="2" ry="1.2" fill="#C4B5FD" opacity="0.6" transform="rotate(-20 13 13)"/>
   </svg>
 );
-
-// ─── Výpočetní jádro (přesně podle barf-calc.js) ─────────────────────────────
 
 type BreedSize = "small" | "medium" | "large" | "giant";
 type Activity  = "gaucak" | "pohodar" | "sportovec";
@@ -32,10 +30,10 @@ const ADULT_RATES: Record<BreedSize, Record<Activity, { neutral: number; neutere
 };
 
 const PUPPY_RATES = [
-  { maxMonths: 4,  percent: 9.0, label: "do 4 měsíců" },
-  { maxMonths: 6,  percent: 7.0, label: "4–6 měsíců" },
-  { maxMonths: 9,  percent: 5.5, label: "6–9 měsíců" },
-  { maxMonths: 12, percent: 4.5, label: "9–12 měsíců" },
+  { maxMonths: 4,  percent: 9.0 },
+  { maxMonths: 6,  percent: 7.0 },
+  { maxMonths: 9,  percent: 5.5 },
+  { maxMonths: 12, percent: 4.5 },
 ];
 
 const CONDITION_ADJUST: Record<Condition, number> = { underweight: 0.5, ideal: 0.0, overweight: -0.5 };
@@ -91,46 +89,9 @@ function calcDaily(weightKg: number, ageMonths: number, breedSize: BreedSize, ac
   };
 }
 
-// ─── UI data ──────────────────────────────────────────────────────────────────
-
-const SIZES = [
-  { key: "small"  as BreedSize, label: "Malý pes",   sub: "do 10 kg",   example: "Čivava, Krysařík, Yorkie",       img: "/dog-small.svg",  color: "#FEF3C7", cardH: 72  },
-  { key: "medium" as BreedSize, label: "Střední pes", sub: "10–25 kg",   example: "Border Kolie, Kokršpaněl",       img: "/dog-medium.svg", color: "#EDE9FE", cardH: 88  },
-  { key: "large"  as BreedSize, label: "Velký pes",   sub: "25–45 kg",   example: "Labrador, Zlatý retrívr",        img: "/dog-big.svg",    color: "#FEF9C3", cardH: 104 },
-  { key: "giant"  as BreedSize, label: "Obří pes",    sub: "nad 45 kg",  example: "Doga, Bernardýn, Newfoundland",  img: "/dog-huge.svg",   color: "#FCE7F3", cardH: 120 },
-];
-
 const WEIGHT_RANGE: Record<BreedSize, [number, number]> = {
   small: [1, 10], medium: [10, 25], large: [25, 45], giant: [45, 80],
 };
-
-const ACTIVITIES: { key: Activity; label: string; sub: string; emoji: string }[] = [
-  { key: "gaucak",    label: "Gaučák",    sub: "Málo pohybu, převážně doma",       emoji: "🛋️" },
-  { key: "pohodar",   label: "Pohodář",   sub: "Běžné procházky 30–60 min denně",  emoji: "🚶" },
-  { key: "sportovec", label: "Sportovec", sub: "Sport, agility, pracovní pes",     emoji: "🏆" },
-];
-
-const CONDITIONS: { key: Condition; label: string; sub: string; adjust: string }[] = [
-  { key: "underweight", label: "Podváha",  sub: "Viditelné kosti, žebra hmatatelná", adjust: "+0,5 %" },
-  { key: "ideal",       label: "Ideální",  sub: "Žebra hmatatelná, pas viditelný",   adjust: "±0 %"   },
-  { key: "overweight",  label: "Nadváha",  sub: "Žebra hůře hmatatelná, kulatý tvar", adjust: "−0,5 %" },
-];
-
-const CATS = [
-  { key: "muscle",  label: "Svalovina",  pct: 70, icon: "🥩",          color: "#EF4444", light: "#FEF2F2", border: "#FECACA", detail: "Hovězí, kuřecí, krůtí, jehněčí. Střídejte alespoň 3 druhy masa týdně." },
-  { key: "rmb",     label: "Masité kosti", pct: 10, icon: "🦴",          color: "#D97706", light: "#FFFBEB", border: "#FDE68A", detail: "Kuřecí krky, křídla, hovězí žebra. Vždy syrové — vařené kosti jsou nebezpečné." },
-  { key: "organs",  label: "Vnitřnosti",   pct: 10, icon: <LiverIcon />, color: "#7C3AED", light: "#F5F3FF", border: "#DDD6FE", detail: "Vnitřnosti 10 % denní dávky, včetně 5 % ledvin." },
-  { key: "other",   label: "Ostatní",      pct: 10, icon: "🌿",          color: "#16A34A", light: "#F0FDF4", border: "#BBF7D0", detail: "Zelenina 7 %, oříšky 2 %, ovoce 1 % z denní dávky." },
-];
-
-const STAGE_LABEL: Record<Stage, string> = { puppy: "🐾 Štěně", adult: "🐕 Dospělý", senior: "🦮 Senior" };
-const STAGE_NOTE: Record<Stage, string> = {
-  puppy: "Procento se počítá z aktuální hmotnosti a klesá s věkem. Vážte štěně každý týden.",
-  adult: "Procento vychází z matice velikost × aktivita × kastrace.",
-  senior: "Senior dostává sazbu 'Gaučák' bez ohledu na aktivitu.",
-};
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const Steps = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-8 flex items-center gap-2">
@@ -155,17 +116,9 @@ const Radio = ({ active }: { active: boolean }) => (
   </div>
 );
 
-function fmtAge(months: number) {
-  const y = Math.floor(months / 12);
-  const m = months % 12;
-  if (y === 0) return `${m} měs.`;
-  if (m === 0) return `${y} ${y === 1 ? "rok" : y < 5 ? "roky" : "let"}`;
-  return `${y} ${y === 1 ? "rok" : y < 5 ? "roky" : "let"} ${m} měs.`;
-}
-
-// ─── Main ─────────────────────────────────────────────────────────────────────
-
 export const KalkulackaPage = () => {
+  const { t } = useTranslation();
+
   const [step, setStep] = useState(0);
   const [breedSize, setBreedSize] = useState<BreedSize | null>(null);
   const [weight, setWeight]       = useState(15);
@@ -173,6 +126,53 @@ export const KalkulackaPage = () => {
   const [activity, setActivity]   = useState<Activity | null>(null);
   const [neutered, setNeutered]   = useState<boolean | null>(null);
   const [condition, setCondition] = useState<Condition>("ideal");
+
+  const SIZES = [
+    { key: "small"  as BreedSize, label: t("calc.size_small_label"),  sub: t("calc.size_small_sub"),  example: t("calc.size_small_ex"),  img: "/dog-small.svg",  color: "#FEF3C7", cardH: 72  },
+    { key: "medium" as BreedSize, label: t("calc.size_medium_label"), sub: t("calc.size_medium_sub"), example: t("calc.size_medium_ex"), img: "/dog-medium.svg", color: "#EDE9FE", cardH: 88  },
+    { key: "large"  as BreedSize, label: t("calc.size_large_label"),  sub: t("calc.size_large_sub"),  example: t("calc.size_large_ex"),  img: "/dog-big.svg",    color: "#FEF9C3", cardH: 104 },
+    { key: "giant"  as BreedSize, label: t("calc.size_giant_label"),  sub: t("calc.size_giant_sub"),  example: t("calc.size_giant_ex"),  img: "/dog-huge.svg",   color: "#FCE7F3", cardH: 120 },
+  ];
+
+  const ACTIVITIES = [
+    { key: "gaucak"    as Activity, label: t("calc.act_gaucak"),    sub: t("calc.act_gaucak_sub"),    emoji: "🛋️" },
+    { key: "pohodar"   as Activity, label: t("calc.act_pohodar"),   sub: t("calc.act_pohodar_sub"),   emoji: "🚶" },
+    { key: "sportovec" as Activity, label: t("calc.act_sportovec"), sub: t("calc.act_sportovec_sub"), emoji: "🏆" },
+  ];
+
+  const CONDITIONS: { key: Condition; label: string; sub: string; adjust: string }[] = [
+    { key: "underweight", label: t("calc.cond_under"),  sub: t("calc.cond_under_sub"),  adjust: "+0,5 %" },
+    { key: "ideal",       label: t("calc.cond_ideal"),  sub: t("calc.cond_ideal_sub"),  adjust: "±0 %"   },
+    { key: "overweight",  label: t("calc.cond_over"),   sub: t("calc.cond_over_sub"),   adjust: "−0,5 %" },
+  ];
+
+  const CATS = [
+    { key: "muscle",  label: t("calc.cat_muscle"),  pct: 70, icon: "🥩",          color: "#EF4444", light: "#FEF2F2", border: "#FECACA" },
+    { key: "rmb",     label: t("calc.cat_rmb"),     pct: 10, icon: "🦴",          color: "#D97706", light: "#FFFBEB", border: "#FDE68A" },
+    { key: "organs",  label: t("calc.cat_organs"),  pct: 10, icon: <LiverIcon />, color: "#7C3AED", light: "#F5F3FF", border: "#DDD6FE" },
+    { key: "other",   label: t("calc.cat_other"),   pct: 10, icon: "🌿",          color: "#16A34A", light: "#F0FDF4", border: "#BBF7D0" },
+  ];
+
+  const STAGE_LABEL: Record<Stage, string> = {
+    puppy:  t("calc.stage_label_puppy"),
+    adult:  t("calc.stage_label_adult"),
+    senior: t("calc.stage_label_senior"),
+  };
+
+  const STAGE_NOTE: Record<Stage, string> = {
+    puppy:  t("calc.stage_note_puppy"),
+    adult:  t("calc.stage_note_adult"),
+    senior: t("calc.stage_note_senior"),
+  };
+
+  const fmtAge = (months: number) => {
+    const y = Math.floor(months / 12);
+    const m = months % 12;
+    const yearWord = y === 1 ? t("calc.age_year") : y < 5 ? t("calc.age_years_2_4") : t("calc.age_years_5_plus");
+    if (y === 0) return `${m} ${t("calc.age_months_abbr")}`;
+    if (m === 0) return `${y} ${yearWord}`;
+    return `${y} ${yearWord} ${m} ${t("calc.age_months_abbr")}`;
+  };
 
   const sizeData = SIZES.find((s) => s.key === breedSize);
 
@@ -196,19 +196,19 @@ export const KalkulackaPage = () => {
     <div className="min-h-screen bg-[#f2f4f7]">
       <SharedNav />
       <div className="bg-textdark px-6 py-10 text-center">
-        <p className="mb-2 text-sm font-bold tracking-[2.5px] text-[#c3e96b] [font-family:'Manrope',Helvetica]">BARF KALKULAČKA</p>
-        <h1 className="[font-family:'Inter',Helvetica] text-[34px] font-normal leading-tight tracking-[-1px] text-white sm:text-[46px]">Kolik sežere váš pes?</h1>
-        <p className="mt-2 text-sm text-white/50">Výpočet podle FEDIAF · korekce kondice · mikroživiny</p>
+        <p className="mb-2 text-sm font-bold tracking-[2.5px] text-[#c3e96b] [font-family:'Manrope',Helvetica]">{t("calc.label")}</p>
+        <h1 className="[font-family:'Inter',Helvetica] text-[34px] font-normal leading-tight tracking-[-1px] text-white sm:text-[46px]">{t("calc.title")}</h1>
+        <p className="mt-2 text-sm text-white/50">{t("calc.subtitle")}</p>
       </div>
 
       <main className="mx-auto max-w-[720px] px-4 py-10 sm:px-6">
 
-        {/* ── KROK 0: velikost ─────────────────────────────────────────────── */}
+        {/* Step 0: size */}
         {step === 0 && (
           <div>
             <Steps current={0} total={3} />
-            <h2 className="mb-1 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">Velikost psa</h2>
-            <p className="mb-6 text-sm text-gray-500">Životní fáze (štěně/dospělý/senior) se určí automaticky z věku.</p>
+            <h2 className="mb-1 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">{t("calc.step_size_title")}</h2>
+            <p className="mb-6 text-sm text-gray-500">{t("calc.step_size_sub")}</p>
             <div className="flex flex-col gap-3">
               {SIZES.map((s) => {
                 const active = breedSize === s.key;
@@ -231,19 +231,18 @@ export const KalkulackaPage = () => {
           </div>
         )}
 
-        {/* ── KROK 1: váha + věk ────────────────────────────────────────────── */}
+        {/* Step 1: weight + age */}
         {step === 1 && sizeData && (
           <div>
             <Steps current={1} total={3} />
-            <h2 className="mb-6 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">Váha a věk</h2>
+            <h2 className="mb-6 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">{t("calc.step_weight_title")}</h2>
             <div className="flex flex-col gap-5">
 
-              {/* váha */}
               <div className="rounded-3xl bg-white p-7 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-[#191c1d]">Váha psa</p>
-                    <p className="text-xs text-gray-400">Zadejte cílovou váhu (ne aktuální, pokud má pes nad/podváhu)</p>
+                    <p className="font-semibold text-[#191c1d]">{t("calc.weight_label")}</p>
+                    <p className="text-xs text-gray-400">{t("calc.weight_note")}</p>
                   </div>
                   <div className="text-right">
                     <span className="text-[44px] font-bold leading-none text-[#191c1d]">{weight}</span>
@@ -256,12 +255,11 @@ export const KalkulackaPage = () => {
                 <div className="mt-1.5 flex justify-between text-xs text-gray-400"><span>{wr0} kg</span><span>{wr1} kg</span></div>
               </div>
 
-              {/* věk */}
               <div className="rounded-3xl bg-white p-7 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-[#191c1d]">Věk psa</p>
-                    <p className="text-xs text-gray-400">Věk určuje životní fázi a procento dávky</p>
+                    <p className="font-semibold text-[#191c1d]">{t("calc.age_label")}</p>
+                    <p className="text-xs text-gray-400">{t("calc.age_note")}</p>
                   </div>
                   <div className="text-right">
                     <span className="text-[28px] font-bold leading-none text-[#191c1d]">{fmtAge(ageMonths)}</span>
@@ -270,7 +268,10 @@ export const KalkulackaPage = () => {
                 <input type="range" min={1} max={180} value={ageMonths} onChange={(e) => setAgeMonths(Number(e.target.value))}
                   className="w-full cursor-pointer appearance-none rounded-full"
                   style={{ height: 8, background: `linear-gradient(to right,#191c1d ${agePct}%,#e5e7eb ${agePct}%)` }} />
-                <div className="mt-1.5 flex justify-between text-xs text-gray-400"><span>1 měs.</span><span>15 let</span></div>
+                <div className="mt-1.5 flex justify-between text-xs text-gray-400">
+                  <span>1 {t("calc.age_months_abbr")}</span>
+                  <span>15 {t("calc.age_years_5_plus")}</span>
+                </div>
 
                 {detectedStage && (
                   <div className="mt-4 flex items-center gap-3 rounded-2xl bg-[#f7fde8] px-4 py-3">
@@ -286,16 +287,15 @@ export const KalkulackaPage = () => {
           </div>
         )}
 
-        {/* ── KROK 2: aktivita + kastrace + kondice ────────────────────────── */}
+        {/* Step 2: activity + neuter + condition */}
         {step === 2 && (
           <div>
             <Steps current={2} total={3} />
-            <h2 className="mb-6 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">Životní styl</h2>
+            <h2 className="mb-6 text-[22px] font-semibold text-[#191c1d] [font-family:'Inter',Helvetica]">{t("calc.step_lifestyle_title")}</h2>
 
-            {/* aktivita — skryta pro seniory */}
             {detectedStage !== "senior" && detectedStage !== "puppy" && (
               <div className="mb-5">
-                <p className="mb-3 text-sm font-semibold text-gray-700">Úroveň aktivity</p>
+                <p className="mb-3 text-sm font-semibold text-gray-700">{t("calc.activity_label")}</p>
                 <div className="flex flex-col gap-2">
                   {ACTIVITIES.map((a) => (
                     <button key={a.key} onClick={() => setActivity(a.key)}
@@ -309,14 +309,12 @@ export const KalkulackaPage = () => {
               </div>
             )}
 
-            {/* auto-set activity for puppy/senior */}
             {(detectedStage === "puppy" || detectedStage === "senior") && activity === null && (() => { setActivity("pohodar"); return null; })()}
 
-            {/* kastrace */}
             <div className="mb-5">
-              <p className="mb-3 text-sm font-semibold text-gray-700">Kastrace / sterilizace</p>
+              <p className="mb-3 text-sm font-semibold text-gray-700">{t("calc.neuter_label")}</p>
               <div className="grid grid-cols-2 gap-3">
-                {[{ val: false, label: "Nekastrovaný/á", emoji: "🐕" }, { val: true, label: "Kastrovaný/á", emoji: "✂️" }].map((opt) => (
+                {[{ val: false, label: t("calc.neutered_no"), emoji: "🐕" }, { val: true, label: t("calc.neutered_yes"), emoji: "✂️" }].map((opt) => (
                   <button key={String(opt.val)} onClick={() => setNeutered(opt.val)}
                     className={`flex items-center gap-3 rounded-2xl border-2 bg-white p-4 text-left transition-all hover:shadow-sm ${neutered === opt.val ? "border-[#c3e96b] bg-[#f7fde8]" : "border-gray-200"}`}>
                     <span className="text-2xl">{opt.emoji}</span>
@@ -325,12 +323,11 @@ export const KalkulackaPage = () => {
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-xs text-gray-400">Kastrace snižuje energetické nároky o ~10 %.</p>
+              <p className="mt-2 text-xs text-gray-400">{t("calc.neuter_note")}</p>
             </div>
 
-            {/* kondice */}
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">Tělesná kondice <span className="font-normal text-gray-400">(korekce dávky)</span></p>
+              <p className="mb-3 text-sm font-semibold text-gray-700">{t("calc.condition_label")} <span className="font-normal text-gray-400">({t("calc.condition_note")})</span></p>
               <div className="flex flex-col gap-2">
                 {CONDITIONS.map((c) => (
                   <button key={c.key} onClick={() => setCondition(c.key)}
@@ -350,23 +347,22 @@ export const KalkulackaPage = () => {
           </div>
         )}
 
-        {/* ── VÝSLEDKY ─────────────────────────────────────────────────────── */}
+        {/* Results */}
         {step === 3 && result && sizeData && (
           <div>
-            {/* banner */}
             <div className="mb-6 overflow-hidden rounded-3xl bg-[#191c1d] px-7 py-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#c3e96b]">Celková denní dávka</p>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[#c3e96b]">{t("calc.result_label")}</p>
                   <div className="mt-1 flex items-baseline gap-2">
                     <span className="text-[56px] font-bold leading-none text-white">{result.ration_g}</span>
-                    <span className="text-xl text-white/40">g / den</span>
+                    <span className="text-xl text-white/40">{t("calc.per_day")}</span>
                   </div>
                   <div className="mt-2 flex flex-wrap gap-2 text-xs">
                     <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{STAGE_LABEL[result.stage]}</span>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{result.percent} % hmotnosti</span>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{result.percent} {t("calc.percent_weight")}</span>
                     <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">≈ {result.kcal} kcal</span>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{Math.round(result.ration_g / 2)} g na porci (2×)</span>
+                    <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{Math.round(result.ration_g / 2)} g {t("calc.result_per_serving")} (2×)</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
@@ -376,18 +372,16 @@ export const KalkulackaPage = () => {
                   <div className="text-xs text-white/50">
                     <p className="font-semibold text-white">{weight} kg · {fmtAge(ageMonths)}</p>
                     <p>{sizeData.label}</p>
-                    <p>{neutered ? "Kastr." : "Nekastr."} · {CONDITIONS.find(c => c.key === condition)?.label}</p>
+                    <p>{neutered ? t("calc.neutered_abbr") : t("calc.intact_abbr")} · {CONDITIONS.find(c => c.key === condition)?.label}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* složky */}
             <div className="mb-5 grid gap-4 sm:grid-cols-2">
               {CATS.map((cat) => {
                 const keyMap: Record<string, keyof typeof result> = { muscle: "muscle_g", rmb: "rmb_g", organs: "organs_g", kidneys: "kidneys_g", other: "other_g" };
                 const g = result[keyMap[cat.key]] as number;
-                const pct = cat.pct;
                 return (
                   <div key={cat.key} className="overflow-hidden rounded-2xl border-2 bg-white shadow-sm" style={{ borderColor: cat.border }}>
                     <div className="flex items-start gap-4 p-5 pb-3">
@@ -397,17 +391,17 @@ export const KalkulackaPage = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <h3 className="font-semibold text-[#191c1d]">{cat.label}</h3>
-                          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: cat.color }}>{pct} %</span>
+                          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: cat.color }}>{cat.pct} %</span>
                         </div>
                         <div className="mt-1 flex items-baseline gap-1">
                           <span className="text-[26px] font-bold leading-none" style={{ color: cat.color }}>{g}</span>
-                          <span className="text-sm text-gray-400">g / den</span>
+                          <span className="text-sm text-gray-400">{t("calc.per_day")}</span>
                         </div>
                       </div>
                     </div>
                     <div className="px-5 pb-5">
                       <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
-                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: cat.color }} />
+                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${cat.pct}%`, backgroundColor: cat.color }} />
                       </div>
                     </div>
                   </div>
@@ -415,18 +409,17 @@ export const KalkulackaPage = () => {
               })}
             </div>
 
-            {/* týdenní přehled */}
             <div className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm">
               <div className="border-b border-gray-100 px-7 py-4">
-                <h3 className="font-semibold text-[#191c1d]">Týdenní nákupní přehled</h3>
+                <h3 className="font-semibold text-[#191c1d]">{t("calc.weekly_title")}</h3>
               </div>
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-left">
                   <tr>
-                    <th className="px-7 py-3 font-semibold text-gray-500">Složka</th>
-                    <th className="px-4 py-3 font-semibold text-gray-500">Den</th>
-                    <th className="px-4 py-3 font-semibold text-gray-500">Týden</th>
-                    <th className="px-4 py-3 font-semibold text-gray-500">Měsíc</th>
+                    <th className="px-7 py-3 font-semibold text-gray-500">{t("calc.col_part")}</th>
+                    <th className="px-4 py-3 font-semibold text-gray-500">{t("calc.col_day")}</th>
+                    <th className="px-4 py-3 font-semibold text-gray-500">{t("calc.col_week")}</th>
+                    <th className="px-4 py-3 font-semibold text-gray-500">{t("calc.col_month")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -441,7 +434,7 @@ export const KalkulackaPage = () => {
                     const fruit_g = Math.round(result.ration_g * 0.01);
 
                     const renderRow = (label: string, grams: number, color?: string, indent = false) => (
-                      <tr key={label} className={indent ? "hover:bg-gray-50/50" : "hover:bg-gray-50/50"}>
+                      <tr key={label} className="hover:bg-gray-50/50">
                         <td className={`px-7 py-3 font-medium text-gray-700 ${indent ? "pl-12" : ""}`}>
                           <div className="flex items-center gap-2">
                             {color && <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />}
@@ -455,18 +448,18 @@ export const KalkulackaPage = () => {
                     );
 
                     return [
-                      renderRow("Svalovina", muscle_g, "#EF4444"),
-                      renderRow("Masité kosti", rmb_g, "#D97706"),
-                      renderRow("Vnitřnosti", organs_g, "#7C3AED"),
-                      renderRow("  – Ledviny", kidneys_g, "#A855F7", true),
-                      renderRow("Ostatní", other_g, "#16A34A"),
-                      renderRow("  – Zelenina", veg_g, undefined, true),
-                      renderRow("  – Oříšky", nuts_g, undefined, true),
-                      renderRow("  – Ovoce", fruit_g, undefined, true),
+                      renderRow(t("calc.cat_muscle"),                    muscle_g,  "#EF4444"),
+                      renderRow(t("calc.cat_rmb"),                       rmb_g,     "#D97706"),
+                      renderRow(t("calc.cat_organs"),                    organs_g,  "#7C3AED"),
+                      renderRow(`  – ${t("calc.cat_kidneys")}`,          kidneys_g, "#A855F7", true),
+                      renderRow(t("calc.cat_other"),                     other_g,   "#16A34A"),
+                      renderRow(`  – ${t("calc.cat_veggie")}`,           veg_g,     undefined, true),
+                      renderRow(`  – ${t("calc.cat_nuts")}`,             nuts_g,    undefined, true),
+                      renderRow(`  – ${t("calc.cat_fruit")}`,            fruit_g,   undefined, true),
                     ];
                   })()}
                   <tr className="bg-gray-50 font-semibold">
-                    <td className="px-7 py-3 text-gray-700">Celkem</td>
+                    <td className="px-7 py-3 text-gray-700">{t("calc.total")}</td>
                     <td className="px-4 py-3 text-gray-700">{result.ration_g} g</td>
                     <td className="px-4 py-3 text-gray-700">{(result.ration_g * 7 / 1000).toFixed(2)} kg</td>
                     <td className="px-4 py-3 text-gray-700">{(result.ration_g * 30 / 1000).toFixed(1)} kg</td>
@@ -475,21 +468,20 @@ export const KalkulackaPage = () => {
               </table>
             </div>
 
-            {/* mikroživiny */}
             <div className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm">
               <div className="border-b border-gray-100 px-7 py-4">
-                <h3 className="font-semibold text-[#191c1d]">Doporučená minima mikroživin <span className="text-xs font-normal text-gray-400">(FEDIAF / den)</span></h3>
+                <h3 className="font-semibold text-[#191c1d]">{t("calc.micro_title")} <span className="text-xs font-normal text-gray-400">({t("calc.micro_note")})</span></h3>
               </div>
               <div className="grid grid-cols-2 gap-px bg-gray-100 sm:grid-cols-4">
                 {[
-                  { label: "Vápník", value: `${result.calcium_mg} mg`, note: "Ca" },
-                  { label: "Fosfor", value: `${result.phosphorus_mg} mg`, note: "P" },
-                  { label: "Hořčík", value: `${result.magnesium_mg} mg`, note: "Mg" },
-                  { label: "Železo", value: `${result.iron_mg} mg`, note: "Fe" },
-                  { label: "Zinek", value: `${result.zinc_mg} mg`, note: "Zn" },
-                  { label: "Vit. A", value: `${result.vitamin_a_ug} μg`, note: "A" },
-                  { label: "Vit. D", value: `${result.vitamin_d_ug} μg`, note: "D" },
-                  { label: "Kalorie", value: `${result.kcal} kcal`, note: "≈" },
+                  { label: t("calc.micro_calcium"),    value: `${result.calcium_mg} mg` },
+                  { label: t("calc.micro_phosphorus"), value: `${result.phosphorus_mg} mg` },
+                  { label: t("calc.micro_magnesium"),  value: `${result.magnesium_mg} mg` },
+                  { label: t("calc.micro_iron"),       value: `${result.iron_mg} mg` },
+                  { label: t("calc.micro_zinc"),       value: `${result.zinc_mg} mg` },
+                  { label: t("calc.micro_vita"),       value: `${result.vitamin_a_ug} μg` },
+                  { label: t("calc.micro_vitd"),       value: `${result.vitamin_d_ug} μg` },
+                  { label: t("calc.micro_kcal"),       value: `${result.kcal} kcal` },
                 ].map((m) => (
                   <div key={m.label} className="flex flex-col items-start bg-white px-5 py-4">
                     <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{m.label}</span>
@@ -500,27 +492,27 @@ export const KalkulackaPage = () => {
             </div>
 
             <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-800">
-              <strong>Upozornění:</strong> Výsledky jsou orientační dle FEDIAF metodik. Skutečné potřeby závisí na zdravotním stavu a rase. U štěňat vážte každý týden a přepočítávejte. Poraďte se s veterinárním nutričním specialistou.
+              <strong>{t("calc.warning")}:</strong> {t("calc.disclaimer")}
             </div>
 
             <button onClick={reset} className="w-full rounded-2xl border-2 border-gray-200 bg-white py-4 font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900">
-              ↺ Spočítat znovu
+              {t("calc.recalculate")}
             </button>
           </div>
         )}
 
-        {/* navigační tlačítka */}
         {step < 3 && (
           <div className="mt-8 flex items-center justify-between">
             {step > 0
               ? <button onClick={back} className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:border-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>Zpět
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                  {t("calc.back")}
                 </button>
               : <div />
             }
             <button onClick={next} disabled={!canNext}
               className="flex items-center gap-2 rounded-full bg-[#191c1d] px-7 py-3 text-sm font-bold text-white transition disabled:opacity-30 hover:enabled:opacity-80">
-              {step === 2 ? "Zobrazit výsledek" : "Pokračovat"}
+              {step === 2 ? t("calc.show_result") : t("calc.next")}
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
           </div>

@@ -189,7 +189,22 @@
     "cta_app_label": "THE APP",
     "cta_app_title": "Track portions directly in the app",
     "cta_app_desc": "BarfingApp monitors your stock, calculates macros and alerts you what needs to be used.",
-    "cta_app_btn": "Download for free"
+    "cta_app_btn": "Download for free",
+    "age_months_abbr": "mo.",
+    "age_year": "year",
+    "age_years_2_4": "years",
+    "age_years_5_plus": "years",
+    "stage_label_puppy": "🐾 Puppy",
+    "stage_label_adult": "🐕 Adult",
+    "stage_label_senior": "🦮 Senior",
+    "percent_weight": "% of body weight",
+    "neutered_abbr": "Neut.",
+    "intact_abbr": "Intact",
+    "warning": "Warning",
+    "cat_kidneys": "Kidneys",
+    "cat_veggie": "Vegetables",
+    "cat_nuts": "Nuts",
+    "cat_fruit": "Fruit"
   },
   "news": {
     "label": "NEWS",
@@ -203,12 +218,36 @@
     "newsletter_label": "NEWSLETTER",
     "newsletter_title": "News straight to your inbox",
     "newsletter_desc": "Every two weeks — no spam, just the best from the BARF world.",
-    "source": "Source"
+    "source": "Source",
+    "cat_research": "Research",
+    "cat_tips": "Tips",
+    "cat_season": "Season",
+    "cat_beginner": "Beginner",
+    "cat_community": "Community",
+    "cat_science": "Science"
   },
   "article": {
     "back": "All news",
     "prev": "Previous article",
     "next": "Next article",
     "back_all": "Back to all news"
+  },
+  "faq_cta": {
+    "title": "Have questions? It's all in our FAQ.",
+    "desc": "If you have questions about the app or want to find an answer quickly, head to our FAQ. All common questions are neatly organized there.",
+    "btn": "Go to FAQ"
+  },
+  "zabava": {
+    "label": "MINI GAMES",
+    "title": "Fun with the BARF world",
+    "subtitle": "Two mini games right in your browser — no install, play now.",
+    "tag_quiz": "Quiz",
+    "tag_arcade": "Arcade",
+    "game1_desc": "Test your BARF diet knowledge — ingredient ratios, nutrition, feeding rules.",
+    "game2_desc": "Catch the right ingredients and dodge the wrong ones. Tests your reflexes and BARF knowledge.",
+    "cta_label": "THE APP",
+    "cta_title": "Want to track real feeding?",
+    "cta_desc": "Download BarfingApp and monitor your fridge, macros and stock.",
+    "cta_btn": "Download for free"
   }
 }
