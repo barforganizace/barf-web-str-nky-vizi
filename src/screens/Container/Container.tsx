@@ -7,12 +7,12 @@ import { SharedNav } from "../../components/SharedNav";
 
 export const Container = (): JSX.Element => {
   return (
-    <main className="relative flex w-full flex-col items-stretch bg-background">
+    <main className="relative flex w-full flex-col items-stretch bg-app-2">
       <SharedNav />
       <HeroIntroductionSection />
       <FeatureHighlightsSection />
-      <DownloadSection />
       <FaqAccordionSection />
+      <DownloadSection />
       <FooterPromoSection />
     </main>
   );

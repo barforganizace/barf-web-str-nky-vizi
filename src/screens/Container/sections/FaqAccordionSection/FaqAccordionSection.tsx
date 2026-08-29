@@ -1,41 +1,46 @@
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { Card, CardContent } from "../../../../components/ui/card";
+import { faqItemsCs, faqItemsEn } from "../../../../data/faq";
 
 export const FaqAccordionSection = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const items = i18n.language.startsWith("en") ? faqItemsEn : faqItemsCs;
 
   return (
-    <section className="relative w-full self-stretch bg-[#f2f4f7] px-8 pt-20 pb-[120px]">
-      <div className="mx-auto flex w-full max-w-[1800px] flex-col items-center px-4 sm:px-6 md:px-10 lg:px-12">
-        <header className="flex w-full flex-col items-center gap-[22.5px] pb-[84px]">
-          <div className="inline-flex items-start justify-center">
-            <p className="flex w-fit items-center justify-center [font-family:'Manrope',Helvetica] text-center text-lg font-bold leading-[30px] tracking-[2.52px] text-[#1f29378c]">
-              FAQ
-            </p>
-          </div>
-          <div className="flex w-full flex-col items-center pb-[1.2px]">
-            <h2 className="[font-family:'Inter',Helvetica] text-center text-[42px] font-bold leading-tight tracking-[-1.44px] text-textprimary sm:text-6xl lg:text-7xl lg:leading-[79.2px]">
-              {t("faq_cta.title")}
-            </h2>
-          </div>
+    <section id="faq" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-24">
+      <div className="mx-auto w-full max-w-[1180px]">
+        <header className="mb-14 max-w-[640px]">
+          <span className="inline-block rounded-full bg-lime-soft px-3.5 py-1.5 [font-family:'Manrope',Helvetica] text-[13px] font-bold uppercase tracking-[0.12em] text-lime-ink">
+            {t("faq_section.label")}
+          </span>
+          <h2 className="mt-4 text-[30px] font-extrabold tracking-[-0.01em] text-fg-1 lg:text-[36px]">
+            {t("faq_section.title")}
+          </h2>
         </header>
-        <div className="w-full max-w-[1140px]">
-          <Card className="overflow-hidden rounded-[30px] border-0 bg-textwhite shadow-[0px_18px_48px_-18px_#1f29372e]">
-            <CardContent className="p-10 sm:p-14">
-              <div className="flex flex-col items-center gap-8 text-center">
-                <p className="max-w-[820px] text-base font-semibold leading-[28px] tracking-[0] text-textprimary sm:text-xl sm:leading-[32px]">
-                  {t("faq_cta.desc")}
-                </p>
-                <Link
-                  to="/faq"
-                  className="inline-flex h-14 items-center justify-center rounded-full bg-textdark px-8 text-base font-bold text-white transition hover:bg-textdark/90"
+
+        <div className="rounded-feature bg-surface p-6 shadow-soft sm:p-14">
+          {items.map((item, index) => (
+            <details
+              key={item.id}
+              open={index === 0}
+              className="group border-b border-hairline py-6 last:border-b-0 last:pb-0"
+            >
+              <summary
+                data-umami-event={`faq-otevreno-${item.id}`}
+                className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-bold text-fg-1 [&::-webkit-details-marker]:hidden"
+              >
+                {item.question}
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 text-fg-6 transition-transform duration-200 ease-out group-open:rotate-45"
                 >
-                  {t("faq_cta.btn")}
-                </Link>
+                  +
+                </span>
+              </summary>
+              <div className="mt-3.5 max-w-[640px] text-[15px] leading-[1.6] text-fg-5">
+                {item.answer}
               </div>
-            </CardContent>
-          </Card>
+            </details>
+          ))}
         </div>
       </div>
     </section>

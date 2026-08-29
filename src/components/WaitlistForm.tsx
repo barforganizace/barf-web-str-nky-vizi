@@ -1,8 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { track } from "../lib/analytics";
 
 type State = "idle" | "loading" | "success" | "error";
 
 export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<State>("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -10,7 +13,7 @@ export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes("@")) {
-      setErrorMsg("Zadej platný e-mail.");
+      setErrorMsg(t("download.waitlist_error"));
       setState("error");
       return;
     }
@@ -31,20 +34,21 @@ export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            from: "BarfingApp Waitlist <onboarding@resend.dev>",
+            from: "BarfApp Waitlist <onboarding@resend.dev>",
             to: ["barfingapp@gmail.com"],
-            subject: "Nový zájemce o BarfingApp",
+            subject: "Nový zájemce o BarfApp",
             html: `<p>Nový zájemce: <strong>${email}</strong></p>`,
           }),
         });
       }
 
       // Vždy zobrazíme úspěch (i bez API klíče pro demo)
+      track("waitlist-prihlaseni", { umisteni: dark ? "cta-band" : "stranka" });
       setState("success");
       setEmail("");
     } catch {
       setState("error");
-      setErrorMsg("Něco se pokazilo. Zkus to znovu.");
+      setErrorMsg(t("download.waitlist_error_generic"));
     }
   };
 
@@ -54,10 +58,10 @@ export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
         <span className="text-2xl">✅</span>
         <div>
           <p className={`text-sm font-semibold ${dark ? "text-white" : "text-[#166534]"}`}>
-            Jsi na listině!
+            {t("download.waitlist_success_title")}
           </p>
           <p className={`text-xs ${dark ? "text-white/60" : "text-[#166534]/70"}`}>
-            Dáme ti vědět, až bude BarfingApp ke stažení.
+            {t("download.waitlist_success_desc")}
           </p>
         </div>
       </div>
@@ -71,7 +75,7 @@ export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
           type="email"
           value={email}
           onChange={(e) => { setEmail(e.target.value); setState("idle"); }}
-          placeholder="tvuj@email.cz"
+          placeholder={t("download.waitlist_placeholder")}
           className={`w-full rounded-xl px-4 py-3 text-sm outline-none transition focus:ring-2 focus:ring-[#c3e96b] ${
             dark
               ? "border-0 bg-white/10 text-white placeholder:text-white/40"
@@ -88,7 +92,7 @@ export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
         disabled={state === "loading"}
         className="shrink-0 rounded-xl bg-[#c3e96b] px-6 py-3 text-sm font-bold text-[#191c1d] transition-opacity hover:opacity-90 disabled:opacity-60"
       >
-        {state === "loading" ? "Odesílám…" : "Notifikovat mě"}
+        {state === "loading" ? t("download.waitlist_sending") : t("download.waitlist_btn")}
       </button>
     </form>
   );

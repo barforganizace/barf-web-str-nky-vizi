@@ -1,145 +1,78 @@
 import { useTranslation } from "react-i18next";
-import { Badge } from "../../../../components/ui/badge";
-import { Card, CardContent } from "../../../../components/ui/card";
+import {
+  CoachScreen,
+  FeedingScreen,
+  FoodDetailScreen,
+  PhoneFrame,
+} from "../../../../components/AppScreens";
 
 export const FeatureHighlightsSection = (): JSX.Element => {
   const { t } = useTranslation();
 
-  const featureItems = [
+  const features = [
     {
-      number: "01",
+      id: "coach",
+      eyebrow: t("features.f1_eyebrow"),
       title: t("features.f1_title"),
-      subtitle: t("features.f1_sub"),
       description: t("features.f1_desc"),
-      bullets: [t("features.f1_b1"), t("features.f1_b2"), t("features.f1_b3")],
-      imageSrc: "/Mockup_3.svg",
-      imageAlt: t("features.f1_title"),
-      imageOnLeft: true,
-      align: "left",
+      Screen: CoachScreen,
     },
     {
-      number: "02",
+      id: "nutrition",
+      eyebrow: t("features.f2_eyebrow"),
       title: t("features.f2_title"),
-      subtitle: t("features.f2_sub"),
       description: t("features.f2_desc"),
-      bullets: [t("features.f2_b1"), t("features.f2_b2"), t("features.f2_b3")],
-      imageSrc: "/Mockup_2 copy.svg",
-      imageAlt: t("features.f2_title"),
-      imageOnLeft: false,
-      align: "right",
+      Screen: FoodDetailScreen,
     },
     {
-      number: "03",
+      id: "fridge",
+      eyebrow: t("features.f3_eyebrow"),
       title: t("features.f3_title"),
-      subtitle: t("features.f3_sub"),
       description: t("features.f3_desc"),
-      bullets: [t("features.f3_b1"), t("features.f3_b2"), t("features.f3_b3")],
-      imageSrc: "/Mockup_mixy.svg",
-      imageAlt: t("features.f3_title"),
-      imageOnLeft: true,
-      align: "left",
+      Screen: FeedingScreen,
     },
   ];
 
   return (
-    <section className="relative w-full bg-[#f2f4f7] px-6 py-20 md:px-10 lg:px-[120px] lg:py-[120px]">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col items-center">
-        <header className="flex w-full max-w-[980px] flex-col items-center px-4 pb-14 text-center lg:pb-20">
-          <h2 className="[font-family:'Inter',Helvetica] text-[48px] font-normal leading-[1.08] tracking-[-0.96px] text-textprimary md:text-[72px] lg:text-[110px] lg:leading-[140px]">
+    <section id="funkce" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-24">
+      <div className="mx-auto w-full max-w-[1180px]">
+        <header className="mb-14 max-w-[640px]">
+          <span className="inline-block rounded-full bg-lime-soft px-3.5 py-1.5 [font-family:'Manrope',Helvetica] text-[13px] font-bold uppercase tracking-[0.12em] text-lime-ink">
+            {t("features.eyebrow")}
+          </span>
+          <h2 className="mb-3 mt-4 text-[30px] font-extrabold tracking-[-0.01em] text-fg-1 lg:text-[36px]">
             {t("features.section_title")}
           </h2>
+          <p className="text-[17px] leading-[1.6] text-fg-5">
+            {t("features.section_subtitle")}
+          </p>
         </header>
-        <div className="flex w-full flex-col gap-20 lg:gap-24">
-          {featureItems.map((item) => {
-            const isRightAligned = item.align === "right";
 
-            return (
-              <article
-                key={item.number}
-                className="grid w-full items-center gap-10 lg:min-h-[700px] lg:grid-cols-2 lg:gap-20"
-              >
-                {item.imageOnLeft && (
-                  <div className="order-1 flex justify-center lg:order-1 lg:justify-start">
-                    <Card className="h-auto w-full border-0 bg-transparent shadow-none">
-                      <CardContent className="flex items-center justify-center p-0">
-                        <img
-                          className="h-auto w-full max-w-[520px] object-contain lg:max-w-full"
-                          alt={item.imageAlt}
-                          src={item.imageSrc}
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
+        <div className="flex flex-col">
+          {features.map((feature, index) => (
+            <article
+              key={feature.id}
+              className="grid items-center gap-12 py-10 lg:grid-cols-2 lg:gap-[72px] lg:py-16"
+            >
+              <div className={index % 2 === 1 ? "lg:order-2" : undefined}>
+                <span className="mb-4 inline-block rounded-full bg-lime-soft px-3.5 py-1.5 [font-family:'Manrope',Helvetica] text-[13px] font-bold uppercase tracking-[0.12em] text-lime-ink">
+                  {feature.eyebrow}
+                </span>
+                <h3 className="mb-4 text-[26px] font-extrabold tracking-[-0.01em] text-fg-1 lg:text-[30px]">
+                  {feature.title}
+                </h3>
+                <p className="max-w-[440px] text-base leading-[1.65] text-fg-5">
+                  {feature.description}
+                </p>
+              </div>
 
-                <div
-                  className={`order-2 flex w-full flex-col gap-5 self-center ${
-                    isRightAligned
-                      ? "items-center text-center lg:items-end lg:text-right"
-                      : "items-center text-center lg:items-start lg:text-left"
-                  }`}
-                >
-                  <Badge className="rounded-full bg-[#c3e3664c] px-[17px] py-[6.8px] [font-family:'Manrope',Helvetica] text-[20.4px] font-bold tracking-[2.45px] text-[#506600] hover:bg-[#c3e3664c]">
-                    {item.number}
-                  </Badge>
-                  <div className="flex w-full flex-col gap-3">
-                    <h3 className="[font-family:'Inter',Helvetica] text-[42px] font-normal leading-[1.1] tracking-[-1.36px] text-textprimary md:text-[56px] lg:text-[68px] lg:leading-[74.8px]">
-                      {item.title}
-                    </h3>
-                    <p className="[font-family:'Inter',Helvetica] text-[22px] font-medium leading-normal text-textsecondary md:text-[26px] lg:text-[30.6px]">
-                      {item.subtitle}
-                    </p>
-                  </div>
-                  <div className="w-full max-w-[782px] pt-1">
-                    <p className="[font-family:'Inter',Helvetica] text-[20px] font-normal leading-[1.6] text-gray-500 md:text-[23px] lg:text-[27.2px] lg:leading-[43.5px]">
-                      {item.description}
-                    </p>
-                  </div>
-                  <ul className="flex w-full flex-col gap-5 pt-2 lg:pt-[20.4px]">
-                    {item.bullets.map((bullet) => (
-                      <li
-                        key={bullet}
-                        className={`flex w-full items-center gap-4 lg:gap-[20.4px] ${
-                          isRightAligned
-                            ? "justify-center lg:justify-end"
-                            : "justify-center lg:justify-start"
-                        }`}
-                      >
-                        {!isRightAligned && (
-                          <svg className="h-[24px] w-[24px] shrink-0 lg:h-[37.4px] lg:w-[37.4px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <circle cx="18" cy="18" r="18" fill="#c3e3664c"/>
-                            <path d="M11 18.5l5 5 9-10" stroke="#506600" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        )}
-                        <span className="[font-family:'Inter',Helvetica] text-[18px] font-medium leading-normal text-gray-800 md:text-[20px] lg:text-[23.8px]">
-                          {bullet}
-                        </span>
-                        {isRightAligned && (
-                          <svg className="h-[24px] w-[24px] shrink-0 lg:h-[37.4px] lg:w-[37.4px]" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <circle cx="18" cy="18" r="18" fill="#c3e3664c"/>
-                            <path d="M11 18.5l5 5 9-10" stroke="#506600" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                {!item.imageOnLeft && (
-                  <div className="order-1 flex justify-center lg:order-3 lg:justify-end">
-                    <Card className="h-auto w-full border-0 bg-transparent shadow-none">
-                      <CardContent className="flex items-center justify-center p-0">
-                        <img
-                          className="h-auto w-full max-w-[520px] object-contain lg:max-w-full"
-                          alt={item.imageAlt}
-                          src={item.imageSrc}
-                        />
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
-              </article>
-            );
-          })}
+              <div className={index % 2 === 1 ? "lg:order-1" : undefined}>
+                <PhoneFrame width={272} label={feature.title}>
+                  <feature.Screen />
+                </PhoneFrame>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

@@ -7,10 +7,10 @@ export const NotFoundPage = (): JSX.Element => {
   const navigate = useNavigate();
 
   const quickLinks = [
+    { label: t("nav.features"),   to: "/#funkce",    emoji: "✨" },
     { label: t("nav.calculator"), to: "/kalkulacka", emoji: "🧮" },
-    { label: t("nav.news"),       to: "/novinky",    emoji: "📰" },
-    { label: t("nav.entertainment"), to: "/zabava",  emoji: "🎮" },
-    { label: "FAQ",               to: "/faq",        emoji: "❓" },
+    { label: t("nav.faq"),        to: "/#faq",       emoji: "❓" },
+    { label: t("nav.download_btn"), to: "/#stahnout", emoji: "📲" },
   ];
 
   return (
