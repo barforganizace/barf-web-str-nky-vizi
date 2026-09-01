@@ -6,11 +6,15 @@ import {
   Check,
   ChevronDown,
   ChevronLeft,
+  Clock,
   Home,
+  LayoutGrid,
   Menu,
+  MoreHorizontal,
   Pencil,
   Plus,
   Refrigerator,
+  Search,
   Settings,
   X,
 } from "lucide-react";
@@ -309,6 +313,123 @@ export function DashboardScreen(): JSX.Element {
           <Home className="h-6 w-6" style={{ color: LIME_INK }} />
           <Refrigerator className="h-6 w-6 text-gray-300" />
           <span className="w-10" />
+          <CalendarDays className="h-6 w-6 text-gray-300" />
+          <Menu className="h-6 w-6 text-gray-300" />
+        </div>
+      </div>
+    </Screen>
+  );
+}
+
+/* ── 1b. Dashboard — týdenní přehled se skládatelnými moduly ─────────────── */
+
+export function DashboardWeekScreen(): JSX.Element {
+  const { t } = useTranslation();
+
+  const days = [
+    { key: "mon", n: 18 },
+    { key: "tue", n: 19 },
+    { key: "wed", n: 20 },
+    { key: "thu", n: 21 },
+    { key: "fri", n: 22 },
+    { key: "sat", n: 23 },
+    { key: "sun", n: 24 },
+  ];
+
+  return (
+    <Screen>
+      <div className="flex flex-1 flex-col gap-3 overflow-y-auto overscroll-contain px-4 pb-4 pt-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="rounded-[20px] bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[19px] font-bold text-gray-900">{t("screens.dash.month")}</h2>
+            <CalendarDays className="h-5 w-5 text-gray-800" />
+          </div>
+          <div className="grid grid-cols-7 gap-1 pt-4">
+            {days.map(({ key, n }) => {
+              const active = n === 20;
+              return (
+                <div key={key} className={`flex flex-col items-center gap-2 ${active ? "" : "opacity-40"}`}>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                    {t(`screens.dash.day_${key}`)}
+                  </span>
+                  <span
+                    className={`flex h-9 w-9 items-center justify-center rounded-full text-[13px] text-gray-800 ${
+                      active ? "font-bold shadow-md" : "bg-white font-medium shadow-sm"
+                    }`}
+                    style={active ? { backgroundColor: LIME } : undefined}
+                  >
+                    {n}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-[20px] bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-gray-800" />
+              <span className="h-2.5 w-2.5 rounded-full bg-gray-200" />
+              <span className="h-2.5 w-2.5 rounded-full bg-gray-200" />
+            </div>
+            <div className="flex items-center rounded-full bg-[#f2f4f7] p-0.5">
+              <span className="rounded-full px-3.5 py-1 text-[13px] font-normal text-gray-400">{t("screens.dash.day")}</span>
+              <span className="rounded-full px-3.5 py-1 text-[13px] font-bold text-gray-800" style={{ backgroundColor: LIME }}>
+                {t("screens.dash.week")}
+              </span>
+            </div>
+          </div>
+
+          <div className="rounded-[18px] p-4" style={{ backgroundColor: "#1e222a" }}>
+            <div className="flex items-baseline justify-between">
+              <span className="text-[18px] font-bold text-white">{t("screens.dash.ration")}</span>
+              <span>
+                <span className="text-[22px] font-bold" style={{ color: LIME }}>530 </span>
+                <span className="text-[14px] font-semibold text-gray-400">/ 800 g</span>
+              </span>
+            </div>
+            <div className="mt-3 h-2.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: "#2d323e" }}>
+              <div className="h-full rounded-full" style={{ width: "66%", backgroundColor: LIME }} />
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-5">
+            <ProgressRow label={t("screens.bucket.muscle")} value={350} target={500} color={MEAT} />
+            <ProgressRow label={t("screens.bucket.bones")} value={60} target={100} color={BONE} />
+            <div className="flex flex-col gap-2">
+              <ProgressRow label={t("screens.bucket.organs")} value={80} target={120} color={ORGAN} />
+              <ProgressRow label={t("screens.bucket.liver")} value={20} target={40} color={LIVER} nested />
+            </div>
+            <ProgressRow label={t("screens.bucket.other")} value={40} target={80} color={OTHER} />
+          </div>
+        </div>
+
+        <div className="rounded-[20px] bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between pb-3">
+            <h3 className="text-[18px] font-bold text-gray-900">{t("screens.food.title")}</h3>
+            <MoreHorizontal className="h-5 w-5 text-gray-300" />
+          </div>
+          <p className="text-[22px] font-extrabold text-gray-900">0 g</p>
+          <div className="mt-3 h-3 w-full rounded-full bg-[#f2f4f7]" />
+          <button type="button" className="mt-4 flex h-10 w-full items-center justify-center rounded-2xl bg-[#f2f4f7]">
+            <Plus className="h-4 w-4 text-gray-500" />
+          </button>
+        </div>
+
+        <button
+          type="button"
+          className="flex h-14 items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 bg-white text-[14px] font-bold text-gray-700"
+        >
+          <LayoutGrid className="h-4 w-4" />
+          {t("screens.dash.arrange")}
+        </button>
+      </div>
+
+      <div className="shrink-0">
+        <div className="flex items-center justify-around bg-white px-6 pb-7 pt-4">
+          <Home className="h-6 w-6" style={{ color: LIME_INK }} />
+          <Refrigerator className="h-6 w-6 text-gray-300" />
           <CalendarDays className="h-6 w-6 text-gray-300" />
           <Menu className="h-6 w-6 text-gray-300" />
         </div>
@@ -642,82 +763,146 @@ export function FoodDetailScreen(): JSX.Element {
   );
 }
 
-/* ── 4. Krmení — výběr z lednice do misky ────────────────────────────────── */
+/* ── 4. Lednice ──────────────────────────────────────────────────────────
+ * 1:1 podle reálné appky (barf-dog-nutrition-main/src/pages/Fridge.tsx):
+ * titulek → vyhledávání s "přidat" tlačítkem → filtrovací puntíky kategorií
+ * → sekce podle kategorie → řádek s kompozičním puntíkem, expirací a rychlým
+ * nakrmením → souhrnný pruh s celkovou váhou v lednici. */
+
+type FridgeCat = "mix" | "muscle" | "bones" | "organs" | "other";
+
+function MixMark({ className }: { className?: string }): JSX.Element {
+  return (
+    <svg viewBox="0 0 226 211" className={className} aria-hidden="true">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M225.266 52.508V157.524C225.266 186.504 201.738 210.032 172.758 210.032H52.5079C23.528 210.032 0 186.504 0 157.524V52.508C0 23.5281 23.528 0 52.5079 0H172.758C201.738 0 225.266 23.5281 225.266 52.508Z"
+        fill="#c4db67"
+      />
+      <path
+        d="M152.061 151.301C166.806 172.526 145.603 194.535 125.019 189.759C109.296 186.108 104.75 177.808 94.6633 175.467C84.5789 173.127 76.8406 178.577 61.1158 174.93C40.5334 170.152 31.1887 141.052 53.777 128.489C81.8458 112.878 94.5752 88.0041 113.918 92.4941C133.265 96.9843 133.736 124.92 152.061 151.301Z"
+        fill="#202937"
+      />
+      <path d="M190.444 124.009C185.379 137.013 172.652 144.199 162.02 140.057C151.389 135.914 146.877 122.014 151.944 109.008C158.044 93.3546 173.191 79.9625 183.822 84.1046C194.451 88.2467 197.022 107.126 190.444 124.009Z" fill="#202937" />
+      <path d="M75.9186 51.2208C78.494 33.2859 90.0165 18.1094 101.312 19.7313C112.605 21.3531 119.206 40.4629 116.819 57.0924C114.834 70.9086 104.069 80.7933 92.7784 79.1715C81.4852 77.5498 73.9353 65.0348 75.9186 51.2208Z" fill="#202937" />
+      <path d="M126.908 59.4334C132.087 43.4534 146.431 29.2028 157.284 32.7229C168.14 36.2407 171.801 54.9411 166.214 72.174C161.91 85.4522 149.623 93.3631 138.766 89.8432C127.914 86.3275 122.603 72.7118 126.908 59.4334Z" fill="#202937" />
+      <path d="M49.786 114.01C38.4191 113.046 30.1562 100.991 31.3343 87.0846C32.8647 69.0314 43.4879 53.2118 54.8568 54.1756C66.2257 55.1394 73.9252 73.8336 72.5053 90.5729C71.3273 104.48 61.1549 114.974 49.786 114.01Z" fill="#202937" />
+    </svg>
+  );
+}
+
+function FridgeShelvesGlyph({ className }: { className?: string }): JSX.Element {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M6 2h12M6 22h12M6 2v6l6 4-6 4v6M18 2v6l-6 4 6 4v6" />
+    </svg>
+  );
+}
+
+const FRIDGE_COLOR: Record<FridgeCat, string> = { mix: INK, muscle: MEAT, bones: BONE, organs: ORGAN, other: OTHER };
+
+function FridgeMark({ cat, className }: { cat: FridgeCat; className?: string }): JSX.Element {
+  if (cat === "mix") return <MixMark className={className} />;
+  return <span className={`${className} rounded-full`} style={{ backgroundColor: FRIDGE_COLOR[cat] }} />;
+}
 
 export function FeedingScreen(): JSX.Element {
   const { t } = useTranslation();
+  const [activeCat, setActiveCat] = useState<FridgeCat | null>(null);
 
-  const stock = [
-    { name: t("screens.feed.s1"), sub: t("screens.bucket.muscle"), color: MEAT },
-    { name: t("screens.feed.s2"), sub: t("screens.bucket.muscle"), color: MEAT },
-    { name: t("screens.feed.s3"), sub: t("screens.bucket.organs"), color: ORGAN },
-    { name: t("screens.feed.s4"), sub: t("screens.bucket.bones"), color: BONE },
-  ];
+  const sections: { cat: FridgeCat; items: { name: string; sub: string; expiry?: number; warn?: boolean }[] }[] = [
+    {
+      cat: "mix",
+      items: [{ name: t("screens.fridge.i_mix"), sub: `3 ${t("screens.fridge.pieces")} · 350 g/bal. · ${t("screens.fridge.total")}: 1.1 kg`, expiry: 4, warn: true }],
+    },
+    {
+      cat: "muscle",
+      items: [
+        { name: t("screens.feed.s1"), sub: "1.2 kg" },
+        { name: t("screens.feed.s2"), sub: "0.6 kg", expiry: 12 },
+      ],
+    },
+    { cat: "bones", items: [{ name: t("screens.feed.s4"), sub: "0.9 kg", expiry: 6, warn: true }] },
+    { cat: "organs", items: [{ name: t("screens.feed.s3"), sub: "0.35 kg" }] },
+    { cat: "other", items: [{ name: t("screens.fridge.i_other"), sub: "0.4 kg" }] },
+  ].filter((s) => !activeCat || s.cat === activeCat);
+
+  const grandKg = 8.5;
 
   return (
     <Screen>
-      <div className="flex flex-1 flex-col overflow-hidden px-4">
-        <div className="flex items-center rounded-full bg-white p-1 shadow-sm">
-          <span className="flex-1 rounded-full py-2.5 text-center text-[15px] font-medium text-gray-400">
-            {t("screens.feed.manual")}
-          </span>
-          <span className="flex-1 rounded-full py-2.5 text-center text-[15px] font-bold text-gray-800" style={{ backgroundColor: LIME }}>
-            {t("screens.feed.fridge")}
-          </span>
-        </div>
+      <div className="shrink-0 px-4 pt-3">
+        <h1 className="pb-3 text-[26px] font-extrabold text-gray-900">{t("screens.fridge.title")}</h1>
 
-        <h1 className="py-4 text-center text-[21px] font-extrabold text-gray-900">{t("screens.feed.title")}</h1>
-
-        <div className="flex justify-center gap-2.5 pb-4">
-          {[MEAT, BONE, ORGAN, OTHER].map((c) => (
-            <span key={c} className="h-6 w-6 rounded-full" style={{ backgroundColor: c }} />
-          ))}
-          <span className="h-6 w-6 rounded-full ring-2 ring-offset-2" style={{ backgroundColor: INK, boxShadow: `0 0 0 2px ${LIME}` }} />
-        </div>
-
-        <div className="rounded-[20px] bg-white p-4 shadow-sm">
-          {stock.map((item, i) => (
-            <div key={item.name} className={`flex items-center gap-3 ${i === 0 ? "pb-3" : "py-3"}`}>
-              <span className="h-6 w-6 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-              <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-[16px] font-bold text-gray-900">{item.name}</span>
-                <span className="truncate text-[13px] text-gray-400">{item.sub}</span>
-              </div>
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full" style={{ backgroundColor: "#eaf5d4" }}>
-                <Plus className="h-4 w-4" style={{ color: LIME_INK }} strokeWidth={2.5} />
-              </span>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3 rounded-[20px] bg-white p-4 shadow-sm">
-          <div className="flex items-baseline justify-between pb-3">
-            <h2 className="text-[19px] font-extrabold text-gray-900">{t("screens.feed.bowl")}</h2>
-            <span className="text-[13px] font-medium text-gray-400">{t("screens.feed.total")}: 350 g</span>
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <div className="w-full truncate rounded-full bg-white py-3 pl-11 pr-12 text-[14px] text-gray-400 shadow-sm">
+            {t("screens.fridge.search_placeholder")}
           </div>
-          {[
-            { name: t("screens.feed.s1"), sub: t("screens.bucket.muscle"), color: MEAT, amount: "300", unit: "g" },
-            { name: t("screens.feed.s5"), sub: t("screens.feed.mix"), color: OTHER, amount: "1", unit: t("screens.feed.unit_pcs") },
-          ].map((row) => (
-            <div key={row.name} className="flex items-center gap-3 py-2">
-              <span className="h-6 w-6 shrink-0 rounded-full" style={{ backgroundColor: row.color }} />
-              <div className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate text-[15px] font-bold text-gray-900">{row.name}</span>
-                <span className="truncate text-[13px] text-gray-400">{row.sub}</span>
-              </div>
-              <span className="flex shrink-0 items-baseline gap-1 rounded-lg bg-[#f2f4f7] px-2.5 py-1.5">
-                <span className="text-[15px] font-extrabold text-gray-900">{row.amount}</span>
-                <span className="text-[12px] text-gray-400">{row.unit}</span>
-              </span>
-              <X className="h-4 w-4 shrink-0" style={{ color: MEAT }} />
-            </div>
-          ))}
+          <span className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full" style={{ color: OTHER }}>
+            <Plus className="h-5 w-5" strokeWidth={2.5} />
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4 py-3 pl-1">
+          {(["muscle", "bones", "organs", "other", "mix"] as FridgeCat[]).map((cat) => {
+            const active = activeCat === cat;
+            return (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setActiveCat(active ? null : cat)}
+                className={`flex h-5 w-5 shrink-0 items-center justify-center transition-all ${cat === "mix" ? "rounded-[28%]" : "rounded-full"} ${
+                  active ? "ring-2 ring-gray-800 ring-offset-2" : activeCat ? "opacity-40" : ""
+                }`}
+                style={cat === "mix" ? undefined : { backgroundColor: FRIDGE_COLOR[cat] }}
+              >
+                {cat === "mix" && <MixMark className="h-full w-full" />}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="shrink-0 px-4 pb-8 pt-4">
-        <div className="flex h-[58px] items-center justify-center rounded-[20px] text-[17px] font-bold text-white" style={{ backgroundColor: INK }}>
-          {t("screens.feed.cta")}
+      <div className="flex flex-1 flex-col gap-4 overflow-y-auto overscroll-contain px-4 pb-3 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {sections.map((section) => (
+          <div key={section.cat} className="flex flex-col gap-2.5">
+            <div className="flex items-center gap-2 pt-1">
+              <FridgeMark cat={section.cat} className="h-3.5 w-3.5 shrink-0" />
+              <h2 className="text-[16px] font-bold text-gray-900">{t(`screens.fridge.cat_${section.cat}`)}</h2>
+            </div>
+
+            {section.items.map((item) => (
+              <div key={item.name} className="flex items-center gap-2.5 rounded-2xl bg-white py-2.5 pl-3.5 pr-2 shadow-sm">
+                <FridgeMark cat={section.cat} className="h-3.5 w-3.5 shrink-0" />
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="truncate text-[14px] font-bold text-gray-900">{item.name}</span>
+                  <span className="flex flex-wrap items-center gap-x-1 truncate text-[11px] text-gray-400">
+                    {item.sub}
+                    {item.expiry != null && (
+                      <span className={`flex items-center gap-0.5 ${item.warn ? "font-semibold" : ""}`} style={item.warn ? { color: "#dc7a1c" } : undefined}>
+                        <span aria-hidden="true">·</span>
+                        <Clock className="h-2.5 w-2.5" />
+                        {item.expiry} {t("screens.fridge.days")}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-800 transition-colors hover:bg-black/5">
+                  <Plus className="h-4 w-4" strokeWidth={2.6} />
+                </span>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div className="shrink-0 px-4 pb-8 pt-2">
+        <div className="flex items-center gap-3 rounded-2xl px-4 py-3.5" style={{ backgroundColor: INK }}>
+          <FridgeShelvesGlyph className="h-5 w-5" style={{ color: LIME }} />
+          <span className="flex-1 text-[13px] font-medium text-white">{t("screens.fridge.total_in_fridge")}</span>
+          <span className="text-[18px] font-semibold" style={{ color: LIME }}>{grandKg.toFixed(1)} kg</span>
         </div>
       </div>
     </Screen>

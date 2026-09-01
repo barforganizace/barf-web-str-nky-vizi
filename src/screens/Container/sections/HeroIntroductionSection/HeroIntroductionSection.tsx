@@ -1,49 +1,47 @@
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-import { StorePills } from "../../../../components/StorePills";
-import { DashboardScreen, PhoneFrame } from "../../../../components/AppScreens";
 
 export const HeroIntroductionSection = (): JSX.Element => {
   const { t } = useTranslation();
 
   return (
-    <section className="px-5 pb-16 pt-16 sm:px-8 lg:pt-[88px]">
-      <div className="mx-auto grid w-full max-w-[1180px] items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+    <section className="bg-navy px-5 py-16 sm:px-8 lg:py-24">
+      <div className="mx-auto grid w-full max-w-[1180px] items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <div>
-          <span className="inline-block rounded-full bg-lime-soft px-3.5 py-1.5 [font-family:'Manrope',Helvetica] text-[13px] font-bold uppercase tracking-[0.12em] text-lime-ink">
-            {t("hero.eyebrow")}
-          </span>
-          <h1 className="my-5 text-[38px] font-extrabold leading-[1.08] tracking-[-0.02em] text-fg-1 lg:text-[56px]">
-            {t("hero.title")}
+          <h1 className="mb-6 text-[40px] font-extrabold leading-[1.08] tracking-[-0.02em] text-fg-0 lg:text-[58px]">
+            {t("hero.title_pre")}
+            <span className="text-lime">{t("hero.title_highlight")}</span>
           </h1>
-          <p className="mb-8 max-w-[480px] text-[18px] leading-[1.6] text-fg-5">
-            {t("hero.subtitle")}
+          <p className="mb-9 max-w-[600px] text-[15px] leading-[1.7] text-white/70">
+            {t("hero.quote")}
           </p>
 
-          <div className="mb-7 flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4">
             <a
-              href="#stahnout"
+              href="https://play.google.com/store/apps/details?id=com.barfingapp.app"
+              target="_blank"
+              rel="noopener noreferrer"
               data-umami-event="cta-hero-stahnout"
-              className="inline-flex h-14 items-center justify-center rounded-card bg-navy px-7 text-base font-bold text-fg-0 transition-colors hover:bg-navy-2"
+              className="inline-flex h-14 items-center justify-center gap-2 rounded-card bg-lime px-7 text-base font-bold text-navy transition-colors hover:bg-lime-muted"
             >
               {t("hero.cta_primary")}
+              <span aria-hidden="true">→</span>
             </a>
-            <Link
-              to="/kalkulacka"
-              data-umami-event="cta-hero-kalkulacka"
-              className="inline-flex h-14 items-center justify-center rounded-card border-2 border-strong px-7 text-base font-bold text-navy transition-colors hover:border-navy"
+            <a
+              href="#funkce"
+              data-umami-event="cta-hero-funkce"
+              className="inline-flex h-14 items-center justify-center rounded-card border border-white/15 bg-white/5 px-7 text-base font-bold text-fg-0 transition-colors hover:border-white/40"
             >
               {t("hero.cta_secondary")}
-            </Link>
+            </a>
           </div>
-
-          <StorePills />
         </div>
 
-        <div className="flex justify-center">
-          <PhoneFrame width={300} label={t("hero.image_alt")}>
-            <DashboardScreen />
-          </PhoneFrame>
+        <div className="flex justify-center lg:justify-end">
+          <img
+            src="/Orez.png"
+            alt={t("hero.dog_alt")}
+            className="w-full max-w-[400px] lg:max-w-[470px]"
+          />
         </div>
       </div>
     </section>

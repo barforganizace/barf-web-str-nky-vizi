@@ -27,10 +27,16 @@ export const StorePills = ({ dark = false }: { dark?: boolean }) => {
         <AppleIcon />
         {t("download.app_store")}
       </span>
-      <span className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold ${pill}`}>
+      <a
+        href="https://play.google.com/store/apps/details?id=com.barfingapp.app"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-umami-event="cta-storepills-google-play"
+        className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-[13px] font-bold transition-opacity hover:opacity-80 ${pill}`}
+      >
         <GooglePlayIcon />
         {t("download.google_play")}
-      </span>
+      </a>
     </div>
   );
 };

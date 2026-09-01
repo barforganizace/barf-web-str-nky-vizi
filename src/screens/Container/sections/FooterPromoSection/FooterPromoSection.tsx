@@ -32,7 +32,7 @@ export const FooterPromoSection = (): JSX.Element => {
       <div className="mx-auto w-full max-w-[1180px]">
         <div className="flex flex-wrap items-center justify-between gap-5">
           <Link to="/" className="flex items-center gap-2.5 font-extrabold text-fg-1">
-            <img src="/barflogo.png" alt="" className="h-6 w-6 rounded-md object-contain" />
+            <img src="/Vector.svg" alt="" className="h-6 w-6 object-contain" />
             BarfApp
           </Link>
 

@@ -9,10 +9,7 @@ export const DownloadSection = (): JSX.Element => {
     <section id="stahnout" className="scroll-mt-20 px-4 py-8 sm:px-8">
       <div className="mx-auto w-full max-w-[1180px]">
         <div className="rounded-feature bg-navy px-7 py-12 text-center sm:px-14 sm:py-[72px]">
-          <span className="inline-block rounded-full bg-lime-faint px-3.5 py-1.5 [font-family:'Manrope',Helvetica] text-[13px] font-bold uppercase tracking-[0.12em] text-lime">
-            {t("download.badge")}
-          </span>
-          <h2 className="mb-3.5 mt-[18px] text-[30px] font-extrabold tracking-[-0.01em] text-fg-0 sm:text-[38px]">
+          <h2 className="mb-3.5 text-[30px] font-extrabold tracking-[-0.01em] text-fg-0 sm:text-[38px]">
             {t("download.title")}
           </h2>
           <p className="mb-8 text-base text-white/65">

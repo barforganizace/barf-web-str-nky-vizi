@@ -32,7 +32,7 @@ export const SharedNav = () => {
 
           {/* brand */}
           <Link to="/" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-70" aria-label="BarfApp">
-            <img src="/barflogo.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
+            <img src="/Vector.svg" alt="" className="h-8 w-8 object-contain" />
             <span className="text-[20px] font-extrabold text-fg-1">BarfApp</span>
           </Link>
 

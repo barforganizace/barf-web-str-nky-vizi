@@ -9,33 +9,33 @@
     "close_menu": "Zavřít menu"
   },
   "hero": {
-    "eyebrow": "BARF dieta, jednoduše",
-    "title": "Krmení bez tabulek a hádání",
-    "subtitle": "BarfApp spočítá makra, hlídá zásoby ve vaší lednici a poradí, co dnes nakrmit — podle skutečné váhy a aktivity vašeho psa.",
-    "cta_primary": "Stáhnout appku",
-    "cta_secondary": "Vyzkoušet kalkulačku",
-    "image_alt": "Přehled dne v BarfApp"
+    "title_pre": "Appka co vznikla pro tohohle ",
+    "title_highlight": "frajera",
+    "quote": "„Už od prvního dne, co barfuju, je to otravný. Není žádná appka, co by mně řešila problémy, který s tím potřebuju řešit – počítání, kolik toho vlastně potřebuje sežrat, vidět, kolik toho sežral, a vědět, kolik toho mám sakra v lednici. No, tak mě nebavilo čekat a udělal jsem si tu appku sám.“",
+    "cta_primary": "Stáhnout zdarma",
+    "cta_secondary": "Jak to funguje",
+    "dog_alt": "Pes, pro kterého appka vznikla"
   },
   "features": {
-    "eyebrow": "Funkce",
     "section_title": "Vše, co BARF krmení potřebuje",
-    "section_subtitle": "Tři pilíře, na kterých appka stojí — lednice, přehled makroživin a kouč, který zná obsah obojího.",
+    "section_subtitle": "Pilíře, na kterých appka stojí — dashboard na míru, lednice, přehled makroživin a kouč, který zná obsah obojího.",
+    "f4_eyebrow": "Přehled na míru",
+    "f4_title": "Dashboard, který si poskládáte podle sebe",
+    "f4_desc": "Týdenní krmná dávka, makra i jednotlivé chálky na jedné obrazovce — moduly si přeskládáte přesně podle toho, co chcete vidět jako první.",
     "f1_eyebrow": "AI kouč",
     "f1_title": "Kouč, který zná vaši lednici",
     "f1_desc": "Zeptejte se, co dnes nakrmit, a Kouč navrhne porci přesně z toho, co máte doma — s ohledem na denní limit kostí, vnitřností i svaloviny.",
     "f2_eyebrow": "Makra pod kontrolou",
     "f2_title": "Nutriční přehled do posledního gramu",
-    "f2_desc": "Každá surovina má svůj podíl svaloviny, kostí, vnitřností i ostatního. Upravte porci a přehled se přepočítá okamžitě.",
+    "f2_desc": "Každá surovina má svůj podíl svaloviny, kostí a vnitřností. Upravte porci a přehled se přepočítá okamžitě.",
     "f3_eyebrow": "Moje Lednice",
     "f3_title": "Zásoby, které máte pořád po ruce",
-    "f3_desc": "Suroviny roztříděné podle typu — svalovina, kosti, vnitřnosti — s váhou a přehledem, kolik toho v lednici reálně zbývá."
+    "f3_desc": "Suroviny roztříděné podle typu — svalovina, kosti, vnitřnosti, ostatní — s váhou a přehledem, kolik toho v lednici reálně zbývá."
   },
   "faq_section": {
-    "label": "Časté dotazy",
     "title": "Než začnete"
   },
   "download": {
-    "badge": "Začněte ještě dnes",
     "title": "Začněte krmit s jistotou",
     "desc": "Bez tabulek, bez odhadů — jen přehled toho, co váš pes skutečně sní.",
     "waitlist_label": "Notifikovat mě při vydání",
@@ -174,7 +174,9 @@
       "day_thu": "Čt",
       "day_fri": "Pá",
       "day_sat": "So",
-      "day_sun": "Ne"
+      "day_sun": "Ne",
+      "ration": "Krmná dávka",
+      "arrange": "Uspořádat moduly"
     },
     "bucket": {
       "muscle": "Svalovina",
@@ -229,6 +231,21 @@
       "s3": "Krůtí játra",
       "s4": "Vepřové kosti",
       "s5": "Hovězí zelenina mix"
+    },
+    "fridge": {
+      "title": "Lednice",
+      "search_placeholder": "Hledat surovinu...",
+      "total_in_fridge": "Celkem v lednici:",
+      "total": "Celkem",
+      "pieces": "ks",
+      "days": "dní",
+      "cat_mix": "Mix",
+      "cat_muscle": "Svalovina",
+      "cat_bones": "Kosti",
+      "cat_organs": "Vnitřnosti",
+      "cat_other": "Ostatní",
+      "i_mix": "Pondělní dávka",
+      "i_other": "Zeleninový mix"
     }
   }
 }

@@ -9,10 +9,7 @@ export const FaqAccordionSection = (): JSX.Element => {
     <section id="faq" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-24">
       <div className="mx-auto w-full max-w-[1180px]">
         <header className="mb-14 max-w-[640px]">
-          <span className="inline-block rounded-full bg-lime-soft px-3.5 py-1.5 [font-family:'Manrope',Helvetica] text-[13px] font-bold uppercase tracking-[0.12em] text-lime-ink">
-            {t("faq_section.label")}
-          </span>
-          <h2 className="mt-4 text-[30px] font-extrabold tracking-[-0.01em] text-fg-1 lg:text-[36px]">
+          <h2 className="text-[30px] font-extrabold tracking-[-0.01em] text-fg-1 lg:text-[36px]">
             {t("faq_section.title")}
           </h2>
         </header>

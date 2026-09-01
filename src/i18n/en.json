@@ -9,17 +9,19 @@
     "close_menu": "Close menu"
   },
   "hero": {
-    "eyebrow": "Raw feeding, made simple",
-    "title": "Feeding without spreadsheets or guesswork",
-    "subtitle": "BarfApp calculates macros, tracks what's in your fridge and tells you what to feed today — based on your dog's actual weight and activity.",
-    "cta_primary": "Get the app",
-    "cta_secondary": "Try the calculator",
-    "image_alt": "Daily overview in BarfApp"
+    "title_pre": "The app built for this ",
+    "title_highlight": "champ",
+    "quote": "“Raw feeding has been annoying since day one. There’s no app that solves the problems I actually need solved – counting how much he really needs to eat, seeing how much he ate, and knowing what the hell is left in the fridge. So I got tired of waiting and made the app myself.”",
+    "cta_primary": "Download free",
+    "cta_secondary": "How it works",
+    "dog_alt": "The dog the app was built for"
   },
   "features": {
-    "eyebrow": "Features",
     "section_title": "Everything raw feeding needs",
-    "section_subtitle": "The three pillars the app is built on — the fridge, the macronutrient overview, and a coach that knows what's in both.",
+    "section_subtitle": "The pillars the app is built on — a dashboard you arrange yourself, the fridge, the macronutrient overview, and a coach that knows what's in both.",
+    "f4_eyebrow": "Built your way",
+    "f4_title": "A dashboard you arrange yourself",
+    "f4_desc": "Weekly feeding total, macros and each meal on one screen — reorder the modules to put what matters most right up top.",
     "f1_eyebrow": "AI coach",
     "f1_title": "A coach that knows your fridge",
     "f1_desc": "Ask what to feed today and the Coach suggests a portion made from exactly what you have at home — respecting the daily limits for bones, organs and muscle meat.",
@@ -28,14 +30,12 @@
     "f2_desc": "Every ingredient has its share of muscle meat, bones, organs and other. Adjust the portion and the overview recalculates instantly.",
     "f3_eyebrow": "My Fridge",
     "f3_title": "Stock you always have at hand",
-    "f3_desc": "Ingredients sorted by type — muscle meat, bones, organs — with weights and an overview of what's actually left in the fridge."
+    "f3_desc": "Ingredients sorted by type — muscle meat, bones, organs, other — with weights and an overview of what's actually left in the fridge."
   },
   "faq_section": {
-    "label": "FAQ",
     "title": "Before you start"
   },
   "download": {
-    "badge": "Start today",
     "title": "Start feeding with confidence",
     "desc": "No spreadsheets, no guesswork — just a clear picture of what your dog actually eats.",
     "waitlist_label": "Notify me on launch",
@@ -174,7 +174,9 @@
       "day_thu": "Thu",
       "day_fri": "Fri",
       "day_sat": "Sat",
-      "day_sun": "Sun"
+      "day_sun": "Sun",
+      "ration": "Feeding total",
+      "arrange": "Arrange modules"
     },
     "bucket": {
       "muscle": "Muscle meat",
@@ -229,6 +231,21 @@
       "s3": "Turkey liver",
       "s4": "Pork bones",
       "s5": "Beef & veggie mix"
+    },
+    "fridge": {
+      "title": "Fridge",
+      "search_placeholder": "Search ingredients...",
+      "total_in_fridge": "Total in fridge:",
+      "total": "Total",
+      "pieces": "pcs",
+      "days": "days",
+      "cat_mix": "Mix",
+      "cat_muscle": "Muscle meat",
+      "cat_bones": "Bones",
+      "cat_organs": "Organs",
+      "cat_other": "Other",
+      "i_mix": "Monday batch",
+      "i_other": "Veggie mix"
     }
   }
 }
