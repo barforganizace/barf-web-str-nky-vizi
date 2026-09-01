@@ -38,7 +38,7 @@ export const HeroIntroductionSection = (): JSX.Element => {
 
         <div className="flex justify-center lg:justify-end">
           <img
-            src="/Orez.png"
+            src="/pes-barf-appka.png"
             alt={t("hero.dog_alt")}
             className="w-full max-w-[400px] lg:max-w-[470px]"
           />

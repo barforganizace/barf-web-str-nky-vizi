@@ -162,8 +162,8 @@ export function DashboardScreen(): JSX.Element {
   // Fotky se berou z už existujících obrázků v public/ (používá je kalkulačka),
   // takže náhled nepřidává do buildu žádný nový asset.
   const dogs = [
-    { name: t("screens.dash.dog"), photo: "/dog-medium.jpg" },
-    { name: t("screens.dash.dog2"), photo: "/dog-small.jpg" },
+    { name: t("screens.dash.dog"), photo: "/pes-profil-kuba.jpg" },
+    { name: t("screens.dash.dog2"), photo: "/pes-profil-bella.jpg" },
   ];
 
   const days = [
@@ -187,7 +187,7 @@ export function DashboardScreen(): JSX.Element {
           >
             <img
               src={dogs[dog].photo}
-              alt=""
+              alt={dogs[dog].name}
               className="h-11 w-11 shrink-0 rounded-full border-2 border-white object-cover shadow-sm"
             />
             <div className="flex items-center gap-1.5">
@@ -215,7 +215,7 @@ export function DashboardScreen(): JSX.Element {
                     }}
                     className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50"
                   >
-                    <img src={d.photo} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />
+                    <img src={d.photo} alt={d.name} className="h-8 w-8 shrink-0 rounded-full object-cover" />
                     <span className={`flex-1 text-[15px] ${i === dog ? "font-bold text-gray-900" : "font-medium text-gray-600"}`}>
                       {d.name}
                     </span>
@@ -568,8 +568,8 @@ export function FoodDetailScreen(): JSX.Element {
           z návrhu, aby zůstalo vidět totéž místo fotky. */}
       <div className="relative h-[260px] shrink-0 overflow-hidden">
         <img
-          src="/screen-food-hero.jpg"
-          alt=""
+          src="/screenshot-nutricni-prehled.jpg"
+          alt="Ukázka obrazovky Nutriční přehled v aplikaci BarfingApp"
           className="absolute left-0 w-full"
           style={{ height: "148.57%", top: "-27.85%", maxWidth: "none" }}
         />
@@ -581,7 +581,7 @@ export function FoodDetailScreen(): JSX.Element {
         </div>
 
         <div className="absolute inset-x-0 bottom-0 px-6 py-7">
-          <h1 className="text-[36px] font-extrabold leading-[40px] text-white">{t("screens.food.title")}</h1>
+          <h3 className="text-[36px] font-extrabold leading-[40px] text-white">{t("screens.food.title")}</h3>
         </div>
       </div>
 
@@ -611,13 +611,13 @@ export function FoodDetailScreen(): JSX.Element {
           <>
             <div className="flex items-center justify-between px-4">
               <div className="flex items-center gap-3">
-                <img src="/icon-muscle.svg" alt="" width={14} height={14} />
+                <img src="/ikona-svalovina.svg" alt="Ikona svalovina" width={14} height={14} />
                 <span className="text-[18px] font-semibold" style={{ color: FIG_HEADING }}>
                   {t("screens.bucket.muscle")}
                 </span>
               </div>
               <div className="flex items-center gap-3">
-                <img src="/icon-bone.svg" alt="" width={15} height={15} />
+                <img src="/ikona-kosti.svg" alt="Ikona kosti" width={15} height={15} />
                 <span className="text-[18px] font-semibold" style={{ color: FIG_HEADING }}>
                   {t("screens.bucket.bones")}
                 </span>
@@ -833,7 +833,7 @@ export function FeedingScreen(): JSX.Element {
   return (
     <Screen>
       <div className="shrink-0 px-4 pt-3">
-        <h1 className="pb-3 text-[26px] font-extrabold text-gray-900">{t("screens.fridge.title")}</h1>
+        <h3 className="pb-3 text-[26px] font-extrabold text-gray-900">{t("screens.fridge.title")}</h3>
 
         <div className="relative">
           <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />

@@ -31,9 +31,9 @@ export const SharedNav = () => {
         <div className="mx-auto flex w-full max-w-[1180px] items-center justify-between gap-4 px-5 py-4 sm:px-8">
 
           {/* brand */}
-          <Link to="/" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-70" aria-label="BarfApp">
-            <img src="/Vector.svg" alt="" className="h-8 w-8 object-contain" />
-            <span className="text-[20px] font-extrabold text-fg-1">BarfApp</span>
+          <Link to="/" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-70" aria-label="BarfingApp">
+            <img src="/barfingapp-logo.svg" alt="BarfingApp logo" className="h-8 w-8 object-contain" />
+            <span className="text-[20px] font-extrabold text-fg-1">BarfingApp</span>
           </Link>
 
           {/* desktop nav */}

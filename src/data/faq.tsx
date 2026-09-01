@@ -55,7 +55,7 @@ export const faqItemsCs: FaqItem[] = [
   {
     id: "faq-9",
     question: "Aplikace mi neposílá upozornění. Co s tím?",
-    answer: (<>Zkontroluj nejdříve oprávnění:<br /><strong>iOS:</strong> Nastavení → BarfApp → Notifikace → povol „Povolit oznámení"<br /><strong>Android:</strong> Nastavení → Aplikace → BarfApp → Oznámení → zapni<br />Pokud máš oprávnění zapnutá a upozornění přesto nepřicházejí, zkus aplikaci odinstalovat a znovu nainstalovat. Pokud problém trvá, napiš nám na <EmailLink />.</>),
+    answer: (<>Zkontroluj nejdříve oprávnění:<br /><strong>iOS:</strong> Nastavení → BarfingApp → Notifikace → povol „Povolit oznámení"<br /><strong>Android:</strong> Nastavení → Aplikace → BarfingApp → Oznámení → zapni<br />Pokud máš oprávnění zapnutá a upozornění přesto nepřicházejí, zkus aplikaci odinstalovat a znovu nainstalovat. Pokud problém trvá, napiš nám na <EmailLink />.</>),
   },
   {
     id: "faq-10",
@@ -108,7 +108,7 @@ export const faqItemsEn: FaqItem[] = [
   {
     id: "faq-9",
     question: "The app isn't sending me notifications. What should I do?",
-    answer: (<>First check your permissions:<br /><strong>iOS:</strong> Settings → BarfApp → Notifications → enable "Allow Notifications"<br /><strong>Android:</strong> Settings → Apps → BarfApp → Notifications → turn on<br />If permissions are enabled and notifications still don't arrive, try uninstalling and reinstalling the app. If the problem persists, email us at <EmailLink />.</>),
+    answer: (<>First check your permissions:<br /><strong>iOS:</strong> Settings → BarfingApp → Notifications → enable "Allow Notifications"<br /><strong>Android:</strong> Settings → Apps → BarfingApp → Notifications → turn on<br />If permissions are enabled and notifications still don't arrive, try uninstalling and reinstalling the app. If the problem persists, email us at <EmailLink />.</>),
   },
   {
     id: "faq-10",

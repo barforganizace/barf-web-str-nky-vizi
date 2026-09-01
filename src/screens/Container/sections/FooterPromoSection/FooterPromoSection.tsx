@@ -32,8 +32,8 @@ export const FooterPromoSection = (): JSX.Element => {
       <div className="mx-auto w-full max-w-[1180px]">
         <div className="flex flex-wrap items-center justify-between gap-5">
           <Link to="/" className="flex items-center gap-2.5 font-extrabold text-fg-1">
-            <img src="/Vector.svg" alt="" className="h-6 w-6 object-contain" />
-            BarfApp
+            <img src="/barfingapp-logo.svg" alt="BarfingApp logo" className="h-6 w-6 object-contain" />
+            BarfingApp
           </Link>
 
           <nav aria-label={t("footer.links_label")} className="flex flex-wrap gap-7">

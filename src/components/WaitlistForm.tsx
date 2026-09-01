@@ -34,9 +34,9 @@ export const WaitlistForm = ({ dark = false }: { dark?: boolean }) => {
             Authorization: `Bearer ${apiKey}`,
           },
           body: JSON.stringify({
-            from: "BarfApp Waitlist <onboarding@resend.dev>",
+            from: "BarfingApp Waitlist <onboarding@resend.dev>",
             to: ["barfingapp@gmail.com"],
-            subject: "Nový zájemce o BarfApp",
+            subject: "Nový zájemce o BarfingApp",
             html: `<p>Nový zájemce: <strong>${email}</strong></p>`,
           }),
         });

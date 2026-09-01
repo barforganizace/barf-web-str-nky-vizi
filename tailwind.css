@@ -22,7 +22,7 @@
   --textwhite: rgba(255, 255, 255, 1);
 }
 
-/* BarfApp design tokens — z Figma zdroje (colors_and_type.css) */
+/* BarfingApp design tokens — z Figma zdroje (colors_and_type.css) */
 :root {
   --brand-lime: rgb(195, 233, 107);
   --brand-lime-ink: rgb(80, 102, 0);

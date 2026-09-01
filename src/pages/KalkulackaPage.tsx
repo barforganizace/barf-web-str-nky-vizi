@@ -139,10 +139,10 @@ export const KalkulackaPage = () => {
   }, []);
 
   const SIZES = [
-    { key: "small"  as BreedSize, label: t("calc.size_small_label"),  sub: t("calc.size_small_sub"),  example: t("calc.size_small_ex"),  img: "/dog-small.svg",  cardH: 72  },
-    { key: "medium" as BreedSize, label: t("calc.size_medium_label"), sub: t("calc.size_medium_sub"), example: t("calc.size_medium_ex"), img: "/dog-medium.svg", cardH: 88  },
-    { key: "large"  as BreedSize, label: t("calc.size_large_label"),  sub: t("calc.size_large_sub"),  example: t("calc.size_large_ex"),  img: "/dog-big.svg",    cardH: 104 },
-    { key: "giant"  as BreedSize, label: t("calc.size_giant_label"),  sub: t("calc.size_giant_sub"),  example: t("calc.size_giant_ex"),  img: "/dog-huge.svg",   cardH: 120 },
+    { key: "small"  as BreedSize, label: t("calc.size_small_label"),  sub: t("calc.size_small_sub"),  example: t("calc.size_small_ex"),  img: "/plemeno-maly-pes.svg",    cardH: 72  },
+    { key: "medium" as BreedSize, label: t("calc.size_medium_label"), sub: t("calc.size_medium_sub"), example: t("calc.size_medium_ex"), img: "/plemeno-stredni-pes.svg", cardH: 88  },
+    { key: "large"  as BreedSize, label: t("calc.size_large_label"),  sub: t("calc.size_large_sub"),  example: t("calc.size_large_ex"),  img: "/plemeno-velky-pes.svg",   cardH: 104 },
+    { key: "giant"  as BreedSize, label: t("calc.size_giant_label"),  sub: t("calc.size_giant_sub"),  example: t("calc.size_giant_ex"),  img: "/plemeno-obri-pes.svg",    cardH: 120 },
   ];
 
   const ACTIVITIES = [

@@ -42,7 +42,7 @@
     "waitlist_btn": "Notify me",
     "waitlist_sending": "Sending…",
     "waitlist_success_title": "You're on the list!",
-    "waitlist_success_desc": "We'll let you know when BarfApp is ready to download.",
+    "waitlist_success_desc": "We'll let you know when BarfingApp is ready to download.",
     "waitlist_error": "Please enter a valid email.",
     "waitlist_error_generic": "Something went wrong. Please try again.",
     "waitlist_placeholder": "your@email.com",
@@ -53,7 +53,7 @@
     "links_label": "Footer links",
     "legal1": "Terms & Conditions",
     "legal2": "Privacy Policy",
-    "copyright": "© 2026 BarfApp. All rights reserved."
+    "copyright": "© 2026 BarfingApp. All rights reserved."
   },
   "not_found": {
     "title": "This page doesn't exist",
