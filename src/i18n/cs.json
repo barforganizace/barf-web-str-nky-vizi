@@ -2,6 +2,7 @@
   "nav": {
     "features": "Funkce",
     "calculator": "Kalkulačka",
+    "blog": "Blog",
     "faq": "Časté dotazy",
     "download_btn": "Stáhnout appku",
     "main_navigation": "Hlavní navigace",
@@ -34,6 +35,25 @@
   },
   "faq_section": {
     "title": "Než začnete"
+  },
+  "blog_section": {
+    "title": "Z blogu",
+    "subtitle": "Tipy a poznatky o BARF krmení — poměry, čerstvost surovin a časté chyby.",
+    "view_all": "Zobrazit všechny články",
+    "read_more": "Číst více",
+    "min_read": "min čtení"
+  },
+  "blog_page": {
+    "title": "Průvodce BARF krmením",
+    "subtitle": "Poměry, suroviny, časté chyby — vše, co potřebujete vědět, než naplníte misku.",
+    "back": "Zpět na blog",
+    "search_placeholder": "Hledat v článcích…",
+    "filter_all": "Vše",
+    "no_results": "Nic jsem nenašel. Zkus jiné slovo.",
+    "next_article": "Přečtěte si další",
+    "cta_title": "Appka to spočítá za tebe",
+    "cta_desc": "Makra, limit kostí i zásoby v lednici — BarfingApp je hlídá automaticky.",
+    "cta_btn": "Stáhnout zdarma"
   },
   "download": {
     "title": "Začněte krmit s jistotou",

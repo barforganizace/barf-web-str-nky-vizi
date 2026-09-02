@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SharedNav } from "../components/SharedNav";
 
@@ -97,16 +97,16 @@ const Steps = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-8 flex items-center gap-2">
     {Array.from({ length: total }).map((_, i) => (
       <div key={i} className="flex items-center gap-2">
-        <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-all ${
+        <div className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-all ${
           i < current
-            ? "bg-[#c3e96b] text-[#191c1d]"
+            ? "bg-lime text-navy"
             : i === current
-            ? "bg-[#191c1d] dark:bg-gray-500 text-white"
-            : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
+            ? "bg-navy text-white"
+            : "bg-fg-8 text-fg-5"
         }`}>
           {i < current ? "✓" : i + 1}
         </div>
-        {i < total - 1 && <div className={`h-0.5 w-8 rounded-full transition-all ${i < current ? "bg-[#c3e96b]" : "bg-gray-200 dark:bg-gray-700"}`} />}
+        {i < total - 1 && <div className={`h-0.5 w-8 rounded-full transition-all ${i < current ? "bg-lime" : "bg-fg-8"}`} />}
       </div>
     ))}
   </div>
@@ -114,9 +114,9 @@ const Steps = ({ current, total }: { current: number; total: number }) => (
 
 const Radio = ({ active }: { active: boolean }) => (
   <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-    active ? "border-[#c3e96b] bg-[#c3e96b]" : "border-gray-300 dark:border-gray-600"
+    active ? "border-lime bg-lime" : "border-strong"
   }`}>
-    {active && <div className="h-2 w-2 rounded-full bg-[#191c1d]" />}
+    {active && <div className="h-2 w-2 rounded-full bg-navy" />}
   </div>
 );
 
@@ -130,13 +130,6 @@ export const KalkulackaPage = () => {
   const [activity, setActivity]   = useState<Activity | null>(null);
   const [neutered, setNeutered]   = useState<boolean | null>(null);
   const [condition, setCondition] = useState<Condition>("ideal");
-  const [isDark, setIsDark]       = useState(() => document.documentElement.classList.contains("dark"));
-
-  useEffect(() => {
-    const obs = new MutationObserver(() => setIsDark(document.documentElement.classList.contains("dark")));
-    obs.observe(document.documentElement, { attributeFilter: ["class"] });
-    return () => obs.disconnect();
-  }, []);
 
   const SIZES = [
     { key: "small"  as BreedSize, label: t("calc.size_small_label"),  sub: t("calc.size_small_sub"),  example: t("calc.size_small_ex"),  img: "/plemeno-maly-pes.svg",    cardH: 72  },
@@ -158,10 +151,10 @@ export const KalkulackaPage = () => {
   ];
 
   const CATS = [
-    { key: "muscle",  label: t("calc.cat_muscle"),  pct: 70, icon: "🥩",          color: "#EF4444", light: "#FEF2F2", lightDark: "#450a0a", border: "#FECACA" },
-    { key: "rmb",     label: t("calc.cat_rmb"),     pct: 10, icon: "🦴",          color: "#D97706", light: "#FFFBEB", lightDark: "#451a03", border: "#FDE68A" },
-    { key: "organs",  label: t("calc.cat_organs"),  pct: 10, icon: <LiverIcon />, color: "#7C3AED", light: "#F5F3FF", lightDark: "#2e1065", border: "#DDD6FE" },
-    { key: "other",   label: t("calc.cat_other"),   pct: 10, icon: "🌿",          color: "#16A34A", light: "#F0FDF4", lightDark: "#052e16", border: "#BBF7D0" },
+    { key: "muscle",  label: t("calc.cat_muscle"),  pct: 70, icon: "🥩",          color: "#EF4444", light: "#FEF2F2" },
+    { key: "rmb",     label: t("calc.cat_rmb"),     pct: 10, icon: "🦴",          color: "#D97706", light: "#FFFBEB" },
+    { key: "organs",  label: t("calc.cat_organs"),  pct: 10, icon: <LiverIcon />, color: "#7C3AED", light: "#F5F3FF" },
+    { key: "other",   label: t("calc.cat_other"),   pct: 10, icon: "🌿",          color: "#16A34A", light: "#F0FDF4" },
   ];
 
   const STAGE_LABEL: Record<Stage, string> = {
@@ -203,16 +196,17 @@ export const KalkulackaPage = () => {
   const sliderPct = ((weight - wr0) / (wr1 - wr0)) * 100;
   const agePct    = (ageMonths / 180) * 100;
 
-  const sliderFill  = isDark ? "#c3e96b" : "#191c1d";
-  const sliderTrack = isDark ? "#374151" : "#e5e7eb";
+  const sliderBg = (pct: number) => ({
+    background: `linear-gradient(to right, var(--brand-navy) ${pct}%, var(--fg-8) ${pct}%)`,
+  });
 
   return (
-    <div className="min-h-screen bg-[#f2f4f7]">
+    <div className="min-h-screen bg-app">
       <SharedNav />
-      <div className="bg-textdark px-6 py-10 text-center">
-        <p className="mb-2 text-sm font-bold tracking-[2.5px] text-[#c3e96b] [font-family:'Manrope',Helvetica]">{t("calc.label")}</p>
+      <div className="bg-navy px-6 py-12 text-center">
+        <p className="mb-2 text-sm font-bold tracking-[2.5px] text-lime [font-family:'Manrope',Helvetica]">{t("calc.label")}</p>
         <h1 className="[font-family:'Inter',Helvetica] text-[34px] font-normal leading-tight tracking-[-1px] text-white sm:text-[46px]">{t("calc.title")}</h1>
-        <p className="mt-2 text-sm text-white/50">{t("calc.subtitle")}</p>
+        <p className="mt-3 text-base text-white/60">{t("calc.subtitle")}</p>
       </div>
 
       <main className="mx-auto max-w-[720px] px-4 py-10 sm:px-6">
@@ -221,21 +215,21 @@ export const KalkulackaPage = () => {
         {step === 0 && (
           <div>
             <Steps current={0} total={3} />
-            <h2 className="mb-1 text-[22px] font-semibold text-[#191c1d] dark:text-white [font-family:'Inter',Helvetica]">{t("calc.step_size_title")}</h2>
-            <p className="mb-6 text-sm text-gray-500">{t("calc.step_size_sub")}</p>
+            <h2 className="mb-1 text-2xl font-bold tracking-[-0.5px] text-fg-1 [font-family:'Inter',Helvetica]">{t("calc.step_size_title")}</h2>
+            <p className="mb-6 text-base text-fg-5">{t("calc.step_size_sub")}</p>
             <div className="flex flex-col gap-3">
               {SIZES.map((s) => {
                 const active = breedSize === s.key;
                 return (
                   <button key={s.key} onClick={() => { setBreedSize(s.key); setWeight(Math.round((WEIGHT_RANGE[s.key][0] + WEIGHT_RANGE[s.key][1]) / 2)); }}
-                    className={`flex items-center overflow-hidden rounded-2xl border-2 bg-white text-left transition-all hover:shadow-md ${active ? "border-[#c3e96b] shadow-md" : "border-gray-200 hover:border-gray-300 dark:hover:border-gray-600"}`}>
-                    <div className="flex shrink-0 items-end justify-center overflow-hidden rounded-l-2xl" style={{ backgroundColor: active ? "#c3e96b" : (isDark ? "#1e2d0a" : "#f7fde8"), width: 108, height: s.cardH }}>
+                    className={`flex items-center overflow-hidden rounded-card border-2 bg-surface text-left shadow-soft transition-all ${active ? "border-lime shadow-lifted" : "border-transparent hover:shadow-lifted"}`}>
+                    <div className={`flex shrink-0 items-end justify-center overflow-hidden ${active ? "bg-lime" : "bg-lime-faint"}`} style={{ width: 108, height: s.cardH }}>
                       <img src={s.img} alt={s.label} className="h-full w-full object-contain object-bottom" />
                     </div>
-                    <div className="flex-1 px-4">
-                      <p className="font-bold text-[#191c1d] dark:text-white">{s.label}</p>
-                      <p className="text-sm text-gray-500">{s.sub}</p>
-                      <p className="mt-0.5 text-xs text-gray-400">{s.example}</p>
+                    <div className="flex-1 px-4 py-3">
+                      <p className="text-base font-bold text-fg-1">{s.label}</p>
+                      <p className="text-[15px] text-fg-4">{s.sub}</p>
+                      <p className="mt-0.5 text-sm text-fg-5">{s.example}</p>
                     </div>
                     <div className="pr-5"><Radio active={active} /></div>
                   </button>
@@ -249,50 +243,48 @@ export const KalkulackaPage = () => {
         {step === 1 && sizeData && (
           <div>
             <Steps current={1} total={3} />
-            <h2 className="mb-6 text-[22px] font-semibold text-[#191c1d] dark:text-white [font-family:'Inter',Helvetica]">{t("calc.step_weight_title")}</h2>
+            <h2 className="mb-6 text-2xl font-bold tracking-[-0.5px] text-fg-1 [font-family:'Inter',Helvetica]">{t("calc.step_weight_title")}</h2>
             <div className="flex flex-col gap-5">
 
-              <div className="rounded-3xl bg-white p-7 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-panel bg-surface p-7 shadow-soft">
+                <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-[#191c1d] dark:text-white">{t("calc.weight_label")}</p>
-                    <p className="text-xs text-gray-400">{t("calc.weight_note")}</p>
+                    <p className="text-base font-semibold text-fg-1">{t("calc.weight_label")}</p>
+                    <p className="text-sm text-fg-5">{t("calc.weight_note")}</p>
                   </div>
                   <div className="text-right">
-                    <span className="text-[44px] font-bold leading-none text-[#191c1d] dark:text-white">{weight}</span>
-                    <span className="ml-1 text-base text-gray-400">kg</span>
+                    <span className="text-[44px] font-bold leading-none text-fg-1">{weight}</span>
+                    <span className="ml-1 text-lg text-fg-5">kg</span>
                   </div>
                 </div>
                 <input type="range" min={wr0} max={wr1} value={weight} onChange={(e) => setWeight(Number(e.target.value))}
-                  className="w-full cursor-pointer appearance-none rounded-full"
-                  style={{ height: 8, background: `linear-gradient(to right,${sliderFill} ${sliderPct}%,${sliderTrack} ${sliderPct}%)` }} />
-                <div className="mt-1.5 flex justify-between text-xs text-gray-400"><span>{wr0} kg</span><span>{wr1} kg</span></div>
+                  className="calc-slider w-full cursor-pointer" style={sliderBg(sliderPct)} />
+                <div className="mt-2 flex justify-between text-sm text-fg-5"><span>{wr0} kg</span><span>{wr1} kg</span></div>
               </div>
 
-              <div className="rounded-3xl bg-white p-7 shadow-sm">
-                <div className="mb-4 flex items-center justify-between">
+              <div className="rounded-panel bg-surface p-7 shadow-soft">
+                <div className="mb-5 flex items-center justify-between">
                   <div>
-                    <p className="font-semibold text-[#191c1d] dark:text-white">{t("calc.age_label")}</p>
-                    <p className="text-xs text-gray-400">{t("calc.age_note")}</p>
+                    <p className="text-base font-semibold text-fg-1">{t("calc.age_label")}</p>
+                    <p className="text-sm text-fg-5">{t("calc.age_note")}</p>
                   </div>
                   <div className="text-right">
-                    <span className="text-[28px] font-bold leading-none text-[#191c1d] dark:text-white">{fmtAge(ageMonths)}</span>
+                    <span className="text-[28px] font-bold leading-none text-fg-1">{fmtAge(ageMonths)}</span>
                   </div>
                 </div>
                 <input type="range" min={1} max={180} value={ageMonths} onChange={(e) => setAgeMonths(Number(e.target.value))}
-                  className="w-full cursor-pointer appearance-none rounded-full"
-                  style={{ height: 8, background: `linear-gradient(to right,${sliderFill} ${agePct}%,${sliderTrack} ${agePct}%)` }} />
-                <div className="mt-1.5 flex justify-between text-xs text-gray-400">
+                  className="calc-slider w-full cursor-pointer" style={sliderBg(agePct)} />
+                <div className="mt-2 flex justify-between text-sm text-fg-5">
                   <span>1 {t("calc.age_months_abbr")}</span>
                   <span>15 {t("calc.age_years_5_plus")}</span>
                 </div>
 
                 {detectedStage && (
-                  <div className="mt-4 flex items-center gap-3 rounded-2xl bg-[#f7fde8] dark:bg-green-900/20 px-4 py-3">
-                    <span className="text-xl">{STAGE_LABEL[detectedStage].split(" ")[0]}</span>
+                  <div className="mt-5 flex items-center gap-3 rounded-card bg-lime-faint px-4 py-3">
+                    <span className="text-2xl">{STAGE_LABEL[detectedStage].split(" ")[0]}</span>
                     <div>
-                      <p className="text-sm font-semibold text-[#506600] dark:text-green-400">{STAGE_LABEL[detectedStage].split(" ").slice(1).join(" ")}</p>
-                      <p className="text-xs text-[#506600]/70 dark:text-green-400/60">{STAGE_NOTE[detectedStage]}</p>
+                      <p className="text-[15px] font-semibold text-lime-ink">{STAGE_LABEL[detectedStage].split(" ").slice(1).join(" ")}</p>
+                      <p className="text-sm text-lime-ink/70">{STAGE_NOTE[detectedStage]}</p>
                     </div>
                   </div>
                 )}
@@ -305,17 +297,17 @@ export const KalkulackaPage = () => {
         {step === 2 && (
           <div>
             <Steps current={2} total={3} />
-            <h2 className="mb-6 text-[22px] font-semibold text-[#191c1d] dark:text-white [font-family:'Inter',Helvetica]">{t("calc.step_lifestyle_title")}</h2>
+            <h2 className="mb-6 text-2xl font-bold tracking-[-0.5px] text-fg-1 [font-family:'Inter',Helvetica]">{t("calc.step_lifestyle_title")}</h2>
 
             {detectedStage !== "senior" && detectedStage !== "puppy" && (
-              <div className="mb-5">
-                <p className="mb-3 text-sm font-semibold text-gray-700">{t("calc.activity_label")}</p>
+              <div className="mb-6">
+                <p className="mb-3 text-base font-semibold text-fg-2">{t("calc.activity_label")}</p>
                 <div className="flex flex-col gap-2">
                   {ACTIVITIES.map((a) => (
                     <button key={a.key} onClick={() => setActivity(a.key)}
-                      className={`flex items-center gap-4 rounded-2xl border-2 bg-white p-4 text-left transition-all hover:shadow-sm ${activity === a.key ? "border-[#c3e96b] bg-[#f7fde8] dark:bg-green-900/20" : "border-gray-200"}`}>
+                      className={`flex items-center gap-4 rounded-card border-2 p-4 text-left shadow-soft transition-all ${activity === a.key ? "border-lime bg-lime-faint" : "border-transparent bg-surface hover:shadow-lifted"}`}>
                       <span className="text-2xl">{a.emoji}</span>
-                      <div className="flex-1"><p className="font-semibold text-[#191c1d] dark:text-white">{a.label}</p><p className="text-xs text-gray-400">{a.sub}</p></div>
+                      <div className="flex-1"><p className="text-base font-semibold text-fg-1">{a.label}</p><p className="text-sm text-fg-5">{a.sub}</p></div>
                       <Radio active={activity === a.key} />
                     </button>
                   ))}
@@ -325,33 +317,33 @@ export const KalkulackaPage = () => {
 
             {(detectedStage === "puppy" || detectedStage === "senior") && activity === null && (() => { setActivity("pohodar"); return null; })()}
 
-            <div className="mb-5">
-              <p className="mb-3 text-sm font-semibold text-gray-700">{t("calc.neuter_label")}</p>
+            <div className="mb-6">
+              <p className="mb-3 text-base font-semibold text-fg-2">{t("calc.neuter_label")}</p>
               <div className="grid grid-cols-2 gap-3">
                 {[{ val: false, label: t("calc.neutered_no"), emoji: "🐕" }, { val: true, label: t("calc.neutered_yes"), emoji: "✂️" }].map((opt) => (
                   <button key={String(opt.val)} onClick={() => setNeutered(opt.val)}
-                    className={`flex items-center gap-3 rounded-2xl border-2 bg-white p-4 text-left transition-all hover:shadow-sm ${neutered === opt.val ? "border-[#c3e96b] bg-[#f7fde8] dark:bg-green-900/20" : "border-gray-200"}`}>
+                    className={`flex items-center gap-3 rounded-card border-2 p-4 text-left shadow-soft transition-all ${neutered === opt.val ? "border-lime bg-lime-faint" : "border-transparent bg-surface hover:shadow-lifted"}`}>
                     <span className="text-2xl">{opt.emoji}</span>
-                    <div className="flex-1 text-sm font-medium text-[#191c1d] dark:text-white">{opt.label}</div>
+                    <div className="flex-1 text-[15px] font-medium text-fg-1">{opt.label}</div>
                     <Radio active={neutered === opt.val} />
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-xs text-gray-400">{t("calc.neuter_note")}</p>
+              <p className="mt-2 text-sm text-fg-5">{t("calc.neuter_note")}</p>
             </div>
 
             <div>
-              <p className="mb-3 text-sm font-semibold text-gray-700">{t("calc.condition_label")} <span className="font-normal text-gray-400">({t("calc.condition_note")})</span></p>
+              <p className="mb-3 text-base font-semibold text-fg-2">{t("calc.condition_label")} <span className="font-normal text-fg-5">({t("calc.condition_note")})</span></p>
               <div className="flex flex-col gap-2">
                 {CONDITIONS.map((c) => (
                   <button key={c.key} onClick={() => setCondition(c.key)}
-                    className={`flex items-center gap-4 rounded-2xl border-2 bg-white p-4 text-left transition-all hover:shadow-sm ${condition === c.key ? "border-[#c3e96b] bg-[#f7fde8] dark:bg-green-900/20" : "border-gray-200"}`}>
+                    className={`flex items-center gap-4 rounded-card border-2 p-4 text-left shadow-soft transition-all ${condition === c.key ? "border-lime bg-lime-faint" : "border-transparent bg-surface hover:shadow-lifted"}`}>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="font-semibold text-[#191c1d] dark:text-white">{c.label}</p>
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-mono text-gray-500">{c.adjust}</span>
+                        <p className="text-base font-semibold text-fg-1">{c.label}</p>
+                        <span className="rounded-full bg-app px-2 py-0.5 text-xs font-mono text-fg-5">{c.adjust}</span>
                       </div>
-                      <p className="text-xs text-gray-400">{c.sub}</p>
+                      <p className="text-sm text-fg-5">{c.sub}</p>
                     </div>
                     <Radio active={condition === c.key} />
                   </button>
@@ -364,26 +356,26 @@ export const KalkulackaPage = () => {
         {/* Results */}
         {step === 3 && result && sizeData && (
           <div>
-            <div className="mb-6 overflow-hidden rounded-3xl bg-[#191c1d] px-7 py-6">
+            <div className="mb-6 overflow-hidden rounded-panel bg-navy px-7 py-6">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#c3e96b]">{t("calc.result_label")}</p>
+                  <p className="text-sm font-bold uppercase tracking-widest text-lime [font-family:'Manrope',Helvetica]">{t("calc.result_label")}</p>
                   <div className="mt-1 flex items-baseline gap-2">
                     <span className="text-[56px] font-bold leading-none text-white">{result.ration_g}</span>
                     <span className="text-xl text-white/40">{t("calc.per_day")}</span>
                   </div>
-                  <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                  <div className="mt-3 flex flex-wrap gap-2 text-sm">
                     <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{STAGE_LABEL[result.stage]}</span>
                     <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{result.percent} {t("calc.percent_weight")}</span>
                     <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">≈ {result.kcal} kcal</span>
                     <span className="rounded-full bg-white/10 px-3 py-1 text-white/70">{Math.round(result.ration_g / 2)} g {t("calc.result_per_serving")} (2×)</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-                  <div className="h-12 w-12 overflow-hidden rounded-xl">
+                <div className="flex items-center gap-3 rounded-card border border-white/10 bg-white/5 px-4 py-3">
+                  <div className="h-12 w-12 overflow-hidden rounded-xl bg-lime-faint">
                     <img src={sizeData.img} alt={sizeData.label} className="h-full w-full object-cover" />
                   </div>
-                  <div className="text-xs text-white/50">
+                  <div className="text-sm text-white/50">
                     <p className="font-semibold text-white">{weight} kg · {fmtAge(ageMonths)}</p>
                     <p>{sizeData.label}</p>
                     <p>{neutered ? t("calc.neutered_abbr") : t("calc.intact_abbr")} · {CONDITIONS.find(c => c.key === condition)?.label}</p>
@@ -397,24 +389,24 @@ export const KalkulackaPage = () => {
                 const keyMap: Record<string, keyof typeof result> = { muscle: "muscle_g", rmb: "rmb_g", organs: "organs_g", kidneys: "kidneys_g", other: "other_g" };
                 const g = result[keyMap[cat.key]] as number;
                 return (
-                  <div key={cat.key} className="overflow-hidden rounded-2xl border-2 bg-white shadow-sm" style={{ borderColor: cat.border }}>
+                  <div key={cat.key} className="overflow-hidden rounded-card border border-hairline bg-surface shadow-soft">
                     <div className="flex items-start gap-4 p-5 pb-3">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-3xl" style={{ backgroundColor: isDark ? cat.lightDark : cat.light }}>
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-3xl" style={{ backgroundColor: cat.light }}>
                         {typeof cat.icon === "string" ? cat.icon : cat.icon}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-semibold text-[#191c1d] dark:text-white">{cat.label}</h3>
-                          <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: cat.color }}>{cat.pct} %</span>
+                          <h3 className="text-base font-semibold text-fg-1">{cat.label}</h3>
+                          <span className="text-xs font-bold uppercase tracking-wide" style={{ color: cat.color }}>{cat.pct} %</span>
                         </div>
                         <div className="mt-1 flex items-baseline gap-1">
-                          <span className="text-[26px] font-bold leading-none" style={{ color: cat.color }}>{g}</span>
-                          <span className="text-sm text-gray-400">{t("calc.per_day")}</span>
+                          <span className="text-[26px] font-bold leading-none text-fg-1">{g}</span>
+                          <span className="text-sm text-fg-5">{t("calc.per_day")}</span>
                         </div>
                       </div>
                     </div>
                     <div className="px-5 pb-5">
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-fg-8">
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${cat.pct}%`, backgroundColor: cat.color }} />
                       </div>
                     </div>
@@ -423,20 +415,20 @@ export const KalkulackaPage = () => {
               })}
             </div>
 
-            <div className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm">
-              <div className="border-b border-gray-100 px-7 py-4">
-                <h3 className="font-semibold text-[#191c1d] dark:text-white">{t("calc.weekly_title")}</h3>
+            <div className="mb-5 overflow-hidden rounded-panel bg-surface shadow-soft">
+              <div className="border-b border-hairline px-7 py-4">
+                <h3 className="text-base font-semibold text-fg-1">{t("calc.weekly_title")}</h3>
               </div>
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-left">
+              <table className="w-full text-[15px]">
+                <thead className="bg-app-2 text-left">
                   <tr>
-                    <th className="px-7 py-3 font-semibold text-gray-500">{t("calc.col_part")}</th>
-                    <th className="px-4 py-3 font-semibold text-gray-500">{t("calc.col_day")}</th>
-                    <th className="px-4 py-3 font-semibold text-gray-500">{t("calc.col_week")}</th>
-                    <th className="px-4 py-3 font-semibold text-gray-500">{t("calc.col_month")}</th>
+                    <th className="px-7 py-3 text-sm font-semibold text-fg-5">{t("calc.col_part")}</th>
+                    <th className="px-4 py-3 text-sm font-semibold text-fg-5">{t("calc.col_day")}</th>
+                    <th className="px-4 py-3 text-sm font-semibold text-fg-5">{t("calc.col_week")}</th>
+                    <th className="px-4 py-3 text-sm font-semibold text-fg-5">{t("calc.col_month")}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody className="divide-y divide-hairline">
                   {(() => {
                     const muscle_g = result.muscle_g;
                     const rmb_g = result.rmb_g;
@@ -448,16 +440,16 @@ export const KalkulackaPage = () => {
                     const fruit_g = Math.round(result.ration_g * 0.01);
 
                     const renderRow = (label: string, grams: number, color?: string, indent = false) => (
-                      <tr key={label} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/30">
-                        <td className={`px-7 py-3 font-medium text-gray-700 ${indent ? "pl-12" : ""}`}>
+                      <tr key={label} className="hover:bg-app-2">
+                        <td className={`px-7 py-3 font-medium text-fg-2 ${indent ? "pl-12" : ""}`}>
                           <div className="flex items-center gap-2">
                             {color && <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />}
                             {label}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-gray-600">{grams} g</td>
-                        <td className="px-4 py-3 text-gray-600">{(grams * 7 / 1000).toFixed(2)} kg</td>
-                        <td className="px-4 py-3 text-gray-600">{(grams * 30 / 1000).toFixed(1)} kg</td>
+                        <td className="px-4 py-3 text-fg-4">{grams} g</td>
+                        <td className="px-4 py-3 text-fg-4">{(grams * 7 / 1000).toFixed(2)} kg</td>
+                        <td className="px-4 py-3 text-fg-4">{(grams * 30 / 1000).toFixed(1)} kg</td>
                       </tr>
                     );
 
@@ -472,21 +464,21 @@ export const KalkulackaPage = () => {
                       renderRow(`  – ${t("calc.cat_fruit")}`,            fruit_g,   undefined, true),
                     ];
                   })()}
-                  <tr className="bg-gray-50 font-semibold">
-                    <td className="px-7 py-3 text-gray-700">{t("calc.total")}</td>
-                    <td className="px-4 py-3 text-gray-700">{result.ration_g} g</td>
-                    <td className="px-4 py-3 text-gray-700">{(result.ration_g * 7 / 1000).toFixed(2)} kg</td>
-                    <td className="px-4 py-3 text-gray-700">{(result.ration_g * 30 / 1000).toFixed(1)} kg</td>
+                  <tr className="bg-app-2 font-semibold">
+                    <td className="px-7 py-3 text-fg-1">{t("calc.total")}</td>
+                    <td className="px-4 py-3 text-fg-1">{result.ration_g} g</td>
+                    <td className="px-4 py-3 text-fg-1">{(result.ration_g * 7 / 1000).toFixed(2)} kg</td>
+                    <td className="px-4 py-3 text-fg-1">{(result.ration_g * 30 / 1000).toFixed(1)} kg</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm">
-              <div className="border-b border-gray-100 px-7 py-4">
-                <h3 className="font-semibold text-[#191c1d] dark:text-white">{t("calc.micro_title")} <span className="text-xs font-normal text-gray-400">({t("calc.micro_note")})</span></h3>
+            <div className="mb-5 overflow-hidden rounded-panel bg-surface shadow-soft">
+              <div className="border-b border-hairline px-7 py-4">
+                <h3 className="text-base font-semibold text-fg-1">{t("calc.micro_title")} <span className="text-sm font-normal text-fg-5">({t("calc.micro_note")})</span></h3>
               </div>
-              <div className="grid grid-cols-2 gap-px bg-gray-100 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-px bg-hairline sm:grid-cols-4">
                 {[
                   { label: t("calc.micro_calcium"),    value: `${result.calcium_mg} mg` },
                   { label: t("calc.micro_phosphorus"), value: `${result.phosphorus_mg} mg` },
@@ -497,19 +489,19 @@ export const KalkulackaPage = () => {
                   { label: t("calc.micro_vitd"),       value: `${result.vitamin_d_ug} μg` },
                   { label: t("calc.micro_kcal"),       value: `${result.kcal} kcal` },
                 ].map((m) => (
-                  <div key={m.label} className="flex flex-col items-start bg-white px-5 py-4">
-                    <span className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{m.label}</span>
-                    <span className="mt-1 text-[20px] font-bold text-[#191c1d] dark:text-white">{m.value}</span>
+                  <div key={m.label} className="flex flex-col items-start bg-surface px-5 py-4">
+                    <span className="text-[11px] font-bold uppercase tracking-wide text-fg-5">{m.label}</span>
+                    <span className="mt-1 text-xl font-bold text-fg-1">{m.value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="mb-6 rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 px-6 py-4 text-sm text-amber-800 dark:text-amber-300">
+            <div className="mb-6 rounded-card border border-amber-200 bg-amber-50 px-6 py-4 text-[15px] text-amber-800">
               <strong>{t("calc.warning")}:</strong> {t("calc.disclaimer")}
             </div>
 
-            <button onClick={reset} className="w-full rounded-2xl border-2 border-gray-200 bg-white py-4 font-semibold text-gray-600 transition hover:border-gray-300 hover:text-gray-900 dark:hover:border-gray-600 dark:hover:text-white">
+            <button onClick={reset} className="w-full rounded-card border border-strong bg-surface py-4 text-base font-semibold text-fg-4 transition hover:border-fg-5 hover:text-fg-1">
               {t("calc.recalculate")}
             </button>
           </div>
@@ -518,16 +510,16 @@ export const KalkulackaPage = () => {
         {step < 3 && (
           <div className="mt-8 flex items-center justify-between">
             {step > 0
-              ? <button onClick={back} className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-600 transition hover:border-gray-300">
+              ? <button onClick={back} className="flex items-center gap-2 rounded-full border border-strong bg-surface px-6 py-3 text-[15px] font-medium text-fg-4 transition hover:border-fg-5 hover:text-fg-1">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                   {t("calc.back")}
                 </button>
               : <div />
             }
             <button onClick={next} disabled={!canNext}
-              className="flex items-center gap-2 rounded-full bg-[#191c1d] dark:bg-[#c3e96b] dark:text-[#191c1d] px-7 py-3 text-sm font-bold text-white transition disabled:opacity-30 hover:enabled:opacity-80">
+              className="flex items-center gap-2 rounded-full bg-navy px-8 py-3.5 text-base font-bold text-white transition disabled:opacity-30 hover:enabled:opacity-85">
               {step === 2 ? t("calc.show_result") : t("calc.next")}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
           </div>
         )}

@@ -3,6 +3,7 @@ import { FeatureHighlightsSection } from "./sections/FeatureHighlightsSection";
 import { FooterPromoSection } from "./sections/FooterPromoSection";
 import { HeroIntroductionSection } from "./sections/HeroIntroductionSection";
 import { DownloadSection } from "./sections/DownloadSection";
+import { BlogPreviewSection } from "./sections/BlogPreviewSection";
 import { SharedNav } from "../../components/SharedNav";
 
 export const Container = (): JSX.Element => {
@@ -11,6 +12,7 @@ export const Container = (): JSX.Element => {
       <SharedNav />
       <HeroIntroductionSection />
       <FeatureHighlightsSection />
+      <BlogPreviewSection />
       <FaqAccordionSection />
       <DownloadSection />
       <FooterPromoSection />

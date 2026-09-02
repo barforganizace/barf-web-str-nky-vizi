@@ -13,6 +13,8 @@ const Container = lazy(() => import("./screens/Container").then(m => ({ default:
 const ObchodniPodminky = lazy(() => import("./pages/ObchodniPodminky").then(m => ({ default: m.ObchodniPodminky })));
 const ZasadyOchrany = lazy(() => import("./pages/ZasadyOchrany").then(m => ({ default: m.ZasadyOchrany })));
 const KalkulackaPage = lazy(() => import("./pages/KalkulackaPage").then(m => ({ default: m.KalkulackaPage })));
+const BlogListPage = lazy(() => import("./pages/BlogListPage").then(m => ({ default: m.BlogListPage })));
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ default: m.BlogPostPage })));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 
 createRoot(document.getElementById("app") as HTMLElement).render(
@@ -24,6 +26,8 @@ createRoot(document.getElementById("app") as HTMLElement).render(
           <Routes>
             <Route path="/" element={<Container />} />
             <Route path="/kalkulacka" element={<KalkulackaPage />} />
+            <Route path="/blog" element={<BlogListPage />} />
+            <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/obchodni-podminky" element={<ObchodniPodminky />} />
             <Route path="/zasady-ochrany-osobnich-udaju" element={<ZasadyOchrany />} />
             <Route path="*" element={<NotFoundPage />} />

@@ -2,6 +2,7 @@
   "nav": {
     "features": "Features",
     "calculator": "Calculator",
+    "blog": "Blog",
     "faq": "FAQ",
     "download_btn": "Get the app",
     "main_navigation": "Main navigation",
@@ -34,6 +35,25 @@
   },
   "faq_section": {
     "title": "Before you start"
+  },
+  "blog_section": {
+    "title": "From the blog",
+    "subtitle": "Tips and insights on raw feeding — ratios, ingredient freshness and common mistakes.",
+    "view_all": "View all articles",
+    "read_more": "Read more",
+    "min_read": "min read"
+  },
+  "blog_page": {
+    "title": "The raw feeding guide",
+    "subtitle": "Ratios, ingredients, common mistakes — everything you need to know before filling the bowl.",
+    "back": "Back to blog",
+    "search_placeholder": "Search articles…",
+    "filter_all": "All",
+    "no_results": "Nothing found. Try a different word.",
+    "next_article": "Read next",
+    "cta_title": "The app does the math for you",
+    "cta_desc": "Macros, bone limits and fridge stock — BarfingApp tracks them all automatically.",
+    "cta_btn": "Download free"
   },
   "download": {
     "title": "Start feeding with confidence",
