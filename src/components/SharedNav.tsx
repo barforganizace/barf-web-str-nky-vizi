@@ -18,6 +18,7 @@ export const SharedNav = () => {
     { labelKey: "nav.calculator", href: "/kalkulacka", event: "nav-kalkulacka" },
     { labelKey: "nav.blog", href: anchor("blog"), event: "nav-blog" },
     { labelKey: "nav.faq", href: anchor("faq"), event: "nav-faq" },
+    { labelKey: "nav.producers", href: "/editor", event: "nav-editor" },
   ];
 
   useEffect(() => { setOpen(false); }, [pathname]);

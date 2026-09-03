@@ -46,6 +46,9 @@ export const FooterPromoSection = (): JSX.Element => {
             <Link to="/blog" className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
               {t("nav.blog")}
             </Link>
+            <Link to="/editor" className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
+              {t("nav.producers")}
+            </Link>
             <Link to="/obchodni-podminky" className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
               {t("footer.legal1")}
             </Link>

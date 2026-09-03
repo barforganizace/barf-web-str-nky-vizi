@@ -16,6 +16,7 @@ const KalkulackaPage = lazy(() => import("./pages/KalkulackaPage").then(m => ({ 
 const BlogListPage = lazy(() => import("./pages/BlogListPage").then(m => ({ default: m.BlogListPage })));
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ default: m.BlogPostPage })));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
+const Editor = lazy(() => import("./editor/Editor").then(m => ({ default: m.Editor })));
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
@@ -30,6 +31,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
             <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/obchodni-podminky" element={<ObchodniPodminky />} />
             <Route path="/zasady-ochrany-osobnich-udaju" element={<ZasadyOchrany />} />
+            <Route path="/editor/*" element={<Editor />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
