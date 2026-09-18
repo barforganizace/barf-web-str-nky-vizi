@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SharedNav } from "../components/SharedNav";
 import { BlogCover } from "../components/BlogCover";
-import { BlogPost, formatPostDate, getBlogPosts, normalizeText } from "../lib/blog";
+import { BlogPost, formatPostDate, useBlogPosts, normalizeText } from "../lib/blog";
 
 const filterChipClass = (active: boolean) =>
   `flex h-9 items-center rounded-full border px-3.5 text-sm font-semibold transition-colors ${
@@ -14,7 +14,7 @@ const filterChipClass = (active: boolean) =>
 
 export const BlogListPage = (): JSX.Element => {
   const { t, i18n } = useTranslation();
-  const posts = getBlogPosts(i18n.language);
+  const { posts, loading } = useBlogPosts(i18n.language);
 
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
@@ -96,6 +96,8 @@ export const BlogListPage = (): JSX.Element => {
             ))}
           </div>
         </div>
+
+        {loading && <p className="py-10 text-[15px] text-fg-5">{t("blog_page.loading")}</p>}
 
         {featured && (
           <Link

@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import { SharedNav } from "../components/SharedNav";
 import { BlogCover } from "../components/BlogCover";
 import { GlossaryTerm } from "../components/GlossaryTerm";
-import { formatPostDate, getBlogPost, getBlogPosts } from "../lib/blog";
+import { formatPostDate, useBlogPosts } from "../lib/blog";
 import { NotFoundPage } from "./NotFoundPage";
 
 const GLOSSARY_PREFIX = "#pojem:";
@@ -42,14 +42,17 @@ const ReadingProgress = (): JSX.Element => {
   );
 };
 
-export const BlogPostPage = (): JSX.Element => {
+export const BlogPostPage = (): JSX.Element | null => {
   const { slug } = useParams<{ slug: string }>();
   const { t, i18n } = useTranslation();
-  const post = slug ? getBlogPost(i18n.language, slug) : undefined;
+  const { posts, loading } = useBlogPosts(i18n.language);
+  const post = slug ? posts.find((p) => p.slug === slug) : undefined;
 
-  if (!post) return <NotFoundPage />;
+  if (!post) {
+    if (loading) return null;
+    return <NotFoundPage />;
+  }
 
-  const posts = getBlogPosts(i18n.language);
   const currentIndex = posts.findIndex((p) => p.slug === post.slug);
   const nextPost = posts.length > 1 ? posts[(currentIndex + 1) % posts.length] : undefined;
 

@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BlogCover } from "../../../../components/BlogCover";
-import { formatPostDate, getBlogPosts } from "../../../../lib/blog";
+import { formatPostDate, useBlogPosts } from "../../../../lib/blog";
 
 export const BlogPreviewSection = (): JSX.Element | null => {
   const { t, i18n } = useTranslation();
-  const posts = getBlogPosts(i18n.language).slice(0, 3);
+  const { posts: allPosts } = useBlogPosts(i18n.language);
+  const posts = allPosts.slice(0, 3);
 
   if (posts.length === 0) return null;
 

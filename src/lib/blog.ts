@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { supabase } from "./supabase";
+
 export type BlogPost = {
   slug: string;
   title: string;
@@ -14,66 +17,87 @@ export type BlogPost = {
   content: string;
 };
 
-const rawFiles = import.meta.glob("/src/content/blog/*/*.md", {
-  query: "?raw",
-  import: "default",
-  eager: true,
-}) as Record<string, string>;
-
-const parsePost = (path: string, raw: string): { lang: string; post: BlogPost } => {
-  const match = path.match(/\/blog\/(cs|en)\/([^/]+)\.md$/);
-  if (!match) throw new Error(`Neočekávaná cesta k blog příspěvku: ${path}`);
-  const [, lang, slug] = match;
-
-  const frontmatterMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-  if (!frontmatterMatch) throw new Error(`Chybí frontmatter v příspěvku: ${path}`);
-  const [, frontmatter, content] = frontmatterMatch;
-
-  const fields: Record<string, string> = {};
-  for (const line of frontmatter.split("\n")) {
-    const fieldMatch = line.match(/^(\w+):\s*"?(.*?)"?$/);
-    if (fieldMatch) fields[fieldMatch[1]] = fieldMatch[2];
-  }
-
-  const body = content.trim();
-  const wordCount = body.split(/\s+/).length;
-
-  return {
-    lang,
-    post: {
-      slug,
-      title: fields.title ?? slug,
-      date: fields.date ?? "",
-      excerpt: fields.excerpt ?? "",
-      category: fields.category ?? "",
-      tags: fields.tags ? fields.tags.split(",").map((tag) => tag.trim()).filter(Boolean) : [],
-      emoji: fields.emoji ?? "🐾",
-      accent: fields.accent ?? "lime",
-      image: fields.image,
-      imageAlt: fields.image_alt,
-      imagePosition: fields.image_position,
-      readingMinutes: Math.max(1, Math.round(wordCount / 200)),
-      content: body,
-    },
-  };
+type ArticleRow = {
+  slug: string;
+  title: string;
+  published_at: string;
+  excerpt: string;
+  category: string;
+  tags: string[];
+  emoji: string;
+  accent: string;
+  image: string | null;
+  image_alt: string | null;
+  image_position: string | null;
+  content: string;
 };
 
-const postsByLang: Record<string, BlogPost[]> = { cs: [], en: [] };
+const toBlogPost = (row: ArticleRow): BlogPost => ({
+  slug: row.slug,
+  title: row.title,
+  date: row.published_at,
+  excerpt: row.excerpt,
+  category: row.category,
+  tags: row.tags,
+  emoji: row.emoji,
+  accent: row.accent,
+  image: row.image ?? undefined,
+  imageAlt: row.image_alt ?? undefined,
+  imagePosition: row.image_position ?? undefined,
+  readingMinutes: Math.max(1, Math.round(row.content.split(/\s+/).length / 200)),
+  content: row.content,
+});
 
-for (const [path, raw] of Object.entries(rawFiles)) {
-  const { lang, post } = parsePost(path, raw);
-  postsByLang[lang]?.push(post);
-}
+type Lang = "cs" | "en";
 
-for (const lang of Object.keys(postsByLang)) {
-  postsByLang[lang].sort((a, b) => b.date.localeCompare(a.date));
-}
+const toLang = (lang: string): Lang => (lang.startsWith("en") ? "en" : "cs");
 
-export const getBlogPosts = (lang: string): BlogPost[] =>
-  postsByLang[lang.startsWith("en") ? "en" : "cs"];
+const cache: Partial<Record<Lang, BlogPost[]>> = {};
+const pending: Partial<Record<Lang, Promise<BlogPost[]>>> = {};
 
-export const getBlogPost = (lang: string, slug: string): BlogPost | undefined =>
-  getBlogPosts(lang).find((post) => post.slug === slug);
+const fetchBlogPosts = (lang: Lang): Promise<BlogPost[]> => {
+  if (cache[lang]) return Promise.resolve(cache[lang]!);
+  if (!pending[lang]) {
+    pending[lang] = Promise.resolve(
+      supabase
+        .from("articles")
+        .select(
+          "slug, title, published_at, excerpt, category, tags, emoji, accent, image, image_alt, image_position, content",
+        )
+        .eq("lang", lang)
+        .order("published_at", { ascending: false }),
+    ).then(({ data, error }) => {
+      if (error) throw error;
+      const posts = (data as ArticleRow[]).map(toBlogPost);
+      cache[lang] = posts;
+      return posts;
+    });
+  }
+  return pending[lang]!;
+};
+
+/** Publikované blog příspěvky pro daný jazyk, načtené ze Supabase (tabulka articles). */
+export const useBlogPosts = (lang: string): { posts: BlogPost[]; loading: boolean } => {
+  const resolvedLang = toLang(lang);
+  const [posts, setPosts] = useState<BlogPost[]>(() => cache[resolvedLang] ?? []);
+  const [loading, setLoading] = useState(!cache[resolvedLang]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(!cache[resolvedLang]);
+    fetchBlogPosts(resolvedLang).then((result) => {
+      if (!cancelled) {
+        setPosts(result);
+        setLoading(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [resolvedLang]);
+
+  return { posts, loading };
+};
 
 /** Malá písmena bez diakritiky — hledání pak najde „Kouč" i při zadání „kouc". */
 export const normalizeText = (text: string): string =>
