@@ -16,6 +16,7 @@ export const SharedNav = () => {
   const navLinks = [
     { labelKey: "nav.features", href: anchor("funkce"), event: "nav-funkce" },
     { labelKey: "nav.calculator", href: "/kalkulacka", event: "nav-kalkulacka" },
+    { labelKey: "nav.ingredients", href: "/suroviny", event: "nav-suroviny" },
     { labelKey: "nav.blog", href: anchor("blog"), event: "nav-blog" },
     { labelKey: "nav.faq", href: anchor("faq"), event: "nav-faq" },
     { labelKey: "nav.producers", href: "/editor", event: "nav-editor" },

@@ -15,6 +15,7 @@ const ZasadyOchrany = lazy(() => import("./pages/ZasadyOchrany").then(m => ({ de
 const KalkulackaPage = lazy(() => import("./pages/KalkulackaPage").then(m => ({ default: m.KalkulackaPage })));
 const BlogListPage = lazy(() => import("./pages/BlogListPage").then(m => ({ default: m.BlogListPage })));
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ default: m.BlogPostPage })));
+const SurovinyPage = lazy(() => import("./pages/SurovinyPage").then(m => ({ default: m.SurovinyPage })));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const Editor = lazy(() => import("./editor/Editor").then(m => ({ default: m.Editor })));
 
@@ -29,6 +30,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
             <Route path="/kalkulacka" element={<KalkulackaPage />} />
             <Route path="/blog" element={<BlogListPage />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/suroviny" element={<SurovinyPage />} />
             <Route path="/obchodni-podminky" element={<ObchodniPodminky />} />
             <Route path="/zasady-ochrany-osobnich-udaju" element={<ZasadyOchrany />} />
             <Route path="/editor/*" element={<Editor />} />
