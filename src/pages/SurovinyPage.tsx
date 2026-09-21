@@ -279,19 +279,20 @@ export const SurovinyPage = (): JSX.Element => {
       <SharedNav />
 
       <main className="mx-auto w-full max-w-[1020px] px-5 py-12 sm:px-8 lg:py-16">
-        {/* Miska stojí vpravo od nadpisu; levý sloupec drží původních 640 px. */}
-        <header className="mb-10 grid gap-8 lg:grid-cols-[minmax(0,640px)_1fr] lg:items-start">
-          <div>
-            <h1 className="mb-3 text-[36px] font-extrabold leading-[1.1] tracking-[-0.015em] text-fg-1 lg:text-[46px]">
-              {t("foods_page.title")}
-            </h1>
-            <p className="text-[17px] leading-[1.6] text-fg-5">{t("foods_page.subtitle")}</p>
-            {foods.length > 0 && (
-              <p className="mt-3 text-[13px] font-medium text-fg-6">{t("foods_page.count", { count: foods.length })}</p>
-            )}
-          </div>
-          <BowlPanel items={bowl} onGrams={setGrams} onRemove={removeFromBowl} />
+        <header className="mb-8 max-w-[640px]">
+          <h1 className="mb-3 text-[36px] font-extrabold leading-[1.1] tracking-[-0.015em] text-fg-1 lg:text-[46px]">
+            {t("foods_page.title")}
+          </h1>
+          <p className="text-[17px] leading-[1.6] text-fg-5">{t("foods_page.subtitle")}</p>
+          {foods.length > 0 && (
+            <p className="mt-3 text-[13px] font-medium text-fg-6">{t("foods_page.count", { count: foods.length })}</p>
+          )}
         </header>
+
+        {/* Pod nadpisem přes celou šířku: vlevo miska s inventářem, vpravo nutriční hodnoty. */}
+        <div className="mb-10">
+          <BowlPanel items={bowl} onGrams={setGrams} onRemove={removeFromBowl} />
+        </div>
 
         <div className="mb-8 flex flex-col gap-4">
           <div className="relative max-w-[420px]">

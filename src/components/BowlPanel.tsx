@@ -133,12 +133,14 @@ export function BowlPanel({
   const editing = items.find((b) => b.food.id === editingId);
   const slots = Math.max(MIN_SLOTS, Math.ceil((items.length + 1) / SLOTS_PER_ROW) * SLOTS_PER_ROW);
 
+  // Dvě karty vedle sebe: vlevo miska s inventářem, vpravo nutriční hodnoty.
   return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
     <aside className="rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <p className="text-[20px] font-semibold text-black">{t("foods_page.bowl.title")}</p>
-          {dog && <p className="text-[11px] font-medium text-gray-500">{t("foods_page.bowl.targets_for", { name: dog.name })}</p>}
+          {dog && <p className="text-[11px] font-medium text-gray-500">{t("foods_page.bowl.for_dog", { name: dog.name })}</p>}
         </div>
         <div className="flex items-baseline gap-1 text-black">
           <span className="text-[32px] font-bold leading-none">{fmt(totals.ration_g, 0)}</span>
@@ -228,8 +230,17 @@ export function BowlPanel({
           </button>
         </div>
       ) : (
-        <p className="mb-4 text-[11px] text-gray-500">{items.length === 0 ? t("foods_page.bowl.empty") : t("foods_page.bowl.edit_hint")}</p>
+        <p className="text-[11px] text-gray-500">{items.length === 0 ? t("foods_page.bowl.empty") : t("foods_page.bowl.edit_hint")}</p>
       )}
+    </aside>
+
+    <section className="rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
+      <div className="mb-4">
+        <p className="text-[20px] font-semibold text-black">{t("foods_page.bowl.nutrition")}</p>
+        <p className="text-[11px] font-medium text-gray-500">
+          {dog ? t("foods_page.bowl.targets_for", { name: dog.name }) : t("foods_page.bowl.no_targets")}
+        </p>
+      </div>
 
       <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.bowl.components")}</p>
       <div className="mb-5 flex flex-col gap-3">
@@ -278,6 +289,7 @@ export function BowlPanel({
       )}
 
       {targets && <p className="mt-4 text-[11px] leading-relaxed text-gray-500">{t("foods_page.bowl.tick_note")}</p>}
-    </aside>
+    </section>
+    </div>
   );
 }

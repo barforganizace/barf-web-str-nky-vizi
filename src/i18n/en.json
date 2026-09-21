@@ -129,7 +129,10 @@
     "omega_no_source": "Omega‑3 and omega‑6: no verified source for this ingredient, so no value is shown.",
     "bowl": {
       "title": "Bowl",
+      "for_dog": "Bowl for {{name}}",
+      "nutrition": "Nutrition",
       "targets_for": "Daily targets for {{name}}",
+      "no_targets": "Totals only while logged out, your dog's targets appear after login.",
       "dog_select": "Dog",
       "empty": "Empty so far. Add an ingredient with the + button on a card or in its detail.",
       "edit_hint": "Click an ingredient in the inventory to change the grams or remove it.",

@@ -131,7 +131,10 @@
     "omega_no_source": "Omega‑3 a omega‑6: pro tuhle surovinu nemáme ověřený zdroj, hodnota se neuvádí.",
     "bowl": {
       "title": "Miska",
+      "for_dog": "Miska pro psa {{name}}",
+      "nutrition": "Nutriční hodnoty",
       "targets_for": "Denní cíle pro psa {{name}}",
+      "no_targets": "Bez přihlášení jen součty, cíle psa se objeví po přihlášení.",
       "dog_select": "Pes",
       "empty": "Zatím prázdná. Surovinu přidáš tlačítkem + na kartě nebo v jejím detailu.",
       "edit_hint": "Klikni na surovinu v inventáři a uprav gramy nebo ji odeber.",
