@@ -269,7 +269,7 @@ export function BowlPanel({
           role="switch"
           aria-checked={showMicro}
           onClick={() => setShowMicro((v) => !v)}
-          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${showMicro ? "bg-[#c3e366]" : "bg-gray-300"}`}
+          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${showMicro ? "bg-navy" : "bg-gray-400"}`}
         >
           <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${showMicro ? "left-[22px]" : "left-0.5"}`} />
         </button>
