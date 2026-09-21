@@ -134,6 +134,8 @@
       "targets_for": "Denní cíle pro psa {{name}}",
       "dog_select": "Pes",
       "empty": "Zatím prázdná. Surovinu přidáš tlačítkem + na kartě nebo v jejím detailu.",
+      "edit_hint": "Klikni na surovinu v inventáři a uprav gramy nebo ji odeber.",
+      "components": "Složení misky",
       "login_text": "Přihlas se a miska se porovná s denní dávkou tvého psa.",
       "login_btn": "Přihlásit se",
       "no_dog_text": "Ještě nemáš profil psa. Průvodce zabere dvě minuty.",

@@ -4,11 +4,13 @@ import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { useSession } from "../lib/session";
 import { dailyTargets } from "../lib/targets";
-import { MACROS, MICRO_SECTIONS, type Food, type NutrientDef } from "../lib/foods";
+import type { RationTargets } from "../account/dogs";
+import { BUCKET_COLOR, MACROS, MICRO_SECTIONS, foodPhoto, type Bucket, type Food, type NutrientDef } from "../lib/foods";
 
 /* Miska vedle katalogu surovin: co uživatel naházel, kolik to má, a jak to
- * sedí na denní cíle jeho psa (profil z /ucet). Bary jsou delší než cíl:
- * čárka na 80 % délky je cíl, výplň za ní ukazuje překročení. */
+ * sedí na denní cíle jeho psa (profil z /ucet). Položky leží v inventáři
+ * jako ve hře (dlaždice s fotkou a gramy). Bary jsou delší než cíl: čárka
+ * na 80 % délky je cíl, výplň za ní ukazuje překročení. */
 
 export interface BowlItem {
   food: Food;
@@ -20,6 +22,25 @@ const TARGET_AT = 0.8;
 const MICRO_COLOR = "#66c8e3";
 const KCAL: NutrientDef = { key: "kcal", unit: "kcal", decimals: 0, color: "#c3e366" };
 const RATION: NutrientDef = { key: "ration_g", unit: "g", decimals: 0, color: "#1c232e" };
+/** Inventář má vždy aspoň dvě řady po čtyřech a jedno volné místo navíc. */
+const SLOTS_PER_ROW = 4;
+const MIN_SLOTS = 8;
+
+/** Složky BARF misky a sloupec denní dávky psa, proti kterému se měří. Játra
+ *  jsou povinná podkategorie vnitřností: počítají se do vnitřností i zvlášť. */
+const COMPONENTS: { bucket: Bucket; target: keyof RationTargets; sub?: boolean }[] = [
+  { bucket: "muscle", target: "muscle_g" },
+  { bucket: "rmb", target: "bone_g" },
+  { bucket: "organs", target: "organ_g" },
+  { bucket: "liver", target: "liver_g", sub: true },
+  { bucket: "other", target: "other_g" },
+];
+
+/** Podíly složek suroviny: koláč u anatomicky složených (kuřecí křídla), jinak celá jedna složka. */
+const bucketShares = (food: Food): [Bucket, number][] => {
+  const parts = Object.entries(food.composition ?? {}).filter(([, share]) => (share ?? 0) > 0) as [Bucket, number][];
+  return parts.length > 1 ? parts : [[food.bucket, 1]];
+};
 
 const TargetBar = ({
   label,
@@ -83,24 +104,34 @@ export function BowlPanel({
   const { user, dogs } = useSession();
   const [dogId, setDogId] = useState<string | null>(null);
   const [showMicro, setShowMicro] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const dog = dogs.find((d) => d.id === dogId) ?? dogs[0];
-  const targets = dog?.daily_targets ? dailyTargets(dog.daily_targets) : null;
+  const ration = dog?.daily_targets ?? null;
+  const targets = ration ? dailyTargets(ration) : null;
   const fmt = (n: number, decimals: number) => n.toLocaleString(i18n.language, { maximumFractionDigits: decimals });
 
   // Součet misky; surovina bez ověřené hodnoty (null) se do součtu nepočítá.
   const totals: Record<string, number> = { kcal: 0, ration_g: 0 };
+  const components: Record<Bucket, number> = { muscle: 0, rmb: 0, organs: 0, liver: 0, other: 0 };
   for (const { food, grams } of items) {
     totals.ration_g += grams;
     totals.kcal += (food.kcal * grams) / 100;
     for (const [key, value] of Object.entries(food.values)) {
       if (value != null) totals[key] = (totals[key] ?? 0) + (value * grams) / 100;
     }
+    for (const [bucket, share] of bucketShares(food)) {
+      components[bucket] += grams * share;
+      if (bucket === "liver") components.organs += grams * share;
+    }
   }
 
   const bar = (def: NutrientDef, label: string) => (
     <TargetBar key={def.key} label={label} value={totals[def.key] ?? 0} target={targets?.[def.key]} def={def} fmt={fmt} />
   );
+
+  const editing = items.find((b) => b.food.id === editingId);
+  const slots = Math.max(MIN_SLOTS, Math.ceil((items.length + 1) / SLOTS_PER_ROW) * SLOTS_PER_ROW);
 
   return (
     <aside className="rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
@@ -145,37 +176,77 @@ export function BowlPanel({
         </div>
       )}
 
-      {items.length === 0 ? (
-        <p className="mb-4 text-sm text-gray-500">{t("foods_page.bowl.empty")}</p>
+      {/* Inventář: dlaždice s fotkou a gramy, klik vybere položku k úpravě. */}
+      <div className="mb-3 grid gap-2" style={{ gridTemplateColumns: `repeat(${SLOTS_PER_ROW}, minmax(0, 1fr))` }}>
+        {items.map(({ food, grams }) => (
+          <button
+            key={food.id}
+            type="button"
+            onClick={() => setEditingId(editingId === food.id ? null : food.id)}
+            title={`${food.name} · ${fmt(grams, 0)} g`}
+            aria-pressed={editingId === food.id}
+            className={`animate-fade-in relative aspect-square overflow-hidden rounded-2xl bg-[#f2f4f7] ring-2 transition ${
+              editingId === food.id ? "ring-[#c3e366]" : "ring-transparent hover:ring-gray-300"
+            }`}
+          >
+            {food.photo ? (
+              <img src={foodPhoto(food.photo, 160)} alt={food.name} className="h-full w-full object-cover" />
+            ) : (
+              <span className="absolute inset-0 m-auto h-4 w-4 rounded-full" style={{ backgroundColor: BUCKET_COLOR[food.bucket] }} />
+            )}
+            <span className="absolute bottom-1 right-1 rounded-full bg-black/70 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+              {fmt(grams, 0)} g
+            </span>
+          </button>
+        ))}
+        {Array.from({ length: slots - items.length }, (_, i) => (
+          <span key={`empty-${i}`} aria-hidden="true" className="aspect-square rounded-2xl border-2 border-dashed border-gray-200" />
+        ))}
+      </div>
+
+      {editing ? (
+        <div className="mb-4 flex items-center gap-2 rounded-2xl bg-[#f2f4f7] py-2 pl-3 pr-2">
+          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">{editing.food.name}</span>
+          <input
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={10}
+            value={editing.grams}
+            onChange={(e) => onGrams(editing.food.id, Math.max(0, Number(e.target.value) || 0))}
+            aria-label={editing.food.name}
+            className="h-8 w-[72px] rounded-full bg-white px-3 text-right text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#c3e366]"
+          />
+          <span className="text-xs font-medium text-gray-500">g</span>
+          <button
+            type="button"
+            onClick={() => { onRemove(editing.food.id); setEditingId(null); }}
+            aria-label={`${t("foods_page.bowl.remove")}: ${editing.food.name}`}
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 transition hover:bg-white hover:text-gray-900"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       ) : (
-        <ul className="mb-4 flex flex-col gap-2">
-          {items.map(({ food, grams }) => (
-            <li key={food.id} className="flex items-center gap-2">
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">{food.name}</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step={10}
-                value={grams}
-                onChange={(e) => onGrams(food.id, Math.max(0, Number(e.target.value) || 0))}
-                aria-label={food.name}
-                className="h-8 w-[72px] rounded-full bg-[#f2f4f7] px-3 text-right text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#c3e366]"
-              />
-              <span className="text-xs font-medium text-gray-500">g</span>
-              <button
-                type="button"
-                onClick={() => onRemove(food.id)}
-                aria-label={`${t("foods_page.bowl.remove")}: ${food.name}`}
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-500 transition hover:bg-[#f2f4f7] hover:text-gray-900"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <p className="mb-4 text-[11px] text-gray-500">{items.length === 0 ? t("foods_page.bowl.empty") : t("foods_page.bowl.edit_hint")}</p>
       )}
 
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.bowl.components")}</p>
+      <div className="mb-5 flex flex-col gap-3">
+        {COMPONENTS.map(({ bucket, target, sub }) => (
+          <div key={bucket} className={sub ? "pl-5" : ""}>
+            <TargetBar
+              label={t(`foods_page.bucket.${bucket}`)}
+              value={components[bucket]}
+              target={ration?.[target] as number | undefined}
+              def={{ key: bucket, unit: "g", decimals: 0, color: BUCKET_COLOR[bucket] }}
+              fmt={fmt}
+            />
+          </div>
+        ))}
+      </div>
+
+      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.macros")}</p>
       <div className="flex flex-col gap-3">
         {bar(RATION, t("foods_page.bowl.ration"))}
         {bar(KCAL, t("foods_page.nutrient.kcal_per_100g"))}

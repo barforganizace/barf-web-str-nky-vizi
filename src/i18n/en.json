@@ -132,6 +132,8 @@
       "targets_for": "Daily targets for {{name}}",
       "dog_select": "Dog",
       "empty": "Empty so far. Add an ingredient with the + button on a card or in its detail.",
+      "edit_hint": "Click an ingredient in the inventory to change the grams or remove it.",
+      "components": "Bowl composition",
       "login_text": "Log in and the bowl is compared with your dog's daily ration.",
       "login_btn": "Log in",
       "no_dog_text": "You don't have a dog profile yet. The guide takes two minutes.",
