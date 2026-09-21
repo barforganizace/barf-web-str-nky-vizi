@@ -1,12 +1,45 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { LogIn } from "lucide-react";
 import { useSession } from "../lib/session";
+
+/** Přihlášení v navigaci: nepřihlášený vidí zřetelné tlačítko „Přihlásit se“,
+ *  přihlášený zelenou pilulku se svým jménem (nebo psem, nebo e-mailem). */
+const AccountPill = ({ className = "" }: { className?: string }) => {
+  const { t } = useTranslation();
+  const { user, dogs } = useSession();
+  if (!user) {
+    return (
+      <Link
+        to="/ucet"
+        data-umami-event="nav-prihlasit"
+        className={`inline-flex h-10 items-center gap-2 rounded-full border-2 border-navy px-4 text-sm font-bold text-navy transition-colors hover:bg-navy hover:text-fg-0 ${className}`}
+      >
+        <LogIn className="h-4 w-4" />
+        {t("nav.login")}
+      </Link>
+    );
+  }
+  const name = (user.user_metadata?.display_name as string | undefined) || dogs[0]?.name || user.email?.split("@")[0] || "";
+  return (
+    <Link
+      to="/ucet"
+      data-umami-event="nav-ucet"
+      title={t("nav.my_account")}
+      className={`inline-flex h-10 max-w-[200px] items-center gap-2 rounded-full bg-lime pl-1.5 pr-4 text-sm font-bold text-[#191c1d] transition-opacity hover:opacity-85 ${className}`}
+    >
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-navy text-xs font-extrabold uppercase text-fg-0">
+        {dogs[0]?.avatar_url ? <img src={dogs[0].avatar_url} alt="" className="h-full w-full object-cover" /> : name.slice(0, 1)}
+      </span>
+      <span className="truncate">{name}</span>
+    </Link>
+  );
+};
 
 export const SharedNav = () => {
   const { pathname } = useLocation();
   const { t, i18n } = useTranslation();
-  const { user, dogs } = useSession();
   const [open, setOpen] = useState(false);
 
   const isCS = i18n.language.startsWith("cs");
@@ -21,8 +54,6 @@ export const SharedNav = () => {
     { labelKey: "nav.blog", href: anchor("blog"), event: "nav-blog" },
     { labelKey: "nav.faq", href: anchor("faq"), event: "nav-faq" },
     { labelKey: "nav.producers", href: "/editor", event: "nav-editor" },
-    // Přihlášený majitel psa vidí místo „Přihlásit“ jméno svého psa.
-    { labelKey: user ? "nav.my_account" : "nav.login", label: dogs[0]?.name, href: "/ucet", event: "nav-ucet" },
   ];
 
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -52,7 +83,7 @@ export const SharedNav = () => {
                     data-umami-event={link.event}
                     className="text-sm font-bold text-fg-4 transition-colors hover:text-navy"
                   >
-                    {link.label ?? t(link.labelKey)}
+                    {t(link.labelKey)}
                   </a>
                 </li>
               ))}
@@ -60,6 +91,9 @@ export const SharedNav = () => {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* přihlášení / jméno uživatele */}
+            <AccountPill />
+
             {/* přepínač jazyka */}
             <button
               onClick={switchLang}
@@ -123,11 +157,14 @@ export const SharedNav = () => {
                   data-umami-event={`${link.event}-mobil`}
                   className="flex items-center px-5 py-4 text-[15px] font-bold text-fg-2 transition-colors hover:bg-app-2"
                 >
-                  {link.label ?? t(link.labelKey)}
+                  {t(link.labelKey)}
                 </a>
               </li>
             ))}
           </ul>
+          <div className="px-4 pt-4" onClick={() => setOpen(false)}>
+            <AccountPill className="w-full justify-center" />
+          </div>
           <div className="flex items-center gap-2 p-4">
             <button
               onClick={switchLang}

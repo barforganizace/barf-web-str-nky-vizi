@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Search, X } from "lucide-react";
 import { SharedNav } from "../components/SharedNav";
+import { BowlPanel, type BowlItem } from "../components/BowlPanel";
 import {
   BUCKET_COLOR,
   BUCKET_ORDER,
@@ -52,7 +53,15 @@ const BucketDot = ({ food, size }: { food: Food; size: number }): JSX.Element =>
   );
 };
 
-const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX.Element => {
+const FoodDetail = ({
+  food,
+  onClose,
+  onAdd,
+}: {
+  food: Food;
+  onClose: () => void;
+  onAdd: (food: Food, grams: number) => void;
+}): JSX.Element => {
   const { t, i18n } = useTranslation();
   const fmt = (n: number, decimals: number) => n.toLocaleString(i18n.language, { maximumFractionDigits: decimals });
 
@@ -125,6 +134,17 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
               <span className="text-sm font-medium text-gray-500">g</span>
             </span>
           </label>
+
+          <button
+            type="button"
+            onClick={() => onAdd(food, grams)}
+            disabled={grams <= 0}
+            data-umami-event="suroviny-do-misky"
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#c3e366] text-sm font-bold text-[#191c1d] transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            <Plus className="h-5 w-5" />
+            {t("foods_page.bowl.add", { grams })}
+          </button>
 
           <section className="flex flex-col gap-4 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
             <div className="flex items-start justify-between">
@@ -201,6 +221,8 @@ export const SurovinyPage = (): JSX.Element => {
   const [query, setQuery] = useState("");
   const [bucket, setBucket] = useState<Bucket | null>(null);
   const [selected, setSelected] = useState<Food | null>(null);
+  const [bowl, setBowl] = useState<BowlItem[]>([]);
+  const bowlRestored = useRef(false);
 
   useEffect(() => {
     const previous = document.title;
@@ -209,6 +231,43 @@ export const SurovinyPage = (): JSX.Element => {
       document.title = previous;
     };
   }, [t]);
+
+  // Miska přežije obnovení stránky: v localStorage jen id a gramy, suroviny se
+  // dohledají v katalogu, až se načte.
+  useEffect(() => {
+    if (bowlRestored.current || foods.length === 0) return;
+    bowlRestored.current = true;
+    try {
+      const saved = JSON.parse(localStorage.getItem("barf-bowl") ?? "[]") as { id: string; grams: number }[];
+      setBowl(saved.flatMap((s) => {
+        const food = foods.find((f) => f.id === s.id);
+        return food ? [{ food, grams: s.grams }] : [];
+      }));
+    } catch {
+      /* bez uložené misky */
+    }
+  }, [foods]);
+
+  useEffect(() => {
+    if (!bowlRestored.current) return;
+    try {
+      localStorage.setItem("barf-bowl", JSON.stringify(bowl.map((b) => ({ id: b.food.id, grams: b.grams }))));
+    } catch {
+      /* soukromé okno apod. */
+    }
+  }, [bowl]);
+
+  const addToBowl = (food: Food, grams: number) => {
+    setBowl((prev) =>
+      prev.some((b) => b.food.id === food.id)
+        ? prev.map((b) => (b.food.id === food.id ? { ...b, grams: b.grams + grams } : b))
+        : [...prev, { food, grams }],
+    );
+    setSelected(null);
+  };
+  const setGrams = (foodId: string, grams: number) =>
+    setBowl((prev) => prev.map((b) => (b.food.id === foodId ? { ...b, grams } : b)));
+  const removeFromBowl = (foodId: string) => setBowl((prev) => prev.filter((b) => b.food.id !== foodId));
 
   const q = normalize(query.trim());
   const visible = foods.filter((f) => (!bucket || f.bucket === bucket) && (!q || f.search.includes(q)));
@@ -220,14 +279,18 @@ export const SurovinyPage = (): JSX.Element => {
       <SharedNav />
 
       <main className="mx-auto w-full max-w-[1020px] px-5 py-12 sm:px-8 lg:py-16">
-        <header className="mb-10 max-w-[640px]">
-          <h1 className="mb-3 text-[36px] font-extrabold leading-[1.1] tracking-[-0.015em] text-fg-1 lg:text-[46px]">
-            {t("foods_page.title")}
-          </h1>
-          <p className="text-[17px] leading-[1.6] text-fg-5">{t("foods_page.subtitle")}</p>
-          {foods.length > 0 && (
-            <p className="mt-3 text-[13px] font-medium text-fg-6">{t("foods_page.count", { count: foods.length })}</p>
-          )}
+        {/* Miska stojí vpravo od nadpisu; levý sloupec drží původních 640 px. */}
+        <header className="mb-10 grid gap-8 lg:grid-cols-[minmax(0,640px)_1fr] lg:items-start">
+          <div>
+            <h1 className="mb-3 text-[36px] font-extrabold leading-[1.1] tracking-[-0.015em] text-fg-1 lg:text-[46px]">
+              {t("foods_page.title")}
+            </h1>
+            <p className="text-[17px] leading-[1.6] text-fg-5">{t("foods_page.subtitle")}</p>
+            {foods.length > 0 && (
+              <p className="mt-3 text-[13px] font-medium text-fg-6">{t("foods_page.count", { count: foods.length })}</p>
+            )}
+          </div>
+          <BowlPanel items={bowl} onGrams={setGrams} onRemove={removeFromBowl} />
         </header>
 
         <div className="mb-8 flex flex-col gap-4">
@@ -272,37 +335,49 @@ export const SurovinyPage = (): JSX.Element => {
         {items.length > 0 && (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((food) => (
-              <button
+              <div
                 key={food.id}
-                type="button"
-                onClick={() => setSelected(food)}
-                data-umami-event="suroviny-detail"
-                title={t("foods_page.open_detail")}
-                className="flex w-full items-center gap-3 rounded-3xl bg-white p-3 text-left transition-colors hover:bg-[#fafbfc]"
+                className="flex items-center gap-3 rounded-3xl bg-white p-3 transition-colors hover:bg-[#fafbfc]"
                 style={{ boxShadow: CARD_SHADOW }}
               >
-                {food.photo ? (
-                  <img
-                    src={foodPhoto(food.photo, 160)}
-                    alt=""
-                    loading="lazy"
-                    decoding="async"
-                    className="h-14 w-14 shrink-0 rounded-2xl bg-[#f2f4f7] object-cover"
-                  />
-                ) : (
-                  <span className="h-14 w-14 shrink-0 rounded-2xl bg-[#f2f4f7]" />
-                )}
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate text-base font-semibold text-gray-900">{food.name}</span>
-                  <span className="flex items-center gap-1.5 truncate text-sm text-gray-500">
-                    <BucketDot food={food} size={10} />
-                    {t(bucketKey(food))}
+                <button
+                  type="button"
+                  onClick={() => setSelected(food)}
+                  data-umami-event="suroviny-detail"
+                  title={t("foods_page.open_detail")}
+                  className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                >
+                  {food.photo ? (
+                    <img
+                      src={foodPhoto(food.photo, 160)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-14 w-14 shrink-0 rounded-2xl bg-[#f2f4f7] object-cover"
+                    />
+                  ) : (
+                    <span className="h-14 w-14 shrink-0 rounded-2xl bg-[#f2f4f7]" />
+                  )}
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-base font-semibold text-gray-900">{food.name}</span>
+                    <span className="flex items-center gap-1.5 truncate text-sm text-gray-500">
+                      <BucketDot food={food} size={10} />
+                      {t(bucketKey(food))}
+                    </span>
                   </span>
-                </span>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2f4f7] text-gray-900">
+                </button>
+                {/* Plus jako v appce: hodí 100 g do misky, detail se otevírá klikem na kartu. */}
+                <button
+                  type="button"
+                  onClick={() => addToBowl(food, 100)}
+                  data-umami-event="suroviny-do-misky"
+                  title={t("foods_page.bowl.add", { grams: 100 })}
+                  aria-label={`${t("foods_page.bowl.add", { grams: 100 })}: ${food.name}`}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2f4f7] text-gray-900 transition-colors hover:bg-[#c3e366]"
+                >
                   <Plus className="h-5 w-5" />
-                </span>
-              </button>
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -322,7 +397,7 @@ export const SurovinyPage = (): JSX.Element => {
         </div>
       </main>
 
-      {selected && <FoodDetail food={selected} onClose={() => setSelected(null)} />}
+      {selected && <FoodDetail food={selected} onClose={() => setSelected(null)} onAdd={addToBowl} />}
     </div>
   );
 };

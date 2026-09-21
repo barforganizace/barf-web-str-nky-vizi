@@ -10,7 +10,7 @@
     "main_navigation": "Hlavní navigace",
     "open_menu": "Otevřít menu",
     "close_menu": "Zavřít menu",
-    "login": "Přihlásit",
+    "login": "Přihlásit se",
     "my_account": "Můj účet"
   },
   "hero": {
@@ -94,6 +94,7 @@
       "fatty_acids": "Esenciální mastné kyseliny"
     },
     "nutrient": {
+      "kcal_per_100g": "Kalorie",
       "protein_pct": "Bílkoviny",
       "fat_pct": "Tuky",
       "carbs_pct": "Sacharidy",
@@ -128,6 +129,21 @@
     },
     "omega_source": "Zdroj omega‑3 a omega‑6: {{version}} · {{id}} · {{name}}",
     "omega_no_source": "Omega‑3 a omega‑6: pro tuhle surovinu nemáme ověřený zdroj, hodnota se neuvádí.",
+    "bowl": {
+      "title": "Miska",
+      "targets_for": "Denní cíle pro psa {{name}}",
+      "dog_select": "Pes",
+      "empty": "Zatím prázdná. Surovinu přidáš tlačítkem + na kartě nebo v jejím detailu.",
+      "login_text": "Přihlas se a miska se porovná s denní dávkou tvého psa.",
+      "login_btn": "Přihlásit se",
+      "no_dog_text": "Ještě nemáš profil psa. Průvodce zabere dvě minuty.",
+      "no_dog_btn": "Založit profil psa",
+      "ration": "Dávka",
+      "micro_toggle": "Mikroživiny",
+      "add": "Přidat do misky ({{grams}} g)",
+      "remove": "Odebrat",
+      "tick_note": "Čárka v baru je denní cíl psa. Když ji výplň přejde, dávka je překročená."
+    },
     "cta_title": "Tyhle suroviny máš v appce",
     "cta_desc": "Vyber surovinu, zadej gramy a BarfingApp spočítá, jak sedí do denní dávky tvého psa.",
     "cta_btn": "Stáhnout zdarma"

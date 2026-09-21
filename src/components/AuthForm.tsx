@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { LogIn, UserPlus } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { Button, Card, ErrorText, Field, inputClass } from "../editor/ui";
 
@@ -66,6 +67,16 @@ export function AuthForm({ redirectPath, nameLabel, nameHint }: Props) {
 
   return (
     <Card>
+      {/* Jasná hlavička, aby bylo na první pohled vidět, že jde o přihlášení. */}
+      <div className="mb-5 flex items-center gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-navy text-fg-0">
+          {mode === "login" ? <LogIn className="h-5 w-5" /> : <UserPlus className="h-5 w-5" />}
+        </span>
+        <div>
+          <p className="text-lg font-extrabold leading-tight text-fg-1">{mode === "login" ? "Přihlášení" : "Nový účet"}</p>
+          <p className="text-xs text-fg-5">Stejný účet jako v appce BarfingApp.</p>
+        </div>
+      </div>
       <div className="mb-5 flex gap-1 rounded-xl bg-app p-1">
         {(["login", "register"] as const).map((m) => (
           <button

@@ -92,6 +92,7 @@
       "fatty_acids": "Essential fatty acids"
     },
     "nutrient": {
+      "kcal_per_100g": "Calories",
       "protein_pct": "Protein",
       "fat_pct": "Fat",
       "carbs_pct": "Carbs",
@@ -126,6 +127,21 @@
     },
     "omega_source": "Omega‑3 and omega‑6 source: {{version}} · {{id}} · {{name}}",
     "omega_no_source": "Omega‑3 and omega‑6: no verified source for this ingredient, so no value is shown.",
+    "bowl": {
+      "title": "Bowl",
+      "targets_for": "Daily targets for {{name}}",
+      "dog_select": "Dog",
+      "empty": "Empty so far. Add an ingredient with the + button on a card or in its detail.",
+      "login_text": "Log in and the bowl is compared with your dog's daily ration.",
+      "login_btn": "Log in",
+      "no_dog_text": "You don't have a dog profile yet. The guide takes two minutes.",
+      "no_dog_btn": "Create a dog profile",
+      "ration": "Ration",
+      "micro_toggle": "Micronutrients",
+      "add": "Add to bowl ({{grams}} g)",
+      "remove": "Remove",
+      "tick_note": "The tick in the bar is your dog's daily target. Fill past it means the ration is exceeded."
+    },
     "cta_title": "These ingredients are in the app",
     "cta_desc": "Pick an ingredient, enter the grams and BarfingApp works out how it fits your dog's daily ration.",
     "cta_btn": "Download free"
