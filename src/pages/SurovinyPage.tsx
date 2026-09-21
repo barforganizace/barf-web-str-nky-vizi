@@ -24,6 +24,9 @@ import {
 const CARD_SHADOW = "0 4px 5.3px rgba(0,0,0,0.03), 0 -4px 5.3px rgba(0,0,0,0.03)";
 const DOT_EDGE = "inset 0 0 0 0.5px rgba(0,0,0,0.10)";
 
+const bucketKey = (food: Food) =>
+  food.supplementary ? "foods_page.bucket.supplementary" : `foods_page.bucket.${food.bucket}`;
+
 /** Tečka složky: jednobarevná, u složených surovin koláč (kuřecí křídla = kosti + svalovina). */
 const BucketDot = ({ food, size }: { food: Food; size: number }): JSX.Element => {
   const parts = Object.entries(food.composition ?? {}).filter(([, share]) => (share ?? 0) > 0) as [Bucket, number][];
@@ -52,6 +55,11 @@ const BucketDot = ({ food, size }: { food: Food; size: number }): JSX.Element =>
 const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX.Element => {
   const { t, i18n } = useTranslation();
   const fmt = (n: number, decimals: number) => n.toLocaleString(i18n.language, { maximumFractionDigits: decimals });
+
+  // Databáze má hodnoty na 100 g; uživatel si je přepočítá na svoji porci.
+  const [gramsText, setGramsText] = useState("100");
+  const grams = Math.max(0, Number(gramsText) || 0);
+  const show = (per100g: number, decimals: number) => fmt((per100g * grams) / 100, decimals);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -94,20 +102,36 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
           <div>
             <p className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-500">
               <BucketDot food={food} size={12} />
-              {t(`foods_page.bucket.${food.bucket}`)}
+              {t(bucketKey(food))}
             </p>
             <h2 className="text-[24px] font-bold leading-tight text-gray-900">{food.name}</h2>
             {food.description && <p className="mt-2 text-sm leading-relaxed text-gray-600">{food.description}</p>}
           </div>
 
+          <label className="flex items-center justify-between gap-3 rounded-3xl bg-white py-3 pl-5 pr-3" style={{ boxShadow: CARD_SHADOW }}>
+            <span className="text-sm font-semibold text-gray-900">{t("foods_page.amount_label")}</span>
+            <span className="flex items-center gap-2">
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step={10}
+                value={gramsText}
+                onChange={(e) => setGramsText(e.target.value)}
+                className="h-10 w-24 rounded-full bg-[#f2f4f7] px-4 text-right text-base font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#c3e366]"
+              />
+              <span className="text-sm font-medium text-gray-500">g</span>
+            </span>
+          </label>
+
           <section className="flex flex-col gap-4 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[20px] font-semibold text-black">{t("foods_page.macros")}</p>
-                <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_100g")}</p>
+                <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_grams", { grams })}</p>
               </div>
               <div className="flex items-baseline gap-1 text-black">
-                <span className="text-[32px] font-bold leading-none">{fmt(food.kcal, 0)}</span>
+                <span className="text-[32px] font-bold leading-none">{show(food.kcal, 0)}</span>
                 <span className="text-xs">kcal</span>
               </div>
             </div>
@@ -116,7 +140,7 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
                 <div className="mb-1.5 flex items-center justify-between">
                   <span className="text-sm text-gray-900">{t(`foods_page.nutrient.${m.key}`)}</span>
                   <span>
-                    <span className="text-sm font-bold text-gray-900">{fmt(food.values[m.key], m.decimals)}</span>
+                    <span className="text-sm font-bold text-gray-900">{show(food.values[m.key], m.decimals)}</span>
                     <span className="text-xs font-medium text-gray-500"> {m.unit}</span>
                   </span>
                 </div>
@@ -131,7 +155,7 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
           <section className="flex flex-col gap-5 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
             <div>
               <p className="text-[20px] font-semibold text-black">{t("foods_page.micros")}</p>
-              <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_100g")}</p>
+              <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_grams", { grams })}</p>
             </div>
             {MICRO_SECTIONS.map((section) => (
               <div key={section.key}>
@@ -143,7 +167,7 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
                     <div key={row.key} className="flex items-center justify-between py-2">
                       <span className="text-sm text-gray-900">{t(`foods_page.nutrient.${row.key}`)}</span>
                       <span>
-                        <span className="text-sm font-bold text-gray-900">{fmt(food.values[row.key], row.decimals)}</span>
+                        <span className="text-sm font-bold text-gray-900">{show(food.values[row.key], row.decimals)}</span>
                         <span className="text-xs font-medium text-gray-500"> {row.unit}</span>
                       </span>
                     </div>
@@ -265,7 +289,7 @@ export const SurovinyPage = (): JSX.Element => {
                   <span className="truncate text-base font-semibold text-gray-900">{food.name}</span>
                   <span className="flex items-center gap-1.5 truncate text-sm text-gray-500">
                     <BucketDot food={food} size={10} />
-                    {t(`foods_page.bucket.${food.bucket}`)}
+                    {t(bucketKey(food))}
                   </span>
                 </span>
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#f2f4f7] text-gray-900">

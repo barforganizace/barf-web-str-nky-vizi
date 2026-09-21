@@ -103,6 +103,8 @@ const NUTRIENT_KEYS = [...MACROS, ...MICRO_SECTIONS.flatMap((s) => s.rows)].map(
 export interface Food {
   id: string;
   bucket: Bucket;
+  /** Doplňková svalovina (dršťky, plíce, vemeno, chrupavky…): počítá se do svaloviny, ale není základ dávky. */
+  supplementary: boolean;
   /** Podíly složek u anatomicky složených surovin (kuřecí křídla = kosti + svalovina). */
   composition: Partial<Record<Bucket, number>> | null;
   photo: string | null;
@@ -124,6 +126,7 @@ interface Translation {
 interface FoodRow {
   id: string;
   category: string;
+  subcategory: string | null;
   photo_url: string | null;
   bucket_composition: Partial<Record<Bucket, number>> | null;
   kcal_per_100g: number | null;
@@ -149,6 +152,7 @@ const toFood = (row: FoodRow, locale: string): Food => {
   return {
     id: row.id,
     bucket: bucketOf(row.category),
+    supplementary: row.subcategory === "supplementary",
     composition: row.bucket_composition,
     photo: row.photo_url,
     name: tr?.name ?? "",
@@ -167,7 +171,7 @@ const fetchFoods = async (): Promise<FoodRow[]> => {
   const { data, error } = await supabase
     .from("foods")
     .select(
-      `id, category, photo_url, bucket_composition, kcal_per_100g, ${NUTRIENT_KEYS.join(", ")}, food_translations ( locale, name, description )`,
+      `id, category, subcategory, photo_url, bucket_composition, kcal_per_100g, ${NUTRIENT_KEYS.join(", ")}, food_translations ( locale, name, description )`,
     )
     .eq("is_active", true);
   if (error) throw error;
