@@ -88,7 +88,7 @@ function DogCard({ dog, units }: { dog: Dog; units: UnitSystem }) {
                 <li key={part.key} className="flex items-center justify-between py-2">
                   <span className="inline-flex items-center gap-2 text-fg-3">
                     <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: part.color }} />
-                    {t(`wizard.bowl_${part.key}`)} ({part.percent} %)
+                    {t(`wizard.bowl_${part.key}`)} ({dog[part.pct] as number} %)
                   </span>
                   <span className="font-semibold tabular-nums text-fg-1">{targets[part.grams]} g</span>
                 </li>

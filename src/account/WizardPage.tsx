@@ -5,9 +5,9 @@ import { SharedNav } from "../components/SharedNav";
 import { useSession } from "../lib/session";
 import { Button, ErrorText, Spinner, inputClass } from "../editor/ui";
 import {
-  ACTIVITIES, BODY_CONDITIONS, BOWL_PARTS, BREED_SIZES, BREED_SIZE_IMAGE, HEALTH_CONDITIONS,
+  ACTIVITIES, BODY_CONDITIONS, BOWL_PARTS, BREED_SIZES, BREED_SIZE_IMAGE, DEFAULT_RATIOS, HEALTH_CONDITIONS,
   parseWeightToKg, saveDog, useRationTargets, weightLabel,
-  type Activity, type BodyCondition, type BreedSize, type HealthCondition, type UnitSystem,
+  type Activity, type BodyCondition, type BreedSize, type DietRatios, type HealthCondition, type UnitSystem,
 } from "./dogs";
 
 // Průvodce profilem psa — stejné 4 kroky a stejný zápis do databáze jako v appce.
@@ -26,9 +26,13 @@ interface Form {
   /** Prázdné = ideální váhu odvodí databáze z kondice. */
   targetWeight: string;
   healthConditions: HealthCondition[];
+  /** Poměry složek misky v %, uživatel je může v kroku 4 upravit. */
+  ratios: DietRatios;
   avatarFile: File | null;
   avatarPreview: string | null;
 }
+
+const ratiosSum = (r: DietRatios) => r.muscle + r.bones + r.organs + r.other;
 
 type StepProps = { form: Form; patch: (p: Partial<Form>) => void };
 
@@ -223,9 +227,10 @@ function Step3({ form, patch }: StepProps) {
   );
 }
 
-function Step4({ form }: { form: Form }) {
+function Step4({ form, patch }: StepProps) {
   const { t } = useTranslation();
   const currentWeightKg = parseWeightToKg(parseFloat(form.weight) || 0, form.unitSystem);
+  const sum = ratiosSum(form.ratios);
   // Dávku počítá stejná databázová funkce, kterou pro uloženého psa používá
   // počítaný sloupec daily_targets — souhrn ukáže to, co pak ukáže appka.
   const targets = useRationTargets({
@@ -236,6 +241,7 @@ function Step4({ form }: { form: Form }) {
     breedSize: form.breedSize,
     bodyCondition: form.bodyCondition,
     targetWeightKg: targetWeightKg(form),
+    ratios: sum === 100 ? form.ratios : DEFAULT_RATIOS,
   });
   const feedingToTarget = targets != null && Math.abs(targets.feeding_weight_kg - currentWeightKg) > 0.01;
 
@@ -269,15 +275,39 @@ function Step4({ form }: { form: Form }) {
       <Section label={t("wizard.bowl")}>
         <ul className="divide-y divide-hairline rounded-panel border border-hairline bg-surface px-5 shadow-soft">
           {BOWL_PARTS.map((part) => (
-            <li key={part.key} className="flex items-center justify-between py-3 text-sm">
-              <span className="inline-flex items-center gap-2 text-fg-3">
-                <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: part.color }} />
-                {t(`wizard.bowl_${part.key}`)} ({part.percent} %)
+            <li key={part.key} className="flex items-center gap-3 py-3 text-sm">
+              <span className="inline-flex flex-1 items-center gap-2 text-fg-3">
+                <i className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: part.color, boxShadow: "inset 0 0 0 0.5px rgba(0,0,0,0.10)" }} />
+                {t(`wizard.bowl_${part.key}`)}
               </span>
-              <span className="font-bold tabular-nums text-fg-1">{targets ? targets[part.grams] : "—"} g</span>
+              {/* Poměr jde upravit; dávka se přepočítá, jakmile je součet 100 %. */}
+              <span className="inline-flex items-center gap-1">
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  max={100}
+                  value={form.ratios[part.key]}
+                  onChange={(e) => patch({ ratios: { ...form.ratios, [part.key]: Math.max(0, Math.min(100, parseInt(e.target.value) || 0)) } })}
+                  aria-label={`${t(`wizard.bowl_${part.key}`)} %`}
+                  className="h-9 w-16 rounded-card border border-hairline bg-app-2 px-2 text-right text-sm font-bold text-fg-1 focus:border-strong focus:outline-none"
+                />
+                <span className="text-xs text-fg-5">%</span>
+              </span>
+              <span className="w-16 text-right font-bold tabular-nums text-fg-1">{targets && sum === 100 ? targets[part.grams] : "—"} g</span>
             </li>
           ))}
         </ul>
+        <div className="mt-2 flex items-center justify-between text-xs">
+          <span className={sum === 100 ? "text-fg-5" : "font-bold text-red-700"}>
+            {sum === 100 ? t("wizard.bowl_hint") : t("wizard.bowl_sum", { sum })}
+          </span>
+          {JSON.stringify(form.ratios) !== JSON.stringify(DEFAULT_RATIOS) ? (
+            <button type="button" onClick={() => patch({ ratios: DEFAULT_RATIOS })} className="font-bold text-fg-3 underline underline-offset-2 hover:text-fg-1">
+              {t("wizard.bowl_reset")}
+            </button>
+          ) : null}
+        </div>
       </Section>
     </div>
   );
@@ -293,14 +323,15 @@ export function WizardPage() {
   const [form, setForm] = useState<Form>({
     name: "", breed: "", breedSize: "medium", ageYears: "", ageMonths: "", weight: "", unitSystem: "metric",
     activity: "pohodar", isNeutered: false, bodyCondition: "ideal", targetWeight: "", healthConditions: [],
-    avatarFile: null, avatarPreview: null,
+    ratios: DEFAULT_RATIOS, avatarFile: null, avatarPreview: null,
   });
   const patch = (p: Partial<Form>) => setForm((prev) => ({ ...prev, ...p }));
 
   if (loading) return <Spinner />;
   if (!user) return <Navigate to="/ucet" replace />;
 
-  const canAdvance = step === 1 ? form.name.trim().length > 0 : step === 2 ? parseFloat(form.weight) > 0 : true;
+  const canAdvance =
+    step === 1 ? form.name.trim().length > 0 : step === 2 ? parseFloat(form.weight) > 0 : step === 4 ? ratiosSum(form.ratios) === 100 : true;
 
   async function next() {
     if (step < 4) {
@@ -321,6 +352,7 @@ export function WizardPage() {
         bodyCondition: form.bodyCondition,
         targetWeightKg: targetWeightKg(form),
         healthConditions: form.healthConditions,
+        ratios: form.ratios,
         avatarFile: form.avatarFile,
         unitSystem: form.unitSystem,
       });
@@ -351,18 +383,21 @@ export function WizardPage() {
         {step === 1 && <Step1 form={form} patch={patch} />}
         {step === 2 && <Step2 form={form} patch={patch} />}
         {step === 3 && <Step3 form={form} patch={patch} />}
-        {step === 4 && <Step4 form={form} />}
+        {step === 4 && <Step4 form={form} patch={patch} />}
 
-        <div className="mt-8 space-y-3">
+        {/* Tlačítka v design systému: tmavé hlavní vpravo, obrysové Zpět vlevo. */}
+        <div className="mt-8">
           <ErrorText>{error}</ErrorText>
-          <Button variant="lime" className="w-full" onClick={next} disabled={!canAdvance || saving}>
-            {step === 4 ? (saving ? t("wizard.saving") : t("wizard.save")) : t("wizard.continue")}
-          </Button>
-          {step > 1 && (
-            <Button variant="secondary" className="w-full" onClick={() => setStep(step - 1)} disabled={saving}>
-              {t("wizard.back")}
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
+            {step > 1 && (
+              <Button variant="secondary" className="h-12 sm:w-40" onClick={() => setStep(step - 1)} disabled={saving}>
+                {t("wizard.back")}
+              </Button>
+            )}
+            <Button variant="primary" className="h-12 flex-1" onClick={next} disabled={!canAdvance || saving}>
+              {step === 4 ? (saving ? t("wizard.saving") : t("wizard.save")) : t("wizard.continue")}
             </Button>
-          )}
+          </div>
         </div>
       </main>
     </div>

@@ -24,13 +24,32 @@ export const BREED_SIZE_IMAGE: Record<BreedSize, string> = {
   giant: "/plemeno-obri-pes.svg",
 };
 
-/** Výchozí složení misky 50/25/15/10 — klíč překladu, procento, barva, pole s gramy v odpovědi databáze. */
-export const BOWL_PARTS: { key: string; percent: number; color: string; grams: keyof RationTargets }[] = [
-  { key: "muscle", percent: 50, color: "#d9534f", grams: "muscle_g" },
-  { key: "bones", percent: 25, color: "#e8b923", grams: "bone_g" },
-  { key: "organs", percent: 15, color: "#8e5bb5", grams: "organ_g" },
-  { key: "other", percent: 10, color: "#5cb85c", grams: "other_g" },
+/** Poměry složek misky v procentech (součet 100), sloupce diet_*_pct psa. */
+export interface DietRatios {
+  muscle: number;
+  bones: number;
+  organs: number;
+  other: number;
+}
+
+export const DEFAULT_RATIOS: DietRatios = { muscle: 50, bones: 25, organs: 15, other: 10 };
+
+/** Složky misky — klíč překladu i poměru, barva z design systému appky
+ *  (--category-*), pole s gramy v odpovědi databáze a sloupec procenta u psa. */
+export const BOWL_PARTS: { key: keyof DietRatios; color: string; grams: keyof RationTargets; pct: keyof Dog }[] = [
+  { key: "muscle", color: "#e66c6c", grams: "muscle_g", pct: "diet_muscle_pct" },
+  { key: "bones", color: "#e6dcc5", grams: "bone_g", pct: "diet_bones_pct" },
+  { key: "organs", color: "#b886f7", grams: "organ_g", pct: "diet_organs_pct" },
+  { key: "other", color: "#58d37e", grams: "other_g", pct: "diet_other_pct" },
 ];
+
+/** Tvar p_ratios pro calc_daily_targets (a klíče, které vrací dogs.diet_*). */
+export const ratiosPayload = (r: DietRatios) => ({
+  muscle_pct: r.muscle,
+  bones_pct: r.bones,
+  organs_pct: r.organs,
+  other_pct: r.other,
+});
 
 export interface RationTargets {
   ration_g: number;
@@ -62,6 +81,10 @@ export interface Dog {
   body_condition: BodyCondition;
   target_weight_kg: number | null;
   health_conditions: HealthCondition[];
+  diet_muscle_pct: number;
+  diet_bones_pct: number;
+  diet_organs_pct: number;
+  diet_other_pct: number;
   daily_targets: RationTargets;
 }
 
@@ -101,6 +124,7 @@ export interface RationQuery {
   breedSize: BreedSize;
   bodyCondition: BodyCondition;
   targetWeightKg: number | null;
+  ratios: DietRatios;
 }
 
 export function useRationTargets(query: RationQuery): RationTargets | null {
@@ -116,7 +140,7 @@ export function useRationTargets(query: RationQuery): RationTargets | null {
       p_activity: q.activity,
       p_neutered: q.neutered,
       p_breed_size: q.breedSize,
-      p_ratios: null,
+      p_ratios: ratiosPayload(q.ratios),
       p_manual_percent: null,
       p_body_condition: q.bodyCondition,
       p_target_weight_kg: q.targetWeightKg,
@@ -144,6 +168,7 @@ export interface NewDog {
   bodyCondition: BodyCondition;
   targetWeightKg: number | null;
   healthConditions: HealthCondition[];
+  ratios: DietRatios;
   avatarFile: File | null;
   unitSystem: UnitSystem;
 }
@@ -187,6 +212,10 @@ export async function saveDog(userId: string, d: NewDog): Promise<void> {
       body_condition: d.bodyCondition,
       target_weight_kg: d.targetWeightKg,
       health_conditions: d.healthConditions,
+      diet_muscle_pct: d.ratios.muscle,
+      diet_bones_pct: d.ratios.bones,
+      diet_organs_pct: d.ratios.organs,
+      diet_other_pct: d.ratios.other,
     })
     .select("id")
     .single();
