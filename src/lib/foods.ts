@@ -113,8 +113,17 @@ export interface Food {
   /** Název bez diakritiky a malými písmeny — pro hledání. */
   search: string;
   kcal: number;
-  /** Živiny na 100 g podle sloupců tabulky foods. */
-  values: Record<string, number>;
+  /** Živiny na 100 g podle sloupců tabulky foods; null = hodnota bez ověřeného zdroje. */
+  values: Record<string, number | null>;
+  /** Řádek USDA SR28 / BLS 4.0, ze kterého jdou omega-3 a omega-6 (food_nutrition_profiles). */
+  omegaSource: { version: string; id: string; name: string } | null;
+}
+
+interface Profile {
+  source: string;
+  source_id: string | null;
+  source_name: string | null;
+  source_version: string | null;
 }
 
 interface Translation {
@@ -131,6 +140,7 @@ interface FoodRow {
   bucket_composition: Partial<Record<Bucket, number>> | null;
   kcal_per_100g: number | null;
   food_translations: Translation[];
+  food_nutrition_profiles: Profile[];
   [nutrient: string]: unknown;
 }
 
@@ -147,8 +157,9 @@ const toFood = (row: FoodRow, locale: string): Food => {
     row.food_translations.find((t) => t.locale === locale) ??
     row.food_translations.find((t) => t.locale === "cs") ??
     row.food_translations[0];
-  const values: Record<string, number> = {};
-  for (const key of NUTRIENT_KEYS) values[key] = Number(row[key] ?? 0);
+  const values: Record<string, number | null> = {};
+  for (const key of NUTRIENT_KEYS) values[key] = row[key] == null ? null : Number(row[key]);
+  const profile = row.food_nutrition_profiles.find((p) => p.source === "usda" || p.source === "bls");
   return {
     id: row.id,
     bucket: bucketOf(row.category),
@@ -160,6 +171,9 @@ const toFood = (row: FoodRow, locale: string): Food => {
     search: normalize(tr?.name ?? ""),
     kcal: Number(row.kcal_per_100g ?? 0),
     values,
+    omegaSource: profile
+      ? { version: profile.source_version ?? profile.source, id: profile.source_id ?? "", name: profile.source_name ?? "" }
+      : null,
   };
 };
 
@@ -171,7 +185,7 @@ const fetchFoods = async (): Promise<FoodRow[]> => {
   const { data, error } = await supabase
     .from("foods")
     .select(
-      `id, category, subcategory, photo_url, bucket_composition, kcal_per_100g, ${NUTRIENT_KEYS.join(", ")}, food_translations ( locale, name, description )`,
+      `id, category, subcategory, photo_url, bucket_composition, kcal_per_100g, ${NUTRIENT_KEYS.join(", ")}, food_translations ( locale, name, description ), food_nutrition_profiles ( source, source_id, source_name, source_version )`,
     )
     .eq("is_active", true);
   if (error) throw error;

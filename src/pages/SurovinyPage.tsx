@@ -59,7 +59,9 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
   // Databáze má hodnoty na 100 g; uživatel si je přepočítá na svoji porci.
   const [gramsText, setGramsText] = useState("100");
   const grams = Math.max(0, Number(gramsText) || 0);
-  const show = (per100g: number, decimals: number) => fmt((per100g * grams) / 100, decimals);
+  // null = bez ověřeného zdroje, radši pomlčka než falešná nula.
+  const show = (per100g: number | null, decimals: number) =>
+    per100g == null ? "–" : fmt((per100g * grams) / 100, decimals);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -146,7 +148,7 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
                 </div>
                 {/* Gramy na 100 g jsou rovnou procenta, bar tak má přirozený strop. */}
                 <div className="h-2 w-full overflow-hidden rounded-full bg-[#f2f4f7]">
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, food.values[m.key])}%`, backgroundColor: m.color }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, food.values[m.key] ?? 0)}%`, backgroundColor: m.color }} />
                 </div>
               </div>
             ))}
@@ -175,6 +177,11 @@ const FoodDetail = ({ food, onClose }: { food: Food; onClose: () => void }): JSX
                 </div>
               </div>
             ))}
+            <p className="text-[11px] leading-relaxed text-gray-500">
+              {food.omegaSource
+                ? t("foods_page.omega_source", food.omegaSource)
+                : t("foods_page.omega_no_source")}
+            </p>
           </section>
         </div>
       </div>

@@ -122,6 +122,8 @@
       "omega3_epa_dha_mg": "Omega-3 (EPA+DHA)",
       "omega6_la_mg": "Omega-6 (linoleic acid)"
     },
+    "omega_source": "Omega‑3 and omega‑6 source: {{version}} · {{id}} · {{name}}",
+    "omega_no_source": "Omega‑3 and omega‑6: no verified source for this ingredient, so no value is shown.",
     "cta_title": "These ingredients are in the app",
     "cta_desc": "Pick an ingredient, enter the grams and BarfingApp works out how it fits your dog's daily ration.",
     "cta_btn": "Download free"

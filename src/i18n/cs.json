@@ -124,6 +124,8 @@
       "omega3_epa_dha_mg": "Omega-3 (EPA+DHA)",
       "omega6_la_mg": "Omega-6 (kys. linolová)"
     },
+    "omega_source": "Zdroj omega‑3 a omega‑6: {{version}} · {{id}} · {{name}}",
+    "omega_no_source": "Omega‑3 a omega‑6: pro tuhle surovinu nemáme ověřený zdroj, hodnota se neuvádí.",
     "cta_title": "Tyhle suroviny máš v appce",
     "cta_desc": "Vyber surovinu, zadej gramy a BarfingApp spočítá, jak sedí do denní dávky tvého psa.",
     "cta_btn": "Stáhnout zdarma"
