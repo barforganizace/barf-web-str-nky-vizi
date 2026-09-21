@@ -21,7 +21,6 @@ const CARD_SHADOW = "0 4px 5.3px rgba(0,0,0,0.03), 0 -4px 5.3px rgba(0,0,0,0.03)
 const TARGET_AT = 0.8;
 const MICRO_COLOR = "#66c8e3";
 const KCAL: NutrientDef = { key: "kcal", unit: "kcal", decimals: 0, color: "#c3e366" };
-const RATION: NutrientDef = { key: "ration_g", unit: "g", decimals: 0, color: "#1c232e" };
 /** Inventář má vždy aspoň dvě řady po čtyřech a jedno volné místo navíc. */
 const SLOTS_PER_ROW = 4;
 const MIN_SLOTS = 8;
@@ -259,7 +258,6 @@ export function BowlPanel({
 
       <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.macros")}</p>
       <div className="flex flex-col gap-3">
-        {bar(RATION, t("foods_page.bowl.ration"))}
         {bar(KCAL, t("foods_page.nutrient.kcal_per_100g"))}
         {MACROS.map((m) => bar(m, t(`foods_page.nutrient.${m.key}`)))}
       </div>
