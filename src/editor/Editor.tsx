@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { SessionProvider } from "./session";
 import { ProductsPage } from "./ProductsPage";
 import { ProductPage } from "./ProductPage";
 import { AdminPage } from "./AdminPage";
@@ -14,13 +13,11 @@ export const Editor = () => {
   }, []);
 
   return (
-    <SessionProvider>
-      <Routes>
-        <Route index element={<ProductsPage />} />
-        <Route path="produkt/:id" element={<ProductPage />} />
-        <Route path="admin" element={<AdminPage />} />
-        <Route path="*" element={<Navigate to="/editor" replace />} />
-      </Routes>
-    </SessionProvider>
+    <Routes>
+      <Route index element={<ProductsPage />} />
+      <Route path="produkt/:id" element={<ProductPage />} />
+      <Route path="admin" element={<AdminPage />} />
+      <Route path="*" element={<Navigate to="/editor" replace />} />
+    </Routes>
   );
 };

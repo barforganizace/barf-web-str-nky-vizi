@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSession } from "./session";
+import { useSession } from "../lib/session";
 import { EditorShell } from "./EditorShell";
 import {
   CATEGORIES, categoryLabel, createOrganization, createProduct, errorMessage, listProducts, myOrganization,

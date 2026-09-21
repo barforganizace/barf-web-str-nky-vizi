@@ -6,6 +6,7 @@ import { PageLoader } from "./components/PageLoader";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollToHash } from "./components/ScrollToHash";
 import { initAnalytics } from "./lib/analytics";
+import { SessionProvider } from "./lib/session";
 
 initAnalytics();
 
@@ -17,11 +18,13 @@ const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ defa
 const SurovinyPage = lazy(() => import("./pages/SurovinyPage").then(m => ({ default: m.SurovinyPage })));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage").then(m => ({ default: m.NotFoundPage })));
 const Editor = lazy(() => import("./editor/Editor").then(m => ({ default: m.Editor })));
+const Account = lazy(() => import("./account/Account").then(m => ({ default: m.Account })));
 
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
+        <SessionProvider>
         <ScrollToHash />
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -32,9 +35,11 @@ createRoot(document.getElementById("app") as HTMLElement).render(
             <Route path="/obchodni-podminky" element={<ObchodniPodminky />} />
             <Route path="/zasady-ochrany-osobnich-udaju" element={<ZasadyOchrany />} />
             <Route path="/editor/*" element={<Editor />} />
+            <Route path="/ucet/*" element={<Account />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
+        </SessionProvider>
       </BrowserRouter>
     </ErrorBoundary>
   </StrictMode>,

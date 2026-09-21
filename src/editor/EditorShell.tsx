@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
-import { useSession } from "./session";
+import { useSession } from "../lib/session";
 import { AuthForm } from "./AuthForm";
 import { Spinner } from "./ui";
 
 function EditorHeader() {
-  const { user, isAdmin } = useSession();
+  const { user, isAdmin, dogs } = useSession();
   return (
     <header className="sticky top-0 z-40 w-full border-b border-hairline bg-[rgba(245,246,248,0.85)] backdrop-blur-[12px]">
       <div className="mx-auto flex w-full max-w-[1180px] items-center justify-between gap-4 px-5 py-3 sm:px-8">
@@ -21,6 +21,9 @@ function EditorHeader() {
             <Link to="/editor/admin" className="rounded-full bg-lime-faint px-3 py-1 text-xs font-bold text-lime-ink hover:opacity-80">
               Schvalování
             </Link>
+          )}
+          {dogs.length > 0 && (
+            <Link to="/ucet" className="hidden text-sm font-bold text-fg-4 hover:text-navy sm:inline">Můj pes</Link>
           )}
         </div>
         {user && (

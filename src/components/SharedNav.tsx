@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useSession } from "../lib/session";
 
 export const SharedNav = () => {
   const { pathname } = useLocation();
   const { t, i18n } = useTranslation();
+  const { user, dogs } = useSession();
   const [open, setOpen] = useState(false);
 
   const isCS = i18n.language.startsWith("cs");
@@ -19,6 +21,8 @@ export const SharedNav = () => {
     { labelKey: "nav.blog", href: anchor("blog"), event: "nav-blog" },
     { labelKey: "nav.faq", href: anchor("faq"), event: "nav-faq" },
     { labelKey: "nav.producers", href: "/editor", event: "nav-editor" },
+    // Přihlášený majitel psa vidí místo „Přihlásit“ jméno svého psa.
+    { labelKey: user ? "nav.my_account" : "nav.login", label: dogs[0]?.name, href: "/ucet", event: "nav-ucet" },
   ];
 
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -48,7 +52,7 @@ export const SharedNav = () => {
                     data-umami-event={link.event}
                     className="text-sm font-bold text-fg-4 transition-colors hover:text-navy"
                   >
-                    {t(link.labelKey)}
+                    {link.label ?? t(link.labelKey)}
                   </a>
                 </li>
               ))}
@@ -119,7 +123,7 @@ export const SharedNav = () => {
                   data-umami-event={`${link.event}-mobil`}
                   className="flex items-center px-5 py-4 text-[15px] font-bold text-fg-2 transition-colors hover:bg-app-2"
                 >
-                  {t(link.labelKey)}
+                  {link.label ?? t(link.labelKey)}
                 </a>
               </li>
             ))}
