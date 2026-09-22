@@ -26,9 +26,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [hasOrg, setHasOrg] = useState(false);
-  const [dogs, setDogs] = useState<Dog[]>([]);
-  const [dogsLoading, setDogsLoading] = useState(true);
+  // Psi se drží spolu s uživatelem, ke kterému patří. Jinak by hned po přihlášení
+  // chvíli platil prázdný seznam z odhlášeného stavu a účet by poslal do průvodce,
+  // i když už je pes uložený.
+  const [loaded, setLoaded] = useState<{ userId: string | null; dogs: Dog[] } | null>(null);
   const userId = user?.id ?? null;
+  const dogs = loaded?.userId === userId ? loaded.dogs : [];
+  const dogsLoading = loaded?.userId !== userId;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -56,15 +60,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const refetchDogs = useCallback(async () => {
     if (!userId) {
-      setDogs([]);
-      setDogsLoading(false);
+      setLoaded({ userId: null, dogs: [] });
       return;
     }
-    setDogsLoading(true);
     const { data, error } = await supabase.from("dogs").select(DOG_SELECT).order("created_at", { ascending: true });
     if (error) console.error("[db] dogs.select:", error.message);
-    setDogs((data ?? []) as Dog[]);
-    setDogsLoading(false);
+    setLoaded({ userId, dogs: (data ?? []) as Dog[] });
   }, [userId]);
 
   useEffect(() => {
