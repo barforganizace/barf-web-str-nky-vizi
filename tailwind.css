@@ -352,6 +352,16 @@
   border-radius: 16px;
 }
 
+/* Popisek pod obrázkem — odstavec, ve kterém je jen kurzíva. */
+.blog-prose p > em:only-child {
+  display: block;
+  margin-top: -0.6em;
+  font-size: 14px;
+  line-height: 1.6;
+  font-style: normal;
+  color: var(--fg-6);
+}
+
 .blog-prose code {
   padding: 2px 6px;
   border-radius: 6px;
