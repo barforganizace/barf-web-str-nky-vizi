@@ -76,6 +76,11 @@
     "per_grams": "Values per {{grams}} g",
     "macros": "Macronutrients",
     "micros": "Micronutrients",
+    "flag": {
+      "toxic": "Toxic for dogs",
+      "never_cook": "Never cook",
+      "must_cook": "Cooked only"
+    },
     "bucket": {
       "muscle": "Muscle meat",
       "supplementary": "Supplementary muscle meat",

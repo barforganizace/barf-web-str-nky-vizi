@@ -78,6 +78,11 @@
     "per_grams": "Hodnoty na {{grams}} g",
     "macros": "Makroživiny",
     "micros": "Mikroživiny",
+    "flag": {
+      "toxic": "Toxické pro psy",
+      "never_cook": "Nikdy nevařit",
+      "must_cook": "Jen tepelně upravené"
+    },
     "bucket": {
       "muscle": "Svalovina",
       "supplementary": "Doplňková svalovina",

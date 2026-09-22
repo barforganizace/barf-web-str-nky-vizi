@@ -117,6 +117,8 @@ export interface Food {
   values: Record<string, number | null>;
   /** Řádek USDA SR28 / BLS 4.0, ze kterého jdou omega-3 a omega-6 (food_nutrition_profiles). */
   omegaSource: { version: string; id: string; name: string } | null;
+  /** Toxická / nikdy nevařit / jen tepelně upravená; null = běžná surovina. */
+  flag: FoodFlag | null;
 }
 
 interface Profile {
@@ -143,6 +145,36 @@ interface FoodRow {
   food_nutrition_profiles: Profile[];
   [nutrient: string]: unknown;
 }
+
+/** Vlastnost suroviny, kterou katalog obarvuje. V databázi appky zatím není, drží se tady. */
+export type FoodFlag = "toxic" | "never_cook" | "must_cook";
+
+/** Pastelové pozadí karty (a tmavší text štítku) pro každou vlastnost. */
+export const FLAG_STYLE: Record<FoodFlag, { bg: string; hover: string; text: string }> = {
+  toxic: { bg: "#fdecea", hover: "#fbdfdc", text: "#a1382f" },
+  never_cook: { bg: "#eaf3fc", hover: "#dde9f8", text: "#2f6ea3" },
+  must_cook: { bg: "#fdf0e2", hover: "#fae4cd", text: "#96591b" },
+};
+
+/* Suroviny, které se podávají jen tepelně upravené; zbytek příznaků plyne z kategorie.
+ * Zvěřina kvůli Aujeszkyho chorobě a trichinelám — kůň a chovaný králík mají v databázi
+ * taky subcategory "game", ale zvěřina to není, proto jmenovitý seznam. */
+const MUST_COOK_IDS = new Set([
+  "702a5427-731f-4730-8f64-7efd6289ac10", // Divočák
+  "0c85323f-f4b7-420d-aeee-f5075540d621", // Daňčí maso
+  "8c40218d-0b9e-49c5-b376-34b3dd3e58bf", // Srnčí maso
+  "914c4da0-4e64-4384-b334-59fdbf8516db", // Zvěřina (jelení)
+  "fc9b60eb-dc25-43c2-bae7-6e5502792888", // Jelení játra
+  "c689b537-46e6-45e2-9afc-a310893e6d7c", // Batáty
+  "16d2ff5e-eadc-4bfd-ad6b-081e7b14cc9a", // Dýně
+]);
+
+const flagOf = (row: FoodRow): FoodFlag | null => {
+  if (row.subcategory === "allium") return "toxic"; // cibule, česnek, pórek — hemolytická anémie
+  if (row.category === "bone") return "never_cook"; // vařené kosti se štípou
+  if (MUST_COOK_IDS.has(row.id)) return "must_cook";
+  return null;
+};
 
 /** Malá písmena bez diakritiky — hledání najde „Hovězí" i při zadání „hovezi". */
 export const normalize = (text: string): string =>
@@ -174,6 +206,7 @@ const toFood = (row: FoodRow, locale: string): Food => {
     omegaSource: profile
       ? { version: profile.source_version ?? profile.source, id: profile.source_id ?? "", name: profile.source_name ?? "" }
       : null,
+    flag: flagOf(row),
   };
 };
 

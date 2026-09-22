@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Search, X } from "lucide-react";
+import { Ban, Flame, Plus, Search, Snowflake, X } from "lucide-react";
 import { SharedNav } from "../components/SharedNav";
 import { BowlPanel, type BowlItem } from "../components/BowlPanel";
 import { MissingFoodForm } from "../components/MissingFoodForm";
 import {
   BUCKET_COLOR,
   BUCKET_ORDER,
+  FLAG_STYLE,
   MACROS,
   MICRO_SECTIONS,
   foodPhoto,
@@ -14,6 +15,7 @@ import {
   useFoods,
   type Bucket,
   type Food,
+  type FoodFlag,
 } from "../lib/foods";
 
 /* Katalog surovin z databáze appky.
@@ -28,6 +30,23 @@ const DOT_EDGE = "inset 0 0 0 0.5px rgba(0,0,0,0.10)";
 
 const bucketKey = (food: Food) =>
   food.supplementary ? "foods_page.bucket.supplementary" : `foods_page.bucket.${food.bucket}`;
+
+const FLAG_ICON: Record<FoodFlag, typeof Ban> = { toxic: Ban, never_cook: Snowflake, must_cook: Flame };
+
+/** Štítek vlastnosti: v seznamu samotný text (karta je už obarvená), v detailu pastelová plaketka. */
+const FlagLabel = ({ flag, filled }: { flag: FoodFlag; filled?: boolean }): JSX.Element => {
+  const { t } = useTranslation();
+  const Icon = FLAG_ICON[flag];
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 text-[13px] font-semibold ${filled ? "rounded-full px-2.5 py-1" : ""}`}
+      style={{ color: FLAG_STYLE[flag].text, backgroundColor: filled ? FLAG_STYLE[flag].bg : undefined }}
+    >
+      <Icon className="h-3.5 w-3.5 shrink-0" />
+      {t(`foods_page.flag.${flag}`)}
+    </span>
+  );
+};
 
 /** Tečka složky: jednobarevná, u složených surovin koláč (kuřecí křídla = kosti + svalovina). */
 const BucketDot = ({ food, size }: { food: Food; size: number }): JSX.Element => {
@@ -117,6 +136,11 @@ const FoodDetail = ({
               {t(bucketKey(food))}
             </p>
             <h2 className="text-[24px] font-bold leading-tight text-gray-900">{food.name}</h2>
+            {food.flag && (
+              <p className="mt-2">
+                <FlagLabel flag={food.flag} filled />
+              </p>
+            )}
             {food.description && <p className="mt-2 text-sm leading-relaxed text-gray-600">{food.description}</p>}
           </div>
 
@@ -339,8 +363,14 @@ export const SurovinyPage = (): JSX.Element => {
             {items.map((food) => (
               <div
                 key={food.id}
-                className="flex items-center gap-3 rounded-3xl bg-white p-3 transition-colors hover:bg-[#fafbfc]"
-                style={{ boxShadow: CARD_SHADOW }}
+                className="flex items-center gap-3 rounded-3xl p-3 transition-colors hover:bg-[var(--card-hover)]"
+                style={
+                  {
+                    boxShadow: CARD_SHADOW,
+                    backgroundColor: food.flag ? FLAG_STYLE[food.flag].bg : "#ffffff",
+                    "--card-hover": food.flag ? FLAG_STYLE[food.flag].hover : "#fafbfc",
+                  } as CSSProperties
+                }
               >
                 <button
                   type="button"
@@ -366,6 +396,7 @@ export const SurovinyPage = (): JSX.Element => {
                       <BucketDot food={food} size={10} />
                       {t(bucketKey(food))}
                     </span>
+                    {food.flag && <FlagLabel flag={food.flag} />}
                   </span>
                 </button>
                 {/* Plus jako v appce: hodí 100 g do misky, detail se otevírá klikem na kartu. */}
