@@ -146,6 +146,20 @@
       "remove": "Remove",
       "tick_note": "The tick in the bar is your dog's daily target. Fill past it means the ration is exceeded."
     },
+    "missing": {
+      "title": "An ingredient missing?",
+      "desc": "Tell us what you can't find in the catalogue. We'll check it and add it to the app's database.",
+      "name_label": "Ingredient name",
+      "name_placeholder": "E.g. rabbit ears with fur",
+      "note_label": "Note",
+      "note_placeholder": "Optional — where to buy it, why it's worth adding, a link to its composition…",
+      "submit": "Send suggestion",
+      "sending": "Sending…",
+      "anonymous": "Anonymous — we don't store your email or anything that identifies you.",
+      "error": "The suggestion couldn't be sent. Please try again in a moment.",
+      "sent_title": "Thanks, got it!",
+      "sent_desc": "Your suggestion is in. Once we verify the ingredient, it shows up in the catalogue and the app."
+    },
     "cta_title": "These ingredients are in the app",
     "cta_desc": "Pick an ingredient, enter the grams and BarfingApp works out how it fits your dog's daily ration.",
     "cta_btn": "Download free"

@@ -148,6 +148,20 @@
       "remove": "Odebrat",
       "tick_note": "Čárka v baru je denní cíl psa. Když ji výplň přejde, dávka je překročená."
     },
+    "missing": {
+      "title": "Chybí tu surovina?",
+      "desc": "Napiš, co v katalogu postrádáš. Projdeme to a surovinu doplníme do databáze appky.",
+      "name_label": "Název suroviny",
+      "name_placeholder": "Např. králičí uši s chlupy",
+      "note_label": "Poznámka",
+      "note_placeholder": "Nepovinné — kde se dá koupit, čím je zajímavá, odkaz na složení…",
+      "submit": "Odeslat návrh",
+      "sending": "Odesílám…",
+      "anonymous": "Anonymně — neukládáme e-mail ani nic, podle čeho by šlo poznat, kdo píše.",
+      "error": "Návrh se nepodařilo odeslat. Zkus to za chvíli znovu.",
+      "sent_title": "Díky, máme to!",
+      "sent_desc": "Návrh dorazil. Až surovinu ověříme, objeví se v katalogu i v appce."
+    },
     "cta_title": "Tyhle suroviny máš v appce",
     "cta_desc": "Vyber surovinu, zadej gramy a BarfingApp spočítá, jak sedí do denní dávky tvého psa.",
     "cta_btn": "Stáhnout zdarma"

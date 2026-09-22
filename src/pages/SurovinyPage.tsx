@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Plus, Search, X } from "lucide-react";
 import { SharedNav } from "../components/SharedNav";
 import { BowlPanel, type BowlItem } from "../components/BowlPanel";
+import { MissingFoodForm } from "../components/MissingFoodForm";
 import {
   BUCKET_COLOR,
   BUCKET_ORDER,
@@ -382,6 +383,8 @@ export const SurovinyPage = (): JSX.Element => {
             ))}
           </div>
         )}
+
+        <MissingFoodForm />
 
         <div className="mt-14 rounded-feature bg-navy px-7 py-10 text-center sm:px-10">
           <h2 className="mb-2.5 text-[22px] font-extrabold tracking-[-0.01em] text-fg-0 sm:text-[26px]">
