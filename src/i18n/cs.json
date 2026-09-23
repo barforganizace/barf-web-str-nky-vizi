@@ -100,7 +100,7 @@
     "bucket": {
       "muscle": "Svalovina",
       "supplementary": "Doplňková svalovina",
-      "rmb": "Masité kosti",
+      "rmb": "Kosti",
       "organs": "Vnitřnosti",
       "liver": "Játra",
       "other": "Ostatní"
@@ -166,7 +166,7 @@
       "micro_toggle": "Mikroživiny",
       "add": "Přidat do misky ({{grams}} g)",
       "remove": "Odebrat",
-      "tick_note": "Čárka v baru je denní cíl psa. Když ji výplň přejde, dávka je překročená."
+      "tick_note": "Čárka v baru je denní cíl psa. U živin je to minimum — přejít ho nevadí, syrová dávka ho běžně přesáhne. Červeně se ozve jen překročení bezpečné horní hranice."
     },
     "missing": {
       "title": "Chybí tu surovina?",
@@ -279,7 +279,7 @@
     "cond_over": "Nadváha",
     "cond_over_sub": "Žebra hůře hmatatelná, kulatý tvar",
     "cat_muscle": "Svalovina",
-    "cat_rmb": "Masité kosti",
+    "cat_rmb": "Kosti",
     "cat_organs": "Vnitřnosti",
     "cat_other": "Ostatní",
     "micro_calcium": "Vápník",
@@ -487,7 +487,7 @@
     "bowl_sum": "Součet je {{sum}} %, musí být přesně 100 %.",
     "bowl_reset": "Vrátit 50/25/15/10",
     "bowl_muscle": "Svalovina",
-    "bowl_bones": "Masité kosti",
+    "bowl_bones": "Kosti",
     "bowl_organs": "Vnitřnosti",
     "bowl_other": "Ostatní",
     "stage_puppy": "Štěně",

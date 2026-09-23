@@ -36,9 +36,13 @@ const CARBS_PCT_OF_KCAL = 0.15;
 // se energetický základ nepouští, jinak by málo žravý pes měl cíle pod NRC.
 const NRC_REFERENCE_KCAL_PER_METABOLIC_KG = 130;
 
+/** Tisíce kcal, na které NRC tabulky přepočítávají — základ obou tabulek níž. */
+const energyBasis = (r: RationTargets): number =>
+  Math.max(r.kcal, NRC_REFERENCE_KCAL_PER_METABOLIC_KG * Math.pow(r.feeding_weight_kg, 0.75)) / 1000;
+
 /** Denní cíle psa podle jeho dávky z databáze; klíče = sloupce tabulky foods + kcal a ration_g. */
 export function dailyTargets(r: RationTargets): Record<string, number> {
-  const basis = Math.max(r.kcal, NRC_REFERENCE_KCAL_PER_METABOLIC_KG * Math.pow(r.feeding_weight_kg, 0.75)) / 1000;
+  const basis = energyBasis(r);
   const table = r.life_stage === "puppy" ? PUPPY : ADULT;
   const out: Record<string, number> = {
     kcal: r.kcal,
@@ -48,5 +52,30 @@ export function dailyTargets(r: RationTargets): Record<string, number> {
     carbs_pct: Math.round((r.kcal * CARBS_PCT_OF_KCAL) / 4),
   };
   for (const [key, ra] of Object.entries(table)) out[key] = ra * basis;
+  return out;
+}
+
+// Bezpečné horní limity (NRC Safe Upper Limit na 1000 kcal), zkopírované z appky
+// (nutrients.ts, pole `sul` a FAT_SUL_G_PER_1000KCAL). Většina živin žádný limit nemá:
+// chybějící klíč znamená „NRC strop nestanovuje“, ne „neomezeně“. Bílkoviny mezi nimi
+// schválně nejsou — cíl je u nich minimum, které syrová dávka běžně několikrát přesáhne.
+const ADULT_LIMITS: Record<string, number> = {
+  fat_pct: 82.5,
+  vitamin_a_ug: 16000, vitamin_d_ug: 20,
+  omega3_epa_dha_mg: 2800, omega6_la_mg: 16300,
+};
+
+const PUPPY_LIMITS: Record<string, number> = {
+  fat_pct: 330, calcium_mg: 18000,
+  vitamin_a_ug: 3750, vitamin_d_ug: 20,
+  omega3_epa_dha_mg: 11000, omega6_la_mg: 65000,
+};
+
+/** Horní hranice pro tentýž den. Kalorie jsou jediný cíl, který je zároveň strop. */
+export function dailyLimits(r: RationTargets): Record<string, number> {
+  const basis = energyBasis(r);
+  const table = r.life_stage === "puppy" ? PUPPY_LIMITS : ADULT_LIMITS;
+  const out: Record<string, number> = { kcal: r.kcal };
+  for (const [key, sul] of Object.entries(table)) out[key] = sul * basis;
   return out;
 }

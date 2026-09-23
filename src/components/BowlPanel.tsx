@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { useSession } from "../lib/session";
-import { dailyTargets } from "../lib/targets";
+import { dailyLimits, dailyTargets } from "../lib/targets";
 import { CardPager } from "./CardPager";
 import type { RationTargets } from "../account/dogs";
 import { BUCKET_COLOR, MACROS, MICRO_SECTIONS, foodPhoto, type Bucket, type Food, type NutrientDef } from "../lib/foods";
@@ -42,23 +42,28 @@ const bucketShares = (food: Food): [Bucket, number][] => {
   return parts.length > 1 ? parts : [[food.bucket, 1]];
 };
 
+/** `target` je u živin minimum (NRC Recommended Allowance), ne strop — červeně se proto hlásí
+ *  až překročení `limit`. Většina živin žádný nemá; složení misky a kalorie ano, tam je cíl
+ *  zároveň hranicí. */
 const TargetBar = ({
   label,
   value,
   target,
+  limit,
   def,
   fmt,
 }: {
   label: string;
   value: number;
   target: number | undefined;
+  limit?: number;
   def: NutrientDef;
   fmt: (n: number, decimals: number) => string;
 }): JSX.Element => {
   const hasTarget = target != null && target > 0;
   const ratio = hasTarget ? value / target : 0;
   const width = hasTarget ? Math.min(100, ratio * TARGET_AT * 100) : 0;
-  const over = hasTarget && ratio > 1;
+  const over = limit != null && limit > 0 && value > limit;
   return (
     <div>
       <div className="mb-1 flex items-center justify-between gap-2">
@@ -108,6 +113,7 @@ export function BowlPanel({
   const dog = dogs.find((d) => d.id === dogId) ?? dogs[0];
   const ration = dog?.daily_targets ?? null;
   const targets = ration ? dailyTargets(ration) : null;
+  const limits = ration ? dailyLimits(ration) : null;
   const fmt = (n: number, decimals: number) => n.toLocaleString(i18n.language, { maximumFractionDigits: decimals });
 
   // Součet misky; surovina bez ověřené hodnoty (null) se do součtu nepočítá.
@@ -126,7 +132,15 @@ export function BowlPanel({
   }
 
   const bar = (def: NutrientDef, label: string) => (
-    <TargetBar key={def.key} label={label} value={totals[def.key] ?? 0} target={targets?.[def.key]} def={def} fmt={fmt} />
+    <TargetBar
+      key={def.key}
+      label={label}
+      value={totals[def.key] ?? 0}
+      target={targets?.[def.key]}
+      limit={limits?.[def.key]}
+      def={def}
+      fmt={fmt}
+    />
   );
 
   const editing = items.find((b) => b.food.id === editingId);
@@ -251,6 +265,7 @@ export function BowlPanel({
                   label={t(`foods_page.bucket.${bucket}`)}
                   value={components[bucket]}
                   target={ration?.[target] as number | undefined}
+                  limit={ration?.[target] as number | undefined}
                   def={{ key: bucket, unit: "g", decimals: 0, color: BUCKET_COLOR[bucket] }}
                   fmt={fmt}
                 />

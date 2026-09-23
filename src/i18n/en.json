@@ -98,7 +98,7 @@
     "bucket": {
       "muscle": "Muscle meat",
       "supplementary": "Supplementary muscle meat",
-      "rmb": "Raw meaty bones",
+      "rmb": "Bones",
       "organs": "Organs",
       "liver": "Liver",
       "other": "Other"
@@ -164,7 +164,7 @@
       "micro_toggle": "Micronutrients",
       "add": "Add to bowl ({{grams}} g)",
       "remove": "Remove",
-      "tick_note": "The tick in the bar is your dog's daily target. Fill past it means the ration is exceeded."
+      "tick_note": "The tick in the bar is your dog's daily target. For nutrients it is a minimum — going past it is fine, a raw ration routinely does. Red appears only above the safe upper limit."
     },
     "missing": {
       "title": "An ingredient missing?",
@@ -277,7 +277,7 @@
     "cond_over": "Overweight",
     "cond_over_sub": "Ribs hard to feel, rounded shape",
     "cat_muscle": "Muscle meat",
-    "cat_rmb": "Raw meaty bones",
+    "cat_rmb": "Bones",
     "cat_organs": "Organs",
     "cat_other": "Other",
     "micro_calcium": "Calcium",
@@ -485,7 +485,7 @@
     "bowl_sum": "The total is {{sum}} %, it has to be exactly 100 %.",
     "bowl_reset": "Reset to 50/25/15/10",
     "bowl_muscle": "Muscle meat",
-    "bowl_bones": "Meaty bones",
+    "bowl_bones": "Bones",
     "bowl_organs": "Organs",
     "bowl_other": "Other",
     "stage_puppy": "Puppy",

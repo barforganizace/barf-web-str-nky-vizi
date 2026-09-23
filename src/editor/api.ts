@@ -10,7 +10,7 @@ export const CATEGORIES = [
   { value: "mix", label: "Mix více surovin" },
   { value: "complete_menu", label: "Kompletní menu" },
   { value: "monoprotein", label: "Monoprotein" },
-  { value: "rmb", label: "Masité kosti" },
+  { value: "rmb", label: "Kosti" },
   { value: "treat", label: "Pamlsek" },
 ];
 
