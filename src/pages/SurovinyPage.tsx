@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { Children, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Ban, Flame, Plus, Search, Snowflake, X } from "lucide-react";
 import { SharedNav } from "../components/SharedNav";
@@ -132,6 +132,57 @@ const CalciumPhosphorusRatio = ({ food }: { food: Food }): JSX.Element | null =>
   );
 };
 
+/* Karty na jedné ploše: přejetím prstem (nebo klikem na tečku) se přepínají. Stejně jako
+ * SwipeableCardContainer v appce — scroll-snap a aktivní stránka dopočítaná z pozice scrollu.
+ * Výšku drží nejvyšší karta, aby obsah pod ní při přejetí nepodskakoval. */
+const CardPager = ({ labels, children }: { labels: string[]; children: ReactNode }): JSX.Element => {
+  const track = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const pages = Children.toArray(children);
+
+  const onScroll = () => {
+    const el = track.current;
+    if (!el || el.clientWidth <= 0) return;
+    setActive(Math.max(0, Math.min(Math.round(el.scrollLeft / el.clientWidth), pages.length - 1)));
+  };
+
+  const goTo = (index: number) => {
+    const el = track.current;
+    el?.scrollTo({ left: index * el.clientWidth, behavior: "smooth" });
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      {/* Jediná tečka by slibovala stránky, které tam nejsou. */}
+      {pages.length > 1 && (
+        <div className="flex justify-center gap-2">
+          {pages.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => goTo(i)}
+              aria-label={labels[i]}
+              aria-current={i === active}
+              className={`h-2.5 w-2.5 rounded-full transition-colors ${i === active ? "bg-navy" : "bg-gray-300"}`}
+            />
+          ))}
+        </div>
+      )}
+      <div
+        ref={track}
+        onScroll={onScroll}
+        className="flex snap-x snap-mandatory overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {pages.map((page, i) => (
+          <div key={i} className="w-full shrink-0 snap-start pr-3 last:pr-0">
+            {page}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 const FoodDetail = ({
   food,
   onClose,
@@ -212,33 +263,6 @@ const FoodDetail = ({
             {food.description && <p className="mt-2 text-sm leading-relaxed text-gray-600">{food.description}</p>}
           </div>
 
-          {shares.length > 1 && (
-            <section className="rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
-              <p className="mb-2 text-[20px] font-semibold text-black">{t("foods_page.composition")}</p>
-              <div className="divide-y divide-[#f2f4f7]">
-                {shares.map(([bucket, share]) => (
-                  <div key={bucket} className="flex items-center justify-between gap-3 py-2">
-                    <span className="flex items-center gap-2 text-sm text-gray-900">
-                      <span
-                        className="h-2.5 w-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: BUCKET_COLOR[bucket], boxShadow: DOT_EDGE }}
-                      />
-                      {t(`foods_page.bucket.${bucket}`)}
-                    </span>
-                    <span className="shrink-0">
-                      <span className="text-sm font-bold text-gray-900">{Math.round(share * 100)} %</span>
-                      <span className="text-xs font-medium text-gray-500">
-                        {" · "}
-                        {t("foods_page.share_of_ration", { percent: bucketShare(bucket, ration) })}
-                      </span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("foods_page.composition_note")}</p>
-            </section>
-          )}
-
           <label className="flex items-center justify-between gap-3 rounded-3xl bg-white py-3 pl-5 pr-3" style={{ boxShadow: CARD_SHADOW }}>
             <span className="text-sm font-semibold text-gray-900">{t("foods_page.amount_label")}</span>
             <span className="flex items-center gap-2">
@@ -271,64 +295,98 @@ const FoodDetail = ({
             {t("foods_page.bowl.add", { grams })}
           </button>
 
-          <section className="flex flex-col gap-4 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[20px] font-semibold text-black">{t("foods_page.macros")}</p>
-                <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_grams", { grams })}</p>
-              </div>
-              <div className="flex items-baseline gap-1 text-black">
-                <span className="text-[32px] font-bold leading-none">{show(food.kcal, 0)}</span>
-                <span className="text-xs">kcal</span>
-              </div>
-            </div>
-            {MACROS.map((m) => (
-              <div key={m.key}>
-                <div className="mb-1.5 flex items-center justify-between">
-                  <span className="text-sm text-gray-900">{t(`foods_page.nutrient.${m.key}`)}</span>
-                  <span>
-                    <span className="text-sm font-bold text-gray-900">{show(food.values[m.key], m.decimals)}</span>
-                    <span className="text-xs font-medium text-gray-500"> {m.unit}</span>
-                  </span>
-                </div>
-                {/* Gramy na 100 g jsou rovnou procenta, bar tak má přirozený strop. */}
-                <div className="h-2 w-full overflow-hidden rounded-full bg-[#f2f4f7]">
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, food.values[m.key] ?? 0)}%`, backgroundColor: m.color }} />
-                </div>
-              </div>
-            ))}
-          </section>
-
-          <section className="flex flex-col gap-5 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
-            <div>
-              <p className="text-[20px] font-semibold text-black">{t("foods_page.micros")}</p>
-              <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_grams", { grams })}</p>
-            </div>
-            {MICRO_SECTIONS.map((section) => (
-              <div key={section.key}>
-                <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-gray-500">
-                  {t(`foods_page.section.${section.key}`)}
-                </p>
+          <CardPager
+            labels={[
+              ...(shares.length > 1 ? [t("foods_page.composition")] : []),
+              t("foods_page.macros"),
+              t("foods_page.micros"),
+            ]}
+          >
+            {shares.length > 1 && (
+              <section className="rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
+                <p className="mb-2 text-[20px] font-semibold text-black">{t("foods_page.composition")}</p>
                 <div className="divide-y divide-[#f2f4f7]">
-                  {section.rows.map((row) => (
-                    <div key={row.key} className="flex items-center justify-between py-2">
-                      <span className="text-sm text-gray-900">{t(`foods_page.nutrient.${row.key}`)}</span>
-                      <span>
-                        <span className="text-sm font-bold text-gray-900">{show(food.values[row.key], row.decimals)}</span>
-                        <span className="text-xs font-medium text-gray-500"> {row.unit}</span>
+                  {shares.map(([bucket, share]) => (
+                    <div key={bucket} className="flex items-center justify-between gap-3 py-2">
+                      <span className="flex items-center gap-2 text-sm text-gray-900">
+                        <span
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: BUCKET_COLOR[bucket], boxShadow: DOT_EDGE }}
+                        />
+                        {t(`foods_page.bucket.${bucket}`)}
+                      </span>
+                      <span className="shrink-0">
+                        <span className="text-sm font-bold text-gray-900">{Math.round(share * 100)} %</span>
+                        <span className="text-xs font-medium text-gray-500">
+                          {" · "}
+                          {t("foods_page.share_of_ration", { percent: bucketShare(bucket, ration) })}
+                        </span>
                       </span>
                     </div>
                   ))}
                 </div>
-                {section.key === "macrominerals" && <CalciumPhosphorusRatio food={food} />}
+                <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("foods_page.composition_note")}</p>
+              </section>
+            )}
+            <section className="flex flex-col gap-4 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-[20px] font-semibold text-black">{t("foods_page.macros")}</p>
+                  <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_grams", { grams })}</p>
+                </div>
+                <div className="flex items-baseline gap-1 text-black">
+                  <span className="text-[32px] font-bold leading-none">{show(food.kcal, 0)}</span>
+                  <span className="text-xs">kcal</span>
+                </div>
               </div>
-            ))}
-            <p className="text-[11px] leading-relaxed text-gray-500">
-              {food.omegaSource
-                ? t("foods_page.omega_source", food.omegaSource)
-                : t("foods_page.omega_no_source")}
-            </p>
-          </section>
+              {MACROS.map((m) => (
+                <div key={m.key}>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <span className="text-sm text-gray-900">{t(`foods_page.nutrient.${m.key}`)}</span>
+                    <span>
+                      <span className="text-sm font-bold text-gray-900">{show(food.values[m.key], m.decimals)}</span>
+                      <span className="text-xs font-medium text-gray-500"> {m.unit}</span>
+                    </span>
+                  </div>
+                  {/* Gramy na 100 g jsou rovnou procenta, bar tak má přirozený strop. */}
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-[#f2f4f7]">
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(100, food.values[m.key] ?? 0)}%`, backgroundColor: m.color }} />
+                  </div>
+                </div>
+              ))}
+            </section>
+
+            <section className="flex flex-col gap-5 rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
+              <div>
+                <p className="text-[20px] font-semibold text-black">{t("foods_page.micros")}</p>
+                <p className="text-[11px] font-medium text-gray-500">{t("foods_page.per_grams", { grams })}</p>
+              </div>
+              {MICRO_SECTIONS.map((section) => (
+                <div key={section.key}>
+                  <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-gray-500">
+                    {t(`foods_page.section.${section.key}`)}
+                  </p>
+                  <div className="divide-y divide-[#f2f4f7]">
+                    {section.rows.map((row) => (
+                      <div key={row.key} className="flex items-center justify-between py-2">
+                        <span className="text-sm text-gray-900">{t(`foods_page.nutrient.${row.key}`)}</span>
+                        <span>
+                          <span className="text-sm font-bold text-gray-900">{show(food.values[row.key], row.decimals)}</span>
+                          <span className="text-xs font-medium text-gray-500"> {row.unit}</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  {section.key === "macrominerals" && <CalciumPhosphorusRatio food={food} />}
+                </div>
+              ))}
+              <p className="text-[11px] leading-relaxed text-gray-500">
+                {food.omegaSource
+                  ? t("foods_page.omega_source", food.omegaSource)
+                  : t("foods_page.omega_no_source")}
+              </p>
+            </section>
+          </CardPager>
         </div>
       </div>
     </div>
