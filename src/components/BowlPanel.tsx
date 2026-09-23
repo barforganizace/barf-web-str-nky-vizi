@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { useSession } from "../lib/session";
 import { dailyTargets } from "../lib/targets";
+import { CardPager } from "./CardPager";
 import type { RationTargets } from "../account/dogs";
 import { BUCKET_COLOR, MACROS, MICRO_SECTIONS, foodPhoto, type Bucket, type Food, type NutrientDef } from "../lib/foods";
 
@@ -102,7 +103,6 @@ export function BowlPanel({
   const { t, i18n } = useTranslation();
   const { user, dogs } = useSession();
   const [dogId, setDogId] = useState<string | null>(null);
-  const [showMicro, setShowMicro] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const dog = dogs.find((d) => d.id === dogId) ?? dogs[0];
@@ -241,42 +241,33 @@ export function BowlPanel({
         </p>
       </div>
 
-      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.bowl.components")}</p>
-      <div className="mb-5 flex flex-col gap-3">
-        {COMPONENTS.map(({ bucket, target, sub }) => (
-          <div key={bucket} className={sub ? "pl-5" : ""}>
-            <TargetBar
-              label={t(`foods_page.bucket.${bucket}`)}
-              value={components[bucket]}
-              target={ration?.[target] as number | undefined}
-              def={{ key: bucket, unit: "g", decimals: 0, color: BUCKET_COLOR[bucket] }}
-              fmt={fmt}
-            />
+      <CardPager labels={[t("foods_page.bowl.components"), t("foods_page.macros"), t("foods_page.micros")]}>
+        <div>
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.bowl.components")}</p>
+          <div className="flex flex-col gap-3">
+            {COMPONENTS.map(({ bucket, target, sub }) => (
+              <div key={bucket} className={sub ? "pl-5" : ""}>
+                <TargetBar
+                  label={t(`foods_page.bucket.${bucket}`)}
+                  value={components[bucket]}
+                  target={ration?.[target] as number | undefined}
+                  def={{ key: bucket, unit: "g", decimals: 0, color: BUCKET_COLOR[bucket] }}
+                  fmt={fmt}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
 
-      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.macros")}</p>
-      <div className="flex flex-col gap-3">
-        {bar(KCAL, t("foods_page.nutrient.kcal_per_100g"))}
-        {MACROS.map((m) => bar(m, t(`foods_page.nutrient.${m.key}`)))}
-      </div>
+        <div>
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-gray-500">{t("foods_page.macros")}</p>
+          <div className="flex flex-col gap-3">
+            {bar(KCAL, t("foods_page.nutrient.kcal_per_100g"))}
+            {MACROS.map((m) => bar(m, t(`foods_page.nutrient.${m.key}`)))}
+          </div>
+        </div>
 
-      <label className="mt-5 flex cursor-pointer items-center justify-between gap-3">
-        <span className="text-sm font-semibold text-gray-900">{t("foods_page.bowl.micro_toggle")}</span>
-        <button
-          type="button"
-          role="switch"
-          aria-checked={showMicro}
-          onClick={() => setShowMicro((v) => !v)}
-          className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${showMicro ? "bg-navy" : "bg-gray-400"}`}
-        >
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${showMicro ? "left-[22px]" : "left-0.5"}`} />
-        </button>
-      </label>
-
-      {showMicro && (
-        <div className="mt-4 flex flex-col gap-5">
+        <div className="flex flex-col gap-5">
           {MICRO_SECTIONS.map((section) => (
             <div key={section.key} className="flex flex-col gap-3">
               <p className="text-[11px] font-bold uppercase tracking-wide text-gray-500">{t(`foods_page.section.${section.key}`)}</p>
@@ -284,7 +275,7 @@ export function BowlPanel({
             </div>
           ))}
         </div>
-      )}
+      </CardPager>
 
       {targets && <p className="mt-4 text-[11px] leading-relaxed text-gray-500">{t("foods_page.bowl.tick_note")}</p>}
     </section>
