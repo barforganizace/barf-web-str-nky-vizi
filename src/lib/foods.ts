@@ -41,6 +41,7 @@ export const MACROS: NutrientDef[] = [
   { key: "fat_pct", unit: "g", decimals: 1, color: "#ecd053" },
   { key: "carbs_pct", unit: "g", decimals: 1, color: "#93c5fc" },
   { key: "fiber_pct", unit: "g", decimals: 1, color: "#58d37e" },
+  { key: "moisture_pct", unit: "g", decimals: 1, color: "#8ecae6" },
 ];
 
 export const MICRO_SECTIONS: { key: string; rows: NutrientDef[] }[] = [
@@ -119,6 +120,8 @@ export interface Food {
   omegaSource: { version: string; id: string; name: string } | null;
   /** Toxická / nikdy nevařit / jen tepelně upravená; null = běžná surovina. */
   flag: FoodFlag | null;
+  /** Kolik váží jeden kus (krk, křídlo); null = surovina se na kusy nepočítá. */
+  pieceGrams: number | null;
 }
 
 interface Profile {
@@ -139,6 +142,7 @@ interface FoodRow {
   category: string;
   subcategory: string | null;
   photo_url: string | null;
+  piece_grams: number | null;
   bucket_composition: Partial<Record<Bucket, number>> | null;
   kcal_per_100g: number | null;
   food_translations: Translation[];
@@ -207,6 +211,7 @@ const toFood = (row: FoodRow, locale: string): Food => {
       ? { version: profile.source_version ?? profile.source, id: profile.source_id ?? "", name: profile.source_name ?? "" }
       : null,
     flag: flagOf(row),
+    pieceGrams: row.piece_grams == null ? null : Number(row.piece_grams),
   };
 };
 
@@ -218,7 +223,7 @@ const fetchFoods = async (): Promise<FoodRow[]> => {
   const { data, error } = await supabase
     .from("foods")
     .select(
-      `id, category, subcategory, photo_url, bucket_composition, kcal_per_100g, ${NUTRIENT_KEYS.join(", ")}, food_translations ( locale, name, description ), food_nutrition_profiles ( source, source_id, source_name, source_version )`,
+      `id, category, subcategory, photo_url, piece_grams, bucket_composition, kcal_per_100g, ${NUTRIENT_KEYS.join(", ")}, food_translations ( locale, name, description ), food_nutrition_profiles ( source, source_id, source_name, source_version )`,
     )
     .eq("is_active", true);
   if (error) throw error;

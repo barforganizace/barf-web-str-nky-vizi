@@ -6,6 +6,9 @@
     "blog": "Blog",
     "faq": "Časté dotazy",
     "producers": "Pro výrobce",
+    "formulator": "Formulátor receptů",
+    "soon": "brzy",
+    "formulator_soon": "Formulátor receptů se zatím vyrábí",
     "download_btn": "Stáhnout appku",
     "main_navigation": "Hlavní navigace",
     "open_menu": "Otevřít menu",
@@ -78,6 +81,17 @@
     "per_grams": "Hodnoty na {{grams}} g",
     "macros": "Makroživiny",
     "micros": "Mikroživiny",
+    "share_of_ration": "{{percent}} % dávky",
+    "composition": "Složení suroviny",
+    "composition_note": "Vlevo podíl ve surovině, vpravo kolik má ta složka tvořit denní dávku psa.",
+    "piece_grams": "Jeden kus ≈ {{grams}} g",
+    "ca_p": {
+      "title": "Poměr vápník : fosfor",
+      "ideal": "Ideální poměr (1,2–1,4 : 1)",
+      "ok": "Přijatelné, ideál je 1,2–1,4 : 1",
+      "low": "Málo vápníku — vyrovnává se kostmi nebo skořápkou",
+      "high": "Hodně vápníku — vyrovnává se svalovinou"
+    },
     "flag": {
       "toxic": "Toxické pro psy",
       "never_cook": "Nikdy nevařit",
@@ -101,6 +115,7 @@
     "nutrient": {
       "kcal_per_100g": "Kalorie",
       "protein_pct": "Bílkoviny",
+      "moisture_pct": "Voda",
       "fat_pct": "Tuky",
       "carbs_pct": "Sacharidy",
       "fiber_pct": "Vláknina",

@@ -6,6 +6,9 @@
     "blog": "Blog",
     "faq": "FAQ",
     "producers": "For producers",
+    "formulator": "Recipe formulator",
+    "soon": "soon",
+    "formulator_soon": "The recipe formulator is still in the works",
     "download_btn": "Get the app",
     "main_navigation": "Main navigation",
     "open_menu": "Open menu",
@@ -76,6 +79,17 @@
     "per_grams": "Values per {{grams}} g",
     "macros": "Macronutrients",
     "micros": "Micronutrients",
+    "share_of_ration": "{{percent}} % of ration",
+    "composition": "What it is made of",
+    "composition_note": "Left: share within the ingredient. Right: how much of the daily ration that component should be.",
+    "piece_grams": "One piece ≈ {{grams}} g",
+    "ca_p": {
+      "title": "Calcium : phosphorus ratio",
+      "ideal": "Ideal ratio (1.2–1.4 : 1)",
+      "ok": "Acceptable, ideal is 1.2–1.4 : 1",
+      "low": "Low in calcium — balance with bone or eggshell",
+      "high": "High in calcium — balance with muscle meat"
+    },
     "flag": {
       "toxic": "Toxic for dogs",
       "never_cook": "Never cook",
@@ -99,6 +113,7 @@
     "nutrient": {
       "kcal_per_100g": "Calories",
       "protein_pct": "Protein",
+      "moisture_pct": "Water",
       "fat_pct": "Fat",
       "carbs_pct": "Carbs",
       "fiber_pct": "Fiber",

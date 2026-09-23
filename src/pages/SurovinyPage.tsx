@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { Ban, Flame, Plus, Search, Snowflake, X } from "lucide-react";
 import { SharedNav } from "../components/SharedNav";
+import { useSession } from "../lib/session";
+import type { RationTargets } from "../account/dogs";
 import { BowlPanel, type BowlItem } from "../components/BowlPanel";
 import { MissingFoodForm } from "../components/MissingFoodForm";
 import {
@@ -73,6 +75,63 @@ const BucketDot = ({ food, size }: { food: Food; size: number }): JSX.Element =>
   );
 };
 
+/* Kolik procent denní dávky připadá na složku. Appka to počítá jako cíl složky ku celé dávce
+ * (dashboardTargets v barf.ts); výchozí hodnoty jsou ty, se kterými počítá calc_daily_targets
+ * v databázi, když pes nemá vlastní poměry — tedy co uvidí nepřihlášený návštěvník. */
+const TARGET_KEY: Record<Bucket, "muscle_g" | "bone_g" | "organ_g" | "liver_g" | "other_g"> = {
+  muscle: "muscle_g",
+  rmb: "bone_g",
+  organs: "organ_g",
+  liver: "liver_g",
+  other: "other_g",
+};
+const DEFAULT_SHARE: Record<Bucket, number> = { muscle: 50, rmb: 25, organs: 15, liver: 8, other: 10 };
+
+const bucketShare = (bucket: Bucket, ration: RationTargets | null): number =>
+  ration && ration.ration_g > 0
+    ? Math.round((ration[TARGET_KEY[bucket]] / ration.ration_g) * 100)
+    : DEFAULT_SHARE[bucket];
+
+/** Podíly složek suroviny; u jednoduché surovina sama tvoří celou svou složku. */
+const bucketShares = (food: Food): [Bucket, number][] => {
+  const parts = Object.entries(food.composition ?? {}).filter(([, share]) => (share ?? 0) > 0) as [Bucket, number][];
+  return parts.length > 1 ? parts : [[food.bucket, 1]];
+};
+
+/* Poměr vápníku a fosforu. Pásmo je převzaté z appky (CA_P_RATIO_BAND.adult v src/lib/nutrients.ts):
+ * ideál 1,2–1,4 : 1, mimo 1–2 : 1 je to problém. Osa končí na 3, výš už je jedno o kolik —
+ * taková surovina je čistý zdroj vápníku a vyrovnává se svalovinou. */
+const CA_P_AXIS = 3;
+const CA_P_BAR =
+  "linear-gradient(to right, #f2f4f7 0 33.3%, #e9f7ee 33.3% 40%, #58d37e 40% 46.7%, #e9f7ee 46.7% 66.7%, #f2f4f7 66.7% 100%)";
+
+const CalciumPhosphorusRatio = ({ food }: { food: Food }): JSX.Element | null => {
+  const { t, i18n } = useTranslation();
+  const calcium = food.values.calcium_mg;
+  const phosphorus = food.values.phosphorus_mg;
+  if (!calcium || !phosphorus) return null;
+
+  const ratio = calcium / phosphorus;
+  const state = ratio < 1 ? "low" : ratio > 2 ? "high" : ratio >= 1.2 && ratio <= 1.4 ? "ideal" : "ok";
+  return (
+    <div className="mt-3 rounded-2xl bg-[#fafbfc] p-3">
+      <div className="mb-2 flex items-baseline justify-between gap-3">
+        <span className="text-sm text-gray-900">{t("foods_page.ca_p.title")}</span>
+        <span className="shrink-0 text-sm font-bold text-gray-900">
+          {ratio.toLocaleString(i18n.language, { maximumFractionDigits: ratio < 10 ? 2 : 0 })} : 1
+        </span>
+      </div>
+      <div className="relative h-2 w-full rounded-full" style={{ background: CA_P_BAR }}>
+        <span
+          className="absolute top-[-2px] h-3 w-[3px] -translate-x-1/2 rounded-full bg-gray-900"
+          style={{ left: `${Math.min(100, (ratio / CA_P_AXIS) * 100)}%` }}
+        />
+      </div>
+      <p className="mt-1.5 text-[11px] font-medium text-gray-500">{t(`foods_page.ca_p.${state}`)}</p>
+    </div>
+  );
+};
+
 const FoodDetail = ({
   food,
   onClose,
@@ -83,6 +142,10 @@ const FoodDetail = ({
   onAdd: (food: Food, grams: number) => void;
 }): JSX.Element => {
   const { t, i18n } = useTranslation();
+  const { dogs } = useSession();
+  // Miska si psa vybírá sama; detail bere prvního, u jednoho psa je to totéž.
+  const ration = dogs[0]?.daily_targets ?? null;
+  const shares = bucketShares(food);
   const fmt = (n: number, decimals: number) => n.toLocaleString(i18n.language, { maximumFractionDigits: decimals });
 
   // Databáze má hodnoty na 100 g; uživatel si je přepočítá na svoji porci.
@@ -131,9 +194,14 @@ const FoodDetail = ({
 
         <div className="flex flex-col gap-4 p-5">
           <div>
-            <p className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-500">
+            <p className="mb-2 flex flex-wrap items-center gap-2 text-sm font-medium text-gray-500">
               <BucketDot food={food} size={12} />
               {t(bucketKey(food))}
+              {shares.length === 1 && (
+                <span className="rounded-full bg-[#f2f4f7] px-2.5 py-0.5 text-[12px] font-semibold text-gray-700">
+                  {t("foods_page.share_of_ration", { percent: bucketShare(food.bucket, ration) })}
+                </span>
+              )}
             </p>
             <h2 className="text-[24px] font-bold leading-tight text-gray-900">{food.name}</h2>
             {food.flag && (
@@ -143,6 +211,33 @@ const FoodDetail = ({
             )}
             {food.description && <p className="mt-2 text-sm leading-relaxed text-gray-600">{food.description}</p>}
           </div>
+
+          {shares.length > 1 && (
+            <section className="rounded-3xl bg-white p-5" style={{ boxShadow: CARD_SHADOW }}>
+              <p className="mb-2 text-[20px] font-semibold text-black">{t("foods_page.composition")}</p>
+              <div className="divide-y divide-[#f2f4f7]">
+                {shares.map(([bucket, share]) => (
+                  <div key={bucket} className="flex items-center justify-between gap-3 py-2">
+                    <span className="flex items-center gap-2 text-sm text-gray-900">
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: BUCKET_COLOR[bucket], boxShadow: DOT_EDGE }}
+                      />
+                      {t(`foods_page.bucket.${bucket}`)}
+                    </span>
+                    <span className="shrink-0">
+                      <span className="text-sm font-bold text-gray-900">{Math.round(share * 100)} %</span>
+                      <span className="text-xs font-medium text-gray-500">
+                        {" · "}
+                        {t("foods_page.share_of_ration", { percent: bucketShare(bucket, ration) })}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-[11px] leading-relaxed text-gray-500">{t("foods_page.composition_note")}</p>
+            </section>
+          )}
 
           <label className="flex items-center justify-between gap-3 rounded-3xl bg-white py-3 pl-5 pr-3" style={{ boxShadow: CARD_SHADOW }}>
             <span className="text-sm font-semibold text-gray-900">{t("foods_page.amount_label")}</span>
@@ -159,6 +254,11 @@ const FoodDetail = ({
               <span className="text-sm font-medium text-gray-500">g</span>
             </span>
           </label>
+          {food.pieceGrams != null && (
+            <p className="-mt-3 px-5 text-[11px] font-medium text-gray-500">
+              {t("foods_page.piece_grams", { grams: food.pieceGrams })}
+            </p>
+          )}
 
           <button
             type="button"
@@ -220,6 +320,7 @@ const FoodDetail = ({
                     </div>
                   ))}
                 </div>
+                {section.key === "macrominerals" && <CalciumPhosphorusRatio food={food} />}
               </div>
             ))}
             <p className="text-[11px] leading-relaxed text-gray-500">
