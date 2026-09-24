@@ -168,7 +168,10 @@
       "micro_toggle": "Mikroživiny",
       "add": "Přidat do misky ({{grams}} g)",
       "remove": "Odebrat",
-      "tick_note": "Čárka v baru je denní cíl psa. U živin je to minimum — přejít ho nevadí, syrová dávka ho běžně přesáhne. Červeně se ozve jen překročení bezpečné horní hranice."
+      "min_prefix": "min.",
+      "met": "splněno",
+      "over_limit": "nad limitem",
+      "tick_note": "Pásmo na baru je bezpečné rozmezí: levá čárka je denní minimum, pravá bezpečný strop. Kde pravá chybí, NRC strop nestanovuje — syrová dávka minimum běžně přesáhne a je to tak správně. Červeně se ozve jen překročení stropu."
     },
     "missing": {
       "title": "Chybí tu surovina?",

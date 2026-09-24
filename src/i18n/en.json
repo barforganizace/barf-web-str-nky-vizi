@@ -166,7 +166,10 @@
       "micro_toggle": "Micronutrients",
       "add": "Add to bowl ({{grams}} g)",
       "remove": "Remove",
-      "tick_note": "The tick in the bar is your dog's daily target. For nutrients it is a minimum — going past it is fine, a raw ration routinely does. Red appears only above the safe upper limit."
+      "min_prefix": "min.",
+      "met": "met",
+      "over_limit": "over limit",
+      "tick_note": "The band on the bar is the safe range: the left tick is the daily minimum, the right one the safe upper limit. Where the right tick is missing, NRC sets no limit — a raw ration routinely goes past the minimum, and that is fine. Red appears only above the limit."
     },
     "missing": {
       "title": "An ingredient missing?",

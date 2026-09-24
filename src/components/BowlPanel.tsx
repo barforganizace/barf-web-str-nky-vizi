@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useSession } from "../lib/session";
 import { dailyLimits, dailyTargets } from "../lib/targets";
 import { CardPager } from "./CardPager";
@@ -10,8 +10,8 @@ import { BUCKET_COLOR, MACROS, MICRO_SECTIONS, foodPhoto, type Bucket, type Food
 
 /* Miska vedle katalogu surovin: co uživatel naházel, kolik to má, a jak to
  * sedí na denní cíle jeho psa (profil z /ucet). Položky leží v inventáři
- * jako ve hře (dlaždice s fotkou a gramy). Bary jsou delší než cíl: čárka
- * na 80 % délky je cíl, výplň za ní ukazuje překročení. */
+ * jako ve hře (dlaždice s fotkou a gramy). Bary jsou budík, ne měřítko: pásmo
+ * mezi čárkami je bezpečné rozmezí, výplň za pravou čárkou ukazuje překročení. */
 
 export interface BowlItem {
   food: Food;
@@ -19,7 +19,20 @@ export interface BowlItem {
 }
 
 const CARD_SHADOW = "0 4px 5.3px rgba(0,0,0,0.03), 0 -4px 5.3px rgba(0,0,0,0.03)";
-const TARGET_AT = 0.8;
+/** Minimum sedí vždy na 40 % délky baru, bezpečný strop na 80 %, zbytek je překročení.
+ *  Kde je cíl zároveň strop (složení misky, kalorie), je jen jedna čárka na 80 %;
+ *  kde strop chybí, je pásmo otevřené doprava a bar končí na trojnásobku minima. */
+const MIN_AT = 0.4;
+const MAX_AT = 0.8;
+const position = (value: number, min: number, max: number | undefined): number => {
+  const single = max != null && max <= min;
+  const minAt = single ? MAX_AT : MIN_AT;
+  if (value <= min) return (value / min) * minAt;
+  if (single) return Math.min(1, MAX_AT + ((value - min) / min) * (1 - MAX_AT));
+  if (max == null) return Math.min(1, MIN_AT + ((value - min) / (2 * min)) * (1 - MIN_AT));
+  if (value <= max) return MIN_AT + ((value - min) / (max - min)) * (MAX_AT - MIN_AT);
+  return Math.min(1, MAX_AT + ((value - max) / max) * (1 - MAX_AT));
+};
 const MICRO_COLOR = "#66c8e3";
 const KCAL: NutrientDef = { key: "kcal", unit: "kcal", decimals: 0, color: "#c3e366" };
 /** Inventář má vždy aspoň dvě řady po čtyřech a jedno volné místo navíc. */
@@ -60,10 +73,27 @@ const TargetBar = ({
   def: NutrientDef;
   fmt: (n: number, decimals: number) => string;
 }): JSX.Element => {
+  const { t } = useTranslation();
   const hasTarget = target != null && target > 0;
-  const ratio = hasTarget ? value / target : 0;
-  const width = hasTarget ? Math.min(100, ratio * TARGET_AT * 100) : 0;
-  const over = limit != null && limit > 0 && value > limit;
+  const hasLimit = limit != null && limit > 0;
+  const over = hasLimit && value > limit;
+  // Složení misky a kalorie mají strop rovnou na cíli; jinde je cíl minimum a strop
+  // buď dál (tuk, vitamin A…), nebo žádný — bar to musí říct sám, bez vysvětlivky pod kartou.
+  const single = hasTarget && hasLimit && limit <= target;
+  const ranged = hasTarget && !single;
+  const met = ranged && !over && value >= target;
+  const width = hasTarget ? position(value, target, hasLimit ? limit : undefined) * 100 : 0;
+  const color = def.color ?? MICRO_COLOR;
+  const rangeText = !hasTarget
+    ? ""
+    : single
+      ? fmt(target, def.decimals)
+      : hasLimit
+        ? `${fmt(target, def.decimals)}–${fmt(limit, def.decimals)}`
+        : `${t("foods_page.bowl.min_prefix")} ${fmt(target, def.decimals)}`;
+  const tick = (at: number) => (
+    <span aria-hidden="true" className="absolute -top-[3px] h-[14px] w-[2px] rounded-full bg-gray-900" style={{ left: `calc(${at * 100}% - 1px)` }} />
+  );
   return (
     <div>
       <div className="mb-1 flex items-center justify-between gap-2">
@@ -71,26 +101,38 @@ const TargetBar = ({
         <span className="flex items-center gap-1.5">
           {over && (
             <span className="rounded-full bg-[#fdeceb] px-1.5 py-0.5 text-[10px] font-extrabold text-[#c23c34]">
-              {Math.round(ratio * 100)} %
+              {t("foods_page.bowl.over_limit")}
+            </span>
+          )}
+          {met && (
+            <span className="flex items-center gap-0.5 rounded-full bg-[#e9f7ee] px-1.5 py-0.5 text-[10px] font-extrabold text-[#2f7a4a]">
+              <Check className="h-3 w-3" />
+              {t("foods_page.bowl.met")}
             </span>
           )}
           <span>
             <span className="text-sm font-bold text-gray-900">{fmt(value, def.decimals)}</span>
             <span className="text-xs font-medium text-gray-500">
-              {hasTarget ? ` / ${fmt(target, def.decimals)} ${def.unit}` : ` ${def.unit}`}
+              {hasTarget ? ` / ${rangeText} ${def.unit}` : ` ${def.unit}`}
             </span>
           </span>
         </span>
       </div>
       <div className="relative h-2 w-full rounded-full bg-[#f2f4f7]">
-        <div className="h-full rounded-full transition-all duration-300" style={{ width: `${width}%`, backgroundColor: def.color ?? MICRO_COLOR }} />
-        {hasTarget && (
-          <span
+        {ranged && (
+          <div
             aria-hidden="true"
-            className="absolute -top-[3px] h-[14px] w-[2px] rounded-full bg-gray-900"
-            style={{ left: `calc(${TARGET_AT * 100}% - 1px)` }}
+            className="absolute inset-y-0 rounded-full"
+            style={{
+              left: `${MIN_AT * 100}%`,
+              right: hasLimit ? `${(1 - MAX_AT) * 100}%` : 0,
+              background: hasLimit ? `${color}40` : `linear-gradient(to right, ${color}40, transparent)`,
+            }}
           />
         )}
+        <div className="relative h-full rounded-full transition-all duration-300" style={{ width: `${width}%`, backgroundColor: color }} />
+        {hasTarget && tick(single ? MAX_AT : MIN_AT)}
+        {ranged && hasLimit && tick(MAX_AT)}
       </div>
     </div>
   );
