@@ -103,13 +103,13 @@ export const BlogPostPage = (): JSX.Element | null => {
           <p className="mx-auto mb-7 max-w-[420px] text-[15px] leading-relaxed text-white/65">
             {t("blog_page.cta_desc")}
           </p>
-          <a
-            href="/#stahnout"
+          <Link
+            to="/#stahnout"
             data-umami-event="blog-cta-stahnout"
             className="inline-flex h-12 items-center justify-center rounded-card bg-lime px-7 text-sm font-bold text-navy transition-opacity hover:opacity-90"
           >
             {t("blog_page.cta_btn")}
-          </a>
+          </Link>
         </div>
 
         {nextPost && (

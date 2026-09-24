@@ -1,9 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { faqItemsCs, faqItemsEn } from "../../../../data/faq";
+import { faqItems } from "../../../../data/faq";
+import { asLang } from "../../../../lib/lang";
 
 export const FaqAccordionSection = (): JSX.Element => {
   const { t, i18n } = useTranslation();
-  const items = i18n.language.startsWith("en") ? faqItemsEn : faqItemsCs;
+  const items = faqItems[asLang(i18n.language)];
 
   return (
     <section id="faq" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:py-24">

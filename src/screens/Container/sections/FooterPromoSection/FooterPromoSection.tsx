@@ -37,12 +37,12 @@ export const FooterPromoSection = (): JSX.Element => {
           </Link>
 
           <nav aria-label={t("footer.links_label")} className="flex flex-wrap gap-7">
-            <a href={anchor("funkce")} className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
+            <Link to={anchor("funkce")} className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
               {t("nav.features")}
-            </a>
-            <a href={anchor("faq")} className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
+            </Link>
+            <Link to={anchor("faq")} className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
               {t("nav.faq")}
-            </a>
+            </Link>
             <Link to="/blog" className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
               {t("nav.blog")}
             </Link>

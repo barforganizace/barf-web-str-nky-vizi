@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
+import { asLang, type Lang } from "./lang";
 
 export type BlogPost = {
   slug: string;
@@ -48,10 +49,6 @@ const toBlogPost = (row: ArticleRow): BlogPost => ({
   content: row.content,
 });
 
-type Lang = "cs" | "en";
-
-const toLang = (lang: string): Lang => (lang.startsWith("en") ? "en" : "cs");
-
 const cache: Partial<Record<Lang, BlogPost[]>> = {};
 const pending: Partial<Record<Lang, Promise<BlogPost[]>>> = {};
 
@@ -78,7 +75,7 @@ const fetchBlogPosts = (lang: Lang): Promise<BlogPost[]> => {
 
 /** Publikované blog příspěvky pro daný jazyk, načtené ze Supabase (tabulka articles). */
 export const useBlogPosts = (lang: string): { posts: BlogPost[]; loading: boolean } => {
-  const resolvedLang = toLang(lang);
+  const resolvedLang = asLang(lang);
   const [posts, setPosts] = useState<BlogPost[]>(() => cache[resolvedLang] ?? []);
   const [loading, setLoading] = useState(!cache[resolvedLang]);
 
@@ -104,7 +101,7 @@ export const normalizeText = (text: string): string =>
   text.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
 export const formatPostDate = (date: string, lang: string): string =>
-  new Date(date).toLocaleDateString(lang.startsWith("en") ? "en-US" : "cs-CZ", {
+  new Date(date).toLocaleDateString(lang, {
     day: "numeric",
     month: "long",
     year: "numeric",

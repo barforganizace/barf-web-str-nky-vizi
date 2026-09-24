@@ -5,10 +5,19 @@ import "./i18n";
 import { PageLoader } from "./components/PageLoader";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ScrollToHash } from "./components/ScrollToHash";
+import { LangHead } from "./components/LangHead";
 import { initAnalytics } from "./lib/analytics";
+import { DEFAULT_LANG, basenameOf, langFromPath, resolveLang } from "./lib/lang";
 import { SessionProvider } from "./lib/session";
 
 initAnalytics();
+
+// Adresa bez prefixu patří češtině. Kdo si dřív zvolil jiný jazyk, jde rovnou na svou verzi;
+// Googlebot nic uloženého nemá, takže české adresy zůstávají české.
+const lang = resolveLang();
+if (lang !== DEFAULT_LANG && !langFromPath(location.pathname)) {
+  location.replace(`${basenameOf(lang)}${location.pathname}${location.search}${location.hash}`);
+}
 
 const Container = lazy(() => import("./screens/Container").then(m => ({ default: m.Container })));
 const ObchodniPodminky = lazy(() => import("./pages/ObchodniPodminky").then(m => ({ default: m.ObchodniPodminky })));
@@ -24,9 +33,10 @@ const Account = lazy(() => import("./account/Account").then(m => ({ default: m.A
 createRoot(document.getElementById("app") as HTMLElement).render(
   <StrictMode>
     <ErrorBoundary>
-      <BrowserRouter>
+      <BrowserRouter basename={basenameOf(lang)}>
         <SessionProvider>
         <ScrollToHash />
+        <LangHead />
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<Container />} />

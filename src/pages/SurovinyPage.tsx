@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Ban, Flame, Plus, Search, Snowflake, X } from "lucide-react";
 import { CardPager } from "../components/CardPager";
@@ -531,13 +532,13 @@ export const SurovinyPage = (): JSX.Element => {
             {t("foods_page.cta_title")}
           </h2>
           <p className="mx-auto mb-7 max-w-[420px] text-[15px] leading-relaxed text-white/65">{t("foods_page.cta_desc")}</p>
-          <a
-            href="/#stahnout"
+          <Link
+            to="/#stahnout"
             data-umami-event="suroviny-cta-stahnout"
             className="inline-flex h-12 items-center justify-center rounded-card bg-lime px-7 text-sm font-bold text-navy transition-opacity hover:opacity-90"
           >
             {t("foods_page.cta_btn")}
-          </a>
+          </Link>
         </div>
       </main>
 

@@ -25,7 +25,7 @@ export const MissingFoodForm = (): JSX.Element => {
     const { error } = await supabase.from("food_suggestions").insert({
       name: name.trim(),
       note: note.trim() || null,
-      locale: i18n.language.startsWith("cs") ? "cs" : "en",
+      locale: i18n.language,
     });
 
     if (error) {

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LogIn, Factory, FlaskConical, Globe, ChevronDown, Menu, X } from "lucide-react";
+import { LogIn, Factory, FlaskConical, Globe, Languages, ChevronDown, Menu, X } from "lucide-react";
 import { useSession } from "../lib/session";
+import { LANGS, LANG_LABELS, LANG_NAMES, asLang, basenameOf, rememberLang, type Lang } from "../lib/lang";
 
 /* Jednotná pravidla lišty: každý prvek má výšku 40 px, tvar pilulky a jednořádkový text.
  * V liště je jen jedno plné (navy) tlačítko — „Stáhnout appku“. Všechno ostatní je lehčí. */
@@ -42,20 +43,62 @@ const AccountPill = ({ className = "" }: { className?: string }) => {
   );
 };
 
-const LangSwitch = ({ className = "", event }: { className?: string; event: string }) => {
+/** Přepínač jazyka: v liště štítek s rozbalovací nabídkou, v mobilním menu řada štítků.
+ * Položky jsou obyčejné odkazy na tutéž stránku pod jiným prefixem — stránka se načte znovu
+ * v novém jazyce a Google odkazy na ostatní verze vidí. */
+const LangMenu = ({ mobile = false }: { mobile?: boolean }) => {
   const { i18n } = useTranslation();
-  const isCS = i18n.language.startsWith("cs");
+  const { pathname, search, hash } = useLocation();
+  const current = asLang(i18n.language);
+  const href = (lang: Lang) => `${basenameOf(lang)}${pathname}${search}${hash}`;
+
+  if (mobile) {
+    return (
+      <div className="flex flex-wrap gap-1.5">
+        {LANGS.map((lang) => (
+          <a
+            key={lang}
+            href={href(lang)}
+            hrefLang={lang}
+            lang={lang}
+            title={LANG_NAMES[lang]}
+            onClick={() => rememberLang(lang)}
+            data-umami-event="prepnuti-jazyka-mobil"
+            className={`${control} h-9 px-3 text-xs ${lang === current ? "bg-navy text-fg-0" : "border border-strong bg-surface text-fg-2"}`}
+          >
+            {LANG_LABELS[lang]}
+          </a>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <button
-      onClick={() => i18n.changeLanguage(isCS ? "en" : "cs")}
-      data-umami-event={event}
-      title={isCS ? "Switch to English" : "Přepnout na češtinu"}
-      className={`${ghost} gap-1 text-xs ${className}`}
-    >
-      <span className={isCS ? "text-fg-1" : "text-fg-6"}>CZ</span>
-      <span className="text-fg-7">/</span>
-      <span className={!isCS ? "text-fg-1" : "text-fg-6"}>EN</span>
-    </button>
+    <div className="group relative hidden lg:block">
+      <button type="button" aria-haspopup="true" data-umami-event="prepnuti-jazyka" className={`${ghost} gap-1 text-xs`}>
+        <Languages className="h-4 w-4" />
+        {LANG_LABELS[current]}
+        <ChevronDown className="h-3.5 w-3.5 transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+      </button>
+      <div className="invisible absolute right-0 top-full z-50 w-44 pt-1 opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+        <div className="overflow-hidden rounded-card border border-hairline bg-surface p-1.5 shadow-lifted">
+          {LANGS.map((lang) => (
+            <a
+              key={lang}
+              href={href(lang)}
+              hrefLang={lang}
+              lang={lang}
+              onClick={() => rememberLang(lang)}
+              aria-current={lang === current ? "true" : undefined}
+              className={`flex items-center justify-between rounded-xl px-3 py-2 text-sm font-bold hover:bg-app-2 ${lang === current ? "text-fg-1" : "text-fg-4"}`}
+            >
+              {LANG_NAMES[lang]}
+              <span className="text-xs text-fg-6">{LANG_LABELS[lang]}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -99,9 +142,9 @@ export const SharedNav = () => {
             <ul className="flex items-center gap-7">
               {navLinks.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} data-umami-event={l.event} aria-current={isActive(l.href) ? "page" : undefined} className={link(l.href)}>
+                  <Link to={l.href} data-umami-event={l.event} aria-current={isActive(l.href) ? "page" : undefined} className={link(l.href)}>
                     {t(l.labelKey)}
-                  </a>
+                  </Link>
                 </li>
               ))}
               <li className="group relative">
@@ -128,7 +171,7 @@ export const SharedNav = () => {
 
           {/* vpravo: od nejlehčího k nejtěžšímu — jazyk, účet, webová verze, stáhnout */}
           <div className="ml-auto flex items-center gap-1.5 lg:gap-2">
-            <LangSwitch event="prepnuti-jazyka" className="hidden lg:inline-flex" />
+            <LangMenu />
             <AccountPill />
             <a
               href={WEB_APP_URL}
@@ -179,14 +222,14 @@ export const SharedNav = () => {
           <ul className="flex flex-col divide-y divide-hairline">
             {navLinks.map((l) => (
               <li key={l.href}>
-                <a
-                  href={l.href}
+                <Link
+                  to={l.href}
                   onClick={() => setOpen(false)}
                   data-umami-event={`${l.event}-mobil`}
                   className="flex items-center px-5 py-4 text-[15px] font-bold text-fg-1 hover:bg-app-2"
                 >
                   {t(l.labelKey)}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -212,10 +255,10 @@ export const SharedNav = () => {
               <Globe className="h-4 w-4" />
               {t("nav.webapp_btn")}
             </a>
-            <div className="flex items-center gap-2" onClick={() => setOpen(false)}>
-              <AccountPill className="h-12 flex-1" />
-              <LangSwitch event="prepnuti-jazyka-mobil" className="h-12 border border-strong px-4" />
+            <div onClick={() => setOpen(false)}>
+              <AccountPill className="h-12 w-full" />
             </div>
+            <LangMenu mobile />
           </div>
         </nav>
       </div>

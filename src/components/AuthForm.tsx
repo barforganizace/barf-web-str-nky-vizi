@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useHref } from "react-router-dom";
 import { LogIn, UserPlus } from "lucide-react";
 import { supabase } from "../lib/supabase";
 import { Button, Card, ErrorText, Field, inputClass } from "../editor/ui";
@@ -29,6 +30,7 @@ interface Props {
 }
 
 export function AuthForm({ redirectPath, nameLabel, nameHint }: Props) {
+  const redirectTo = useHref(redirectPath); // s jazykovým prefixem, ať se uživatel vrátí do své verze webu
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,7 +49,7 @@ export function AuthForm({ redirectPath, nameLabel, nameHint }: Props) {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}${redirectPath}`,
+            emailRedirectTo: `${window.location.origin}${redirectTo}`,
             data: name ? { display_name: name } : undefined,
           },
         });

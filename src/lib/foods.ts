@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "./supabase";
+import { asLang, type Lang } from "./lang";
 
 // Katalog surovin appky — tabulky foods + food_translations ve sdíleném
 // Supabase projektu. Složky (svalovina, kosti, …), jejich barvy i seznam
@@ -188,9 +189,11 @@ export const normalize = (text: string): string =>
 export const foodPhoto = (url: string, width: number): string =>
   `${url.replace("/object/public/", "/render/image/public/")}?width=${width}&quality=80`;
 
-const toFood = (row: FoodRow, locale: string): Food => {
+const toFood = (row: FoodRow, locale: Lang): Food => {
+  // Surovina bez překladu do jazyka webu (nově přidaná v appce) spadne na angličtinu, pak češtinu.
   const tr =
     row.food_translations.find((t) => t.locale === locale) ??
+    row.food_translations.find((t) => t.locale === "en") ??
     row.food_translations.find((t) => t.locale === "cs") ??
     row.food_translations[0];
   const values: Record<string, number | null> = {};
@@ -215,7 +218,7 @@ const toFood = (row: FoodRow, locale: string): Food => {
   };
 };
 
-// Načte se jednou pro oba jazyky; přepnutí jazyka jen přemapuje názvy.
+// Načte se jednou pro všechny jazyky; přepnutí jazyka jen přemapuje názvy.
 let cache: FoodRow[] | null = null;
 
 const fetchFoods = async (): Promise<FoodRow[]> => {
@@ -233,7 +236,7 @@ const fetchFoods = async (): Promise<FoodRow[]> => {
 
 /** Aktivní suroviny z databáze appky s názvy v jazyce webu, seřazené podle názvu. */
 export const useFoods = (lang: string): { foods: Food[]; loading: boolean; error: boolean } => {
-  const locale = lang.startsWith("cs") ? "cs" : "en";
+  const locale = asLang(lang);
   const [rows, setRows] = useState<FoodRow[]>(() => cache ?? []);
   const [loading, setLoading] = useState(!cache);
   const [error, setError] = useState(false);
