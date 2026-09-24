@@ -1,9 +1,10 @@
 import type { RationTargets } from "../account/dogs";
 
 // Denní cíle živin podle NRC 2006 (Recommended Allowance na 1000 kcal ME).
-// Tabulky jsou zkopírované z appky (barf-dog-nutrition-main: src/lib/barf.ts,
-// ADULT_ALLOWANCES / PUPPY_ALLOWANCES), aby web ukazoval stejné cíle jako
-// appka. Dávka, kcal, krmná váha a životní etapa přicházejí z databáze
+// Tabulky jsou zkopírované z appky (barf-dog-nutrition-main:
+// src/lib/nutrients.ts, ADULT_ALLOWANCES / PUPPY_ALLOWANCES — hodnota `ra`),
+// aby web ukazoval stejné cíle jako appka. Je to ruční kopie: jiné repo
+// bez sdíleného balíčku nemá odkud importovat, při změně tam se mění i tady. Dávka, kcal, krmná váha a životní etapa přicházejí z databáze
 // (daily_targets psa), tady se jen násobí tabulkou.
 //
 // Klíče odpovídají sloupcům tabulky foods, aby šly cíle rovnou porovnat se
