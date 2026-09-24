@@ -4,8 +4,9 @@
     "calculator": "Kalkulačka",
     "ingredients": "Suroviny",
     "blog": "Blog",
-    "faq": "Časté dotazy",
+    "faq": "FAQ",
     "producers": "Pro výrobce",
+    "editor": "Editor produktů",
     "formulator": "Formulátor receptů",
     "soon": "brzy",
     "formulator_soon": "Formulátor receptů se zatím vyrábí",
@@ -14,7 +15,7 @@
     "main_navigation": "Hlavní navigace",
     "open_menu": "Otevřít menu",
     "close_menu": "Zavřít menu",
-    "login": "Přihlásit se",
+    "login": "Přihlásit",
     "my_account": "Můj účet"
   },
   "hero": {
