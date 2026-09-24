@@ -56,18 +56,36 @@ export function dailyTargets(r: RationTargets): Record<string, number> {
   return out;
 }
 
-// Bezpečné horní limity (NRC Safe Upper Limit na 1000 kcal), zkopírované z appky
-// (nutrients.ts, pole `sul` a FAT_SUL_G_PER_1000KCAL). Většina živin žádný limit nemá:
-// chybějící klíč znamená „NRC strop nestanovuje“, ne „neomezeně“. Bílkoviny mezi nimi
-// schválně nejsou — cíl je u nich minimum, které syrová dávka běžně několikrát přesáhne.
+// Horní limity na 1000 kcal, zkopírované z appky (nutrients.ts, pole `sul`,
+// `legalMax` a FAT_SUL_G_PER_1000KCAL). Chybějící klíč znamená „strop nikdo
+// nestanovuje“, ne „neomezeně“. Bílkoviny mezi nimi schválně nejsou — cíl je
+// u nich minimum, které syrová dávka běžně několikrát přesáhne.
+//
+// Míchají se dva zdroje. NRC Safe Upper Limit je toxikologický práh pro psa
+// (tuk, vitaminy A a D, obě mastné kyseliny, u štěněte vápník). U stopových
+// prvků NRC strop nedává vůbec, tam je to legální maximum EU pro formulaci
+// kompletního krmiva podle FEDIAF. Jsou to dvě různá tvrzení; až se u čísla
+// bude psát, odkud je, musí se rozlišit.
+//
+// Vápník u štěněte je 4500, ne 18 000: osmnáctka je dospělá hodnota, kterou má
+// chybně i citovaný zdroj. NRC 2006 pro růst stanovuje 1,8 % sušiny při
+// 4000 kcal/kg. Nevracet zpátky — u vápníku překročení limitu samo působí
+// vývojové ortopedické onemocnění u velkých a obřích štěňat.
+const TRACE_LIMITS: Record<string, number> = {
+  iron_mg: 170.5, zinc_mg: 56.8, copper_mg: 7, manganese_mg: 42.5,
+  selenium_ug: 142, iodine_ug: 2750,
+};
+
 const ADULT_LIMITS: Record<string, number> = {
   fat_pct: 82.5,
+  ...TRACE_LIMITS,
   vitamin_a_ug: 16000, vitamin_d_ug: 20,
   omega3_epa_dha_mg: 2800, omega6_la_mg: 16300,
 };
 
 const PUPPY_LIMITS: Record<string, number> = {
-  fat_pct: 330, calcium_mg: 18000,
+  fat_pct: 330, calcium_mg: 4500,
+  ...TRACE_LIMITS,
   vitamin_a_ug: 3750, vitamin_d_ug: 20,
   omega3_epa_dha_mg: 11000, omega6_la_mg: 65000,
 };
