@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LogIn } from "lucide-react";
+import { LogIn, Factory, FlaskConical, Globe } from "lucide-react";
 import { useSession } from "../lib/session";
 
 /** Přihlášení v navigaci: nepřihlášený vidí zřetelné tlačítko „Přihlásit se“,
@@ -37,6 +37,16 @@ const AccountPill = ({ className = "" }: { className?: string }) => {
   );
 };
 
+/** Nástroje (ne obyčejné odkazy) — proto pilulka místo textu.
+ *  Formulátor má stejnou váhu jako Pro výrobce, jen se zatím vyrábí — odtud tlumené barvy. */
+const toolPill = "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 font-bold transition-colors";
+const toolReady = `${toolPill} border-lime-muted bg-lime-faint text-lime-ink hover:bg-lime-soft`;
+const toolSoon = `${toolPill} cursor-default border-dashed border-strong bg-app-2 text-fg-5`;
+const soonBadge = "rounded-full bg-fg-8 px-1.5 text-[10px] font-bold uppercase tracking-wide text-fg-5";
+
+const GOOGLE_PLAY_URL = "https://play.google.com/store/apps/details?id=com.barfingapp.app";
+const WEB_APP_URL = "https://barfing.net";
+
 export const SharedNav = () => {
   const { pathname } = useLocation();
   const { t, i18n } = useTranslation();
@@ -53,7 +63,6 @@ export const SharedNav = () => {
     { labelKey: "nav.ingredients", href: "/suroviny", event: "nav-suroviny" },
     { labelKey: "nav.blog", href: anchor("blog"), event: "nav-blog" },
     { labelKey: "nav.faq", href: anchor("faq"), event: "nav-faq" },
-    { labelKey: "nav.producers", href: "/editor", event: "nav-editor" },
   ];
 
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -74,8 +83,8 @@ export const SharedNav = () => {
           </Link>
 
           {/* desktop nav */}
-          <nav aria-label={t("nav.main_navigation")} className="hidden lg:block">
-            <ul className="flex items-center gap-8">
+          <nav aria-label={t("nav.main_navigation")} className="hidden xl:block">
+            <ul className="flex items-center gap-6">
               {navLinks.map((link) => (
                 <li key={link.href}>
                   <a
@@ -87,6 +96,19 @@ export const SharedNav = () => {
                   </a>
                 </li>
               ))}
+              <li>
+                <Link to="/editor" data-umami-event="nav-editor" className={`${toolReady} h-9 text-[13px]`}>
+                  <Factory className="h-3.5 w-3.5" />
+                  {t("nav.producers")}
+                </Link>
+              </li>
+              <li>
+                <span title={t("nav.formulator_soon")} className={`${toolSoon} h-9 text-[13px]`}>
+                  <FlaskConical className="h-3.5 w-3.5" />
+                  {t("nav.formulator")}
+                  <span className={soonBadge}>{t("nav.soon")}</span>
+                </span>
+              </li>
             </ul>
           </nav>
 
@@ -106,11 +128,25 @@ export const SharedNav = () => {
               <span className={!isCS ? "text-fg-1" : "text-fg-6"}>EN</span>
             </button>
 
+            {/* webová verze appky — desktop */}
+            <a
+              href={WEB_APP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-umami-event="cta-nav-webapp"
+              className="hidden h-12 items-center justify-center gap-2 rounded-card border-2 border-navy px-4 text-sm font-bold text-navy transition-colors hover:bg-navy hover:text-fg-0 xl:inline-flex"
+            >
+              <Globe className="h-4 w-4" />
+              {t("nav.webapp_btn")}
+            </a>
+
             {/* CTA — desktop */}
             <a
-              href={anchor("stahnout")}
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               data-umami-event="cta-nav-stahnout"
-              className="hidden h-12 items-center justify-center rounded-card bg-navy px-5 text-sm font-bold text-fg-0 transition-colors hover:bg-navy-2 lg:inline-flex"
+              className="hidden h-12 items-center justify-center rounded-card bg-navy px-5 text-sm font-bold text-fg-0 transition-colors hover:bg-navy-2 xl:inline-flex"
             >
               {t("nav.download_btn")}
             </a>
@@ -120,7 +156,7 @@ export const SharedNav = () => {
               onClick={() => setOpen((v) => !v)}
               aria-label={open ? t("nav.close_menu") : t("nav.open_menu")}
               aria-expanded={open}
-              className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5 lg:hidden"
+              className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5 xl:hidden"
             >
               {open ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -138,12 +174,12 @@ export const SharedNav = () => {
 
       {/* mobilní menu */}
       {open && (
-        <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setOpen(false)}>
+        <div className="fixed inset-0 z-40 xl:hidden" onClick={() => setOpen(false)}>
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
         </div>
       )}
       <div
-        className={`fixed left-0 right-0 top-[72px] z-40 lg:hidden transition-all duration-300 ease-out ${
+        className={`fixed left-0 right-0 top-[72px] z-40 xl:hidden transition-all duration-300 ease-out ${
           open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0 pointer-events-none"
         }`}
       >
@@ -162,10 +198,26 @@ export const SharedNav = () => {
               </li>
             ))}
           </ul>
-          <div className="px-4 pt-4" onClick={() => setOpen(false)}>
+          <div className="flex flex-col gap-2 border-t border-hairline p-4">
+            <Link
+              to="/editor"
+              onClick={() => setOpen(false)}
+              data-umami-event="nav-editor-mobil"
+              className={`${toolReady} h-12 w-full justify-center text-[15px]`}
+            >
+              <Factory className="h-4 w-4" />
+              {t("nav.producers")}
+            </Link>
+            <span className={`${toolSoon} h-12 w-full justify-center text-[15px]`}>
+              <FlaskConical className="h-4 w-4" />
+              {t("nav.formulator")}
+              <span className={soonBadge}>{t("nav.soon")}</span>
+            </span>
+          </div>
+          <div className="px-4" onClick={() => setOpen(false)}>
             <AccountPill className="w-full justify-center" />
           </div>
-          <div className="flex items-center gap-2 p-4">
+          <div className="flex flex-wrap items-center gap-2 p-4">
             <button
               onClick={switchLang}
               data-umami-event="prepnuti-jazyka-mobil"
@@ -176,12 +228,25 @@ export const SharedNav = () => {
               <span className={!isCS ? "text-fg-1" : "text-fg-6"}>EN</span>
             </button>
             <a
-              href={anchor("stahnout")}
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setOpen(false)}
               data-umami-event="cta-nav-stahnout-mobil"
               className="flex h-12 flex-1 items-center justify-center rounded-card bg-navy text-sm font-bold text-fg-0 transition-colors hover:bg-navy-2"
             >
               {t("nav.download_btn")}
+            </a>
+            <a
+              href={WEB_APP_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              data-umami-event="cta-nav-webapp-mobil"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-card border-2 border-navy text-sm font-bold text-navy transition-colors hover:bg-navy hover:text-fg-0"
+            >
+              <Globe className="h-4 w-4" />
+              {t("nav.webapp_btn")}
             </a>
           </div>
         </nav>
