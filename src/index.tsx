@@ -13,6 +13,7 @@ initAnalytics();
 const Container = lazy(() => import("./screens/Container").then(m => ({ default: m.Container })));
 const ObchodniPodminky = lazy(() => import("./pages/ObchodniPodminky").then(m => ({ default: m.ObchodniPodminky })));
 const ZasadyOchrany = lazy(() => import("./pages/ZasadyOchrany").then(m => ({ default: m.ZasadyOchrany })));
+const Cookies = lazy(() => import("./pages/Cookies").then(m => ({ default: m.Cookies })));
 const BlogListPage = lazy(() => import("./pages/BlogListPage").then(m => ({ default: m.BlogListPage })));
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage").then(m => ({ default: m.BlogPostPage })));
 const SurovinyPage = lazy(() => import("./pages/SurovinyPage").then(m => ({ default: m.SurovinyPage })));
@@ -34,6 +35,7 @@ createRoot(document.getElementById("app") as HTMLElement).render(
             <Route path="/suroviny" element={<SurovinyPage />} />
             <Route path="/obchodni-podminky" element={<ObchodniPodminky />} />
             <Route path="/zasady-ochrany-osobnich-udaju" element={<ZasadyOchrany />} />
+            <Route path="/cookies" element={<Cookies />} />
             <Route path="/editor/*" element={<Editor />} />
             <Route path="/ucet/*" element={<Account />} />
             <Route path="*" element={<NotFoundPage />} />

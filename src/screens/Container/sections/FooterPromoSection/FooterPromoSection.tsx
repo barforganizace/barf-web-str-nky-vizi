@@ -55,6 +55,9 @@ export const FooterPromoSection = (): JSX.Element => {
             <Link to="/zasady-ochrany-osobnich-udaju" className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
               {t("footer.legal2")}
             </Link>
+            <Link to="/cookies" className="text-sm font-semibold text-fg-5 transition-colors hover:text-navy">
+              {t("footer.legal3")}
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
