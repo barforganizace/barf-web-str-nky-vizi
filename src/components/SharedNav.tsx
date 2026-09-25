@@ -113,8 +113,7 @@ export const SharedNav = () => {
   const navLinks = [
     { labelKey: "nav.features", href: anchor("funkce"), event: "nav-funkce" },
     { labelKey: "nav.ingredients", href: "/suroviny", event: "nav-suroviny" },
-    { labelKey: "nav.blog", href: anchor("blog"), event: "nav-blog" },
-    { labelKey: "nav.faq", href: anchor("faq"), event: "nav-faq" },
+    { labelKey: "nav.blog", href: "/blog", event: "nav-blog" },
   ];
   const isActive = (href: string) => href.startsWith("/") && !href.includes("#") && pathname.startsWith(href);
   const link = (href: string) =>
